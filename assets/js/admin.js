@@ -83,14 +83,15 @@
     '.stats-band', '.stat',
     '.pillar', '.mini', '.spec', '.rm',
     '.lead', '.callout',
-    '.cards-3', '.nav-card',
-    '.corridor', '.layer',
-    '.timeline', '.tl-item',
-    '.bar-chart',
-    '.split-text', '.split-visual',
+    '.cards-3', '.nav-cards', '.nav-card',
+    '.corridor', '.layer', '.layers',
+    '.timeline', '.tl-item', '.roadmap',
+    '.bar-chart', '.specs',
+    '.split', '.split-text', '.split-visual',
     '.hero-title', '.hero-sub', '.hero-actions',
     '.section-kicker',
-    '.subpanel > h3'
+    '.imec-map', '.photo-band',
+    '.subpanel > h3', '.subpanel > p'
   ];
 
   var THEME_VARS = [
@@ -146,6 +147,23 @@
       var o = overrides[keyOf(el)];
       if (o && o.src) el.src = o.src;
     });
+    /* אלמנטים שהוסתרו / שונה גודלם */
+    eachSel(MOVE_SELECTORS, function(el){
+      var o = overrides[keyOf(el)];
+      if (!o) return;
+      if (o.hidden) el.classList.add('pd-hidden');
+      if (o.size){ el.style.width = o.size.w + 'px'; el.style.height = o.size.h + 'px'; }
+    });
+    /* תמונות רקע ראשיות שהוחלפו (page-head / hero) */
+    eachSel(['.page-head', '.hero-layer.sky'], function(el){
+      var o = overrides[keyOf(el)];
+      if (o && o.bg){
+        el.style.backgroundImage = 'url("'+o.bg+'")';
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'center';
+        el.classList.add('has-custom-bg');
+      }
+    });
     /* רקעים */
     eachSel(BG_SELECTORS, function(el){
       var o = overrides[keyOf(el)];
@@ -196,7 +214,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v28</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v29</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="grid">▦ רשת עזר</button>' +
@@ -419,6 +437,36 @@
       else { el.removeAttribute('data-img'); el.removeEventListener('click', onImgClick); }
     });
     enableMoving(on);
+    enableHeroPickers(on);
+  }
+
+  /* כפתור בחירת תמונת רקע ראשית לכל פרק (page-head) ול-hero בעמוד הבית */
+  function enableHeroPickers(on){
+    var targets = [];
+    document.querySelectorAll('.page-head').forEach(function(n){ targets.push(n); });
+    var sky = document.querySelector('.hero-layer.sky');
+    if (sky) targets.push(sky);
+    targets.forEach(function(el){
+      var has = el.querySelector(':scope > .pd-hero-pick') ||
+                (el.parentNode && el.classList.contains('sky') && document.querySelector('.hero .pd-hero-pick'));
+      if (on){
+        if (el.querySelector(':scope > .pd-hero-pick')) return;
+        if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+        var b = document.createElement('button');
+        b.className = 'pd-hero-pick';
+        b.type = 'button';
+        b.textContent = '📷 תמונת רקע';
+        b.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          heroPickTarget = el;
+          document.getElementById('admImgInput').click();
+        });
+        el.appendChild(b);
+      } else {
+        var ex = el.querySelector(':scope > .pd-hero-pick');
+        if (ex) ex.remove();
+      }
+    });
   }
 
   /* ---------- הזזת אלמנטים קיימים ---------- */
@@ -437,11 +485,86 @@
         h.addEventListener('pointerdown', function(e){ startMove(e, el, h); });
         h.addEventListener('dblclick', function(e){ e.preventDefault(); e.stopPropagation(); resetMove(el); });
         el.appendChild(h);
+        /* כפתור הסתרה/מחיקה לאלמנט קיים */
+        var dh = document.createElement('button');
+        dh.className = 'pd-del-handle';
+        dh.type = 'button';
+        dh.title = 'הסתרת האלמנט';
+        dh.textContent = '🗑';
+        dh.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          hideExisting(el, dh);
+        });
+        el.appendChild(dh);
+        /* 8 ידיות שינוי-גודל לאלמנט קיים */
+        addExistingResizeHandles(el);
       } else {
         el.classList.remove('pd-movable');
         if (existing) existing.remove();
+        var dx = el.querySelector(':scope > .pd-del-handle');
+        if (dx) dx.remove();
+        el.querySelectorAll(':scope > .cb-rz').forEach(function(n){ n.remove(); });
       }
     });
+  }
+
+  /* 8 ידיות שינוי-גודל לאלמנט קיים — נשמר ב-overrides[key].size={w,h} */
+  function addExistingResizeHandles(el){
+    if (el.querySelector(':scope > .cb-rz')) return;
+    var dirs = ['n','s','e','w','ne','nw','se','sw'];
+    dirs.forEach(function(d){
+      var h = el2('div', 'cb-rz cb-rz-' + d);
+      h.addEventListener('pointerdown', function(e){
+        e.preventDefault(); e.stopPropagation();
+        var sx = e.clientX, sy = e.clientY;
+        var r = el.getBoundingClientRect();
+        var startW = r.width, startH = r.height;
+        function mv(ev){
+          var dx = ev.clientX - sx, dy = ev.clientY - sy;
+          var nw = startW, nh = startH;
+          if (d.indexOf('e') > -1) nw = startW + dx;
+          if (d.indexOf('w') > -1) nw = startW - dx;
+          if (d.indexOf('s') > -1) nh = startH + dy;
+          if (d.indexOf('n') > -1) nh = startH - dy;
+          nw = Math.max(60, Math.round(nw));
+          nh = Math.max(40, Math.round(nh));
+          el.style.width = nw + 'px';
+          el.style.height = nh + 'px';
+          el._sz = { w:nw, h:nh };
+        }
+        function up(){
+          document.removeEventListener('pointermove', mv);
+          document.removeEventListener('pointerup', up);
+          if (el._sz){
+            var k = keyOf(el);
+            overrides[k] = overrides[k] || {};
+            overrides[k].size = el._sz;
+            flush();
+          }
+        }
+        document.addEventListener('pointermove', mv);
+        document.addEventListener('pointerup', up);
+      });
+      el.appendChild(h);
+    });
+  }
+  function el2(tag, cls){ var e=document.createElement(tag); if(cls)e.className=cls; return e; }
+
+  /* הסתרת אלמנט קיים (נשמר ב-overrides[key].hidden) — הפיך דרך איפוס */
+  function hideExisting(el, btn){
+    if (btn.dataset.armed === '1'){
+      var k = keyOf(el);
+      overrides[k] = overrides[k] || {};
+      overrides[k].hidden = true;
+      el.classList.add('pd-hidden');
+      flush();
+      setStatus('האלמנט הוסתר', true);
+      return;
+    }
+    btn.dataset.armed = '1';
+    btn.textContent = '⚠';
+    btn.classList.add('pd-del-arm');
+    setTimeout(function(){ btn.dataset.armed=''; btn.textContent='🗑'; btn.classList.remove('pd-del-arm'); }, 3000);
   }
 
   function curMove(el){
@@ -519,6 +642,7 @@
   /* ---------- החלפת תמונות / רקעים ---------- */
   var imgTarget = null;
   var blockImgTarget = null;   /* { pid, id, el } — תמונה בתוך בלוק מותאם */
+  var heroPickTarget = null;   /* page-head / hero-layer.sky — תמונת רקע ראשית */
   function onImgClick(e){
     e.preventDefault(); e.stopPropagation();
     blockImgTarget = null;
@@ -532,6 +656,18 @@
       var reader = new FileReader();
       reader.onload = function(){
         var data = reader.result;
+        /* תמונת רקע ראשית (page-head / hero) */
+        if (heroPickTarget){
+          var hk = keyOf(heroPickTarget);
+          overrides[hk] = overrides[hk] || {};
+          overrides[hk].bg = data;
+          heroPickTarget.style.backgroundImage = 'url("'+data+'")';
+          heroPickTarget.style.backgroundSize = 'cover';
+          heroPickTarget.style.backgroundPosition = 'center';
+          heroPickTarget.classList.add('has-custom-bg');
+          flush(); setStatus('תמונת הרקע הוחלפה', true);
+          heroPickTarget = null; fi.value=''; return;
+        }
         /* תמונה בתוך בלוק מותאם */
         if (blockImgTarget){
           var rec = findBlock(blockImgTarget.pid, blockImgTarget.id);
@@ -649,12 +785,22 @@
   function toggleTheme(){ document.getElementById('themePanel').classList.toggle('show'); }
 
   /* רשת עזר למיקום מדויק — אופציונלית, לא נשמרת */
+  /* רשת עזר — לחיצות מחזוריות: כחול → שחור → בז' → כבוי */
+  var gridStates = ['', 'g-black', 'g-beige', 'off'];
+  var gridLabels = ['▦ רשת: כחול', '▦ רשת: שחור', "▦ רשת: בז'", '▦ רשת עזר'];
+  var gridIdx = -1;
   function toggleGrid(btn){
+    gridIdx = (gridIdx + 1) % gridStates.length;
+    var state = gridStates[gridIdx];
     var g = document.getElementById('pdGrid');
-    if (g){ g.remove(); if (btn) btn.classList.remove('on'); return; }
-    g = el('div'); g.id = 'pdGrid';
-    document.body.appendChild(g);
-    if (btn) btn.classList.add('on');
+    if (state === 'off'){
+      if (g) g.remove();
+      if (btn){ btn.classList.remove('on'); btn.textContent = gridLabels[3]; }
+      return;
+    }
+    if (!g){ g = el('div'); g.id = 'pdGrid'; document.body.appendChild(g); }
+    g.className = state;     /* '' = כחול ברירת מחדל */
+    if (btn){ btn.classList.add('on'); btn.textContent = gridLabels[gridIdx]; }
   }
 
   /* ===================================================================
@@ -1290,6 +1436,22 @@
     /* שמירה לפני יציאה */
     window.addEventListener('beforeunload', function(){ if(dirty) save(STORE_KEY, overrides); });
     document.addEventListener('scroll', hideFmt, true);
+
+    /* החלת כלי האדמין מחדש אחרי מעבר טאב/תת-טאב (תוכן חדש נחשף) */
+    document.addEventListener('click', function(e){
+      if (!adminOn) return;
+      if (e.target.closest('.nav-link, .subtab, [data-goto]')){
+        setTimeout(refreshAdminTools, 60);
+      }
+    }, true);
+  }
+
+  /* מרענן ידיות הזזה, מפרידי ＋ ועריכת טקסט על התוכן הנראה כעת */
+  function refreshAdminTools(){
+    if (!adminOn) return;
+    enableEditing(true);     /* מוסיף data-editable/handles לאלמנטים חדשים (קיימים מדלגים) */
+    injectInlineInserts(true);
+    renderBlocks();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
