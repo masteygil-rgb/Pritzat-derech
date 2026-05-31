@@ -198,6 +198,29 @@ body.admin-on .custom-block.cb-free.cb-editing{outline-offset:4px}
 .custom-block .cb-ctl.cb-arm{background:#b4452e;animation:cbArm .5s ease infinite alternate}
 @keyframes cbArm{from{transform:scale(1)}to{transform:scale(1.06)}}
 
+/* ===== בלוק מרווח ריק ===== */
+.custom-block .cb-spacer{position:relative;width:100%;min-height:10px;border-radius:8px}
+body.admin-on .custom-block .cb-spacer{background:repeating-linear-gradient(45deg,rgba(31,135,176,.06) 0 10px,transparent 10px 20px);border:1px dashed var(--sea);display:flex;align-items:center;justify-content:center}
+.custom-block .cb-spacer-lbl{display:none;font-size:.78rem;font-weight:700;color:var(--sea-deep);background:rgba(255,255,255,.85);padding:2px 10px;border-radius:20px}
+body.admin-on .custom-block .cb-spacer-lbl{display:inline-block}
+.custom-block .cb-spacer-grip{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:60px;height:14px;border-radius:7px;background:var(--sea-deep);cursor:ns-resize;display:none}
+body.admin-on .custom-block .cb-spacer-grip{display:block}
+.custom-block .cb-spacer-grip:hover{background:var(--sea)}
+
+/* ===== מפריד הוספה (＋ בין אלמנטים) ===== */
+.cb-insert{display:flex;align-items:center;justify-content:center;height:0;position:relative;margin:0;opacity:0;transition:opacity .15s,height .15s}
+body.admin-on .admin-blocks:hover .cb-insert,
+body.admin-on .cb-insert:hover{opacity:1;height:34px}
+.cb-insert::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:linear-gradient(90deg,transparent,var(--sea) 20%,var(--sea) 80%,transparent)}
+.cb-insert-btn{position:relative;z-index:1;background:var(--sea-deep);color:#fff;border:none;border-radius:20px;padding:5px 16px;font-family:var(--font);font-weight:700;font-size:.82rem;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.cb-insert-btn:hover{background:var(--sea);transform:scale(1.05)}
+
+/* ===== בורר סוג בלוק (chooseTypeAt) ===== */
+.ct-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.ct-opt{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);cursor:pointer;font-family:var(--font);font-weight:700;font-size:.82rem;color:var(--ink);transition:.15s}
+.ct-opt span{font-size:1.5rem;line-height:1}
+.ct-opt:hover{border-color:var(--sea);background:#fff;transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+
 body.admin-on .custom-block [contenteditable]{outline:1.5px dashed transparent;outline-offset:3px;border-radius:4px;transition:.15s;cursor:text}
 body.admin-on .custom-block [contenteditable]:hover{outline-color:var(--sea);background:rgba(31,135,176,.05)}
 body.admin-on .custom-block [contenteditable]:focus{outline:2px solid var(--sea);background:rgba(31,135,176,.07)}

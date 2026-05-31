@@ -184,7 +184,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v23</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v24</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -673,6 +673,7 @@
       var pid = zone.getAttribute('data-addzone');
       var list = blocks[pid] || [];
       zone.innerHTML = '';
+      if (adminOn) zone.appendChild(makeInsertZone(pid, 0));   /* מפריד בראש */
       list.forEach(function(b, i){
         try {
           var node = renderBlock(b, pid, i, list.length);
@@ -682,12 +683,26 @@
             else zone.appendChild(node);
           } else {
             zone.appendChild(node);
+            if (adminOn) zone.appendChild(makeInsertZone(pid, i + 1));  /* מפריד אחרי כל בלוק */
           }
         } catch(err){
           window.dispatchEvent(new ErrorEvent('error',{message:'renderBlock '+(b&&b.type)+': '+err.message, filename:'admin.js', lineno:0, colno:0}));
         }
       });
     });
+  }
+
+  /* מפריד הוספה — קו עם כפתור ＋ להוספת בלוק במיקום מדויק */
+  function makeInsertZone(pid, index){
+    var z = el('div', 'cb-insert');
+    var btn = el('button', 'cb-insert-btn', '＋ הוסף כאן');
+    btn.type = 'button';
+    btn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      chooseTypeAt(pid, index);
+    });
+    z.appendChild(btn);
+    return z;
   }
 
   function applyFreePos(node, b){
@@ -716,7 +731,10 @@
     var T = '<div class="cb-text">'+textHTML+'</div>';
     var inner = '';
 
-    if (b.type === 'text'){
+    if (b.type === 'spacer'){
+      var sh = b.h ? b.h : 60;
+      inner = '<div class="cb-spacer" style="height:'+sh+'px"><span class="cb-spacer-lbl">מרווח · '+sh+'px</span></div>';
+    } else if (b.type === 'text'){
       inner = T;
     } else if (b.type === 'image'){
       inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' />' +
@@ -886,6 +904,34 @@
       opRange.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
     }
 
+    /* מרווח ריק — גרירת הקצה התחתון לשינוי גובה */
+    var spacer = wrap.querySelector('.cb-spacer');
+    if (spacer){
+      var grip = document.createElement('div');
+      grip.className = 'cb-spacer-grip';
+      grip.title = 'גררו לשינוי גובה';
+      spacer.appendChild(grip);
+      grip.addEventListener('pointerdown', function(e){
+        e.preventDefault(); e.stopPropagation();
+        var startY = e.clientY;
+        var startH = b.h ? b.h : 60;
+        function mv(ev){
+          var nh = Math.max(10, Math.round(startH + (ev.clientY - startY)));
+          b.h = nh;
+          spacer.style.height = nh + 'px';
+          var lbl = spacer.querySelector('.cb-spacer-lbl');
+          if (lbl) lbl.textContent = 'מרווח · ' + nh + 'px';
+        }
+        function done(){
+          document.removeEventListener('pointermove', mv);
+          document.removeEventListener('pointerup', done);
+          saveBlocks();
+        }
+        document.addEventListener('pointermove', mv);
+        document.addEventListener('pointerup', done);
+      });
+    }
+
     /* גרירה חופשית — מהידית בלבד */
     var handle = bar.querySelector('[data-drag]');
     if (handle) enableDrag(handle, wrap, b, pid);
@@ -1021,10 +1067,11 @@
     var active = document.querySelector('.page.active');
     addBlock(active ? active.id : 'home');
   }
-  function addBlock(pid){
+  function addBlock(pid, type, index){
     blocks[pid] = blocks[pid] || [];
-    var nb = { id: uid(), type: 'text-image', html:'', img:'', caption:'' };
-    blocks[pid].unshift(nb);     /* חדש בראש — גלוי מיד */
+    var nb = { id: uid(), type: type || 'text-image', html:'', img:'', caption:'' };
+    if (typeof index === 'number' && index >= 0) blocks[pid].splice(index, 0, nb);
+    else blocks[pid].unshift(nb);     /* ברירת מחדל — בראש */
     saveBlocks();
     renderBlocks();
     setTimeout(function(){
@@ -1036,6 +1083,30 @@
       }
     }, 60);
     setStatus('בלוק נוסף — גררו ב"✥ הזז" למיקום הרצוי', true);
+  }
+
+  /* בורר סוג להוספה במיקום מסוים (מפריד ＋ בין אלמנטים) */
+  function chooseTypeAt(pid, index){
+    var TYPES = [
+      {t:'text',i:'¶',l:'טקסט'},{t:'image',i:'🖼',l:'תמונה'},
+      {t:'text-side',i:'⊟',l:'טקסט בצד'},{t:'text-below',i:'⊏',l:'טקסט למטה'},
+      {t:'text-over',i:'▦',l:'טקסט על תמונה'},{t:'before-after',i:'⇄',l:'לפני/אחרי'},
+      {t:'spacer',i:'↕',l:'מרווח ריק'}
+    ];
+    var btns = TYPES.map(function(o){
+      return '<button class="ct-opt" data-t="'+o.t+'"><span>'+o.i+'</span>'+o.l+'</button>';
+    }).join('');
+    showModal('<h3>הוספת בלוק כאן</h3><p>בחרו את סוג התוכן להוספה במיקום זה.</p>' +
+      '<div class="ct-grid">'+btns+'</div>' +
+      '<div class="am-actions"><button class="admin-btn" data-close>ביטול</button></div>',
+      function(box){
+        box.querySelectorAll('.ct-opt').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            hideModal();
+            addBlock(pid, btn.dataset.t, index);
+          });
+        });
+      });
   }
 
   /* ---------- מודאל גנרי ---------- */
