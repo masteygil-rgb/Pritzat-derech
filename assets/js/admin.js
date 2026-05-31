@@ -196,7 +196,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v26</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v27</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -270,6 +270,9 @@
     fmt.querySelector('[data-font]').addEventListener('change', function(e){
       if (e.target.value){ document.execCommand('fontName', false, e.target.value); markDirtyFromActive(); }
     });
+    /* הסרגל הוא שורה שנייה קבועה בתוך סרגל האדמין — תמיד גלוי במצב עריכה */
+    bar.appendChild(fmt);
+    fmt.classList.add('show');
 
     /* פאנל ערכת צבעים */
     var tp = el('div', 'theme-panel'); tp.id = 'themePanel';
@@ -491,23 +494,8 @@
   /* ---------- סרגל עיצוב טקסט ---------- */
   var activeEditable = null;
   function onSelect(e){
+    /* הסרגל קבוע למעלה — רק עוקבים אחרי האלמנט הפעיל ומעדכנים מצב כפתורים */
     activeEditable = e.currentTarget;
-    var sel = window.getSelection();
-    if (!sel || !sel.rangeCount){ hideFmt(); return; }
-    var range = sel.getRangeAt(0);
-    var rect = range.getBoundingClientRect();
-    /* גם כשהסמן בלבד (בלי סימון) — מציגים מעל האלמנט הנערך */
-    if (!rect.width && !rect.height){
-      rect = activeEditable.getBoundingClientRect();
-    }
-    var tb = document.getElementById('fmtToolbar');
-    tb.classList.add('show');
-    var top = rect.top - tb.offsetHeight - 8;
-    if (top < 60) top = rect.bottom + 8;
-    var left = rect.left + rect.width/2 - tb.offsetWidth/2;
-    left = Math.max(8, Math.min(left, window.innerWidth - tb.offsetWidth - 8));
-    tb.style.top = top + 'px';
-    tb.style.left = left + 'px';
     refreshFmtState();
   }
   function refreshFmtState(){
@@ -516,7 +504,7 @@
       if (b){ try { b.classList.toggle('on', document.queryCommandState(c)); } catch(e){} }
     });
   }
-  function hideFmt(){ var t=document.getElementById('fmtToolbar'); if(t) t.classList.remove('show'); }
+  function hideFmt(){ /* הסרגל קבוע — אין צורך להסתיר */ }
   function markDirtyFromActive(){
     if (activeEditable){
       var k = keyOf(activeEditable);

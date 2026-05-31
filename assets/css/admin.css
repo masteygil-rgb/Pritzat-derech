@@ -18,16 +18,18 @@ body.admin-on .admin-fab{display:none}
 /* ----- סרגל אדמין עליון ----- */
 .admin-bar{
   position:fixed;inset-block-start:0;inset-inline:0;z-index:1000;
-  height:54px;display:none;align-items:center;gap:10px;
-  padding:0 16px;
+  display:none;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:8px 16px;
   background:#1c2016;color:#f4f2e9;
   box-shadow:0 6px 20px rgba(0,0,0,.25);
   font-family:var(--font);
 }
 body.admin-on .admin-bar{display:flex}
-body.admin-on{padding-top:54px}
-body.admin-on .sidebar{margin-top:54px}
-body.admin-on .menu-toggle{top:64px}
+body.admin-on{padding-top:108px}        /* מקום לשתי שורות הסרגל */
+body.admin-on .sidebar{margin-top:108px}
+body.admin-on .menu-toggle{top:118px}
+/* קו הפרדה לפני שורת כלי הטקסט */
+.admin-bar .fmt-toolbar{flex-basis:100%;border-top:1px solid rgba(255,255,255,.12);margin-top:2px;padding-top:8px}
 .admin-bar .ab-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.98rem}
 .admin-bar .ab-logo i{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--sea),var(--olive));display:grid;place-items:center;font-style:normal;font-size:.85rem}
 .admin-bar .ab-spacer{flex:1}
@@ -64,14 +66,9 @@ body.admin-on [data-img]:hover::after{opacity:1}
 
 /* ----- סרגל עיצוב טקסט צף ----- */
 .fmt-toolbar{
-  position:fixed;z-index:1100;display:none;align-items:center;gap:2px;flex-wrap:wrap;justify-content:center;
-  top:54px;left:0;right:0;                /* צמוד מתחת לסרגל האדמין השחור (54px) */
-  background:#0e1b27;padding:6px 10px;
-  box-shadow:0 6px 18px rgba(0,0,0,.35);
-  border-top:1px solid rgba(255,255,255,.1);
+  display:none;align-items:center;gap:2px;flex-wrap:wrap;justify-content:flex-start;
 }
 .fmt-toolbar.show{display:flex}
-@media(max-width:768px){.fmt-toolbar{top:96px}}
 .fmt-toolbar button{
   width:32px;height:32px;border-radius:7px;color:#f4f2e9;font-size:.9rem;font-weight:800;
   display:grid;place-items:center;transition:.12s;cursor:pointer;background:transparent;
@@ -273,8 +270,8 @@ body.admin-on .pd-moved > .pd-move-handle{background:var(--sand-deep)}
 @media print{.admin-fab,.admin-bar,.fmt-toolbar,.theme-panel,.admin-modal,.cb-bar,.cb-rz,.cb-insert,.cb-inline-host{display:none !important}
   body.admin-on .custom-block.cb-editing{outline:none}}
 @media(max-width:768px){
-  .admin-bar{height:auto;flex-wrap:wrap;padding:8px 12px;gap:6px}
-  body.admin-on{padding-top:96px}
-  body.admin-on .sidebar{margin-top:96px}
+  .admin-bar{padding:8px 12px;gap:6px}
+  body.admin-on{padding-top:150px}
+  body.admin-on .sidebar{margin-top:150px}
   .admin-btn{padding:7px 10px;font-size:.8rem}
 }
