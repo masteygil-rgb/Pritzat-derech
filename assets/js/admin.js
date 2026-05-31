@@ -196,7 +196,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v25</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v26</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -1075,15 +1075,56 @@
     if (labA){ labA.setAttribute('contenteditable','true'); labA.addEventListener('input', function(){ b.labelA = labA.textContent; markBlocksDirty(); }); labA.addEventListener('pointerdown', function(e){ e.stopPropagation(); }); }
     if (labB){ labB.setAttribute('contenteditable','true'); labB.addEventListener('input', function(){ b.labelB = labB.textContent; markBlocksDirty(); }); labB.addEventListener('pointerdown', function(e){ e.stopPropagation(); }); }
 
-    /* שמירת גודל לאחר שינוי (גרירת פינה) */
-    if (window.ResizeObserver){
-      var ro = new ResizeObserver(function(){
-        if (!wrap.offsetWidth) return;
-        b.w = Math.round(wrap.offsetWidth);
-        clearTimeout(wrap._rt); wrap._rt = setTimeout(saveBlocks, 500);
+    /* שחזור מידות שמורות */
+    if (b.boxH) wrap.style.height = b.boxH + 'px';
+    /* ידיות שינוי-גודל לכל הכיוונים (8 נקודות) */
+    addResizeHandles(wrap, b);
+  }
+
+  /* ---------- ידיות שינוי-גודל לכל הכיוונים ---------- */
+  function addResizeHandles(wrap, b){
+    var dirs = ['n','s','e','w','ne','nw','se','sw'];
+    dirs.forEach(function(d){
+      var h = el('div', 'cb-rz cb-rz-' + d);
+      h.addEventListener('pointerdown', function(e){
+        e.preventDefault(); e.stopPropagation();
+        var sx = e.clientX, sy = e.clientY;
+        var r = wrap.getBoundingClientRect();
+        var startW = r.width, startH = r.height;
+        var startLeft = wrap.offsetLeft, startTop = wrap.offsetTop;
+        var isFree = wrap.classList.contains('cb-free');
+        function mv(ev){
+          var dx = ev.clientX - sx, dy = ev.clientY - sy;
+          var nw = startW, nh = startH;
+          if (d.indexOf('e') > -1) nw = startW + dx;
+          if (d.indexOf('w') > -1) nw = startW - dx;
+          if (d.indexOf('s') > -1) nh = startH + dy;
+          if (d.indexOf('n') > -1) nh = startH - dy;
+          nw = Math.max(200, Math.round(nw));
+          nh = Math.max(80, Math.round(nh));
+          wrap.style.width = nw + 'px';
+          wrap.style.maxWidth = 'none';
+          wrap.style.height = nh + 'px';
+          b.w = nw; b.boxH = nh;
+          /* בלוק צף — תזוזת קצה צפון/מערב גם מזיזה מיקום */
+          if (isFree){
+            var page = wrap.offsetParent;
+            if (page){
+              if (d.indexOf('w') > -1){ b.x = ((startLeft + (startW - nw)) / page.offsetWidth) * 100; wrap.style.left = b.x + '%'; }
+              if (d.indexOf('n') > -1){ b.y = ((startTop  + (startH - nh)) / page.offsetHeight) * 100; wrap.style.top = b.y + '%'; }
+            }
+          }
+        }
+        function up(){
+          document.removeEventListener('pointermove', mv);
+          document.removeEventListener('pointerup', up);
+          saveBlocks();
+        }
+        document.addEventListener('pointermove', mv);
+        document.addEventListener('pointerup', up);
       });
-      ro.observe(wrap);
-    }
+      wrap.appendChild(h);
+    });
   }
 
   /* ---------- מנגנון גרירה חופשית ---------- */

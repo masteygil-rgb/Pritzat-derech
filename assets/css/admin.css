@@ -65,14 +65,13 @@ body.admin-on [data-img]:hover::after{opacity:1}
 /* ----- סרגל עיצוב טקסט צף ----- */
 .fmt-toolbar{
   position:fixed;z-index:1100;display:none;align-items:center;gap:2px;flex-wrap:wrap;justify-content:center;
-  top:62px;left:50%;transform:translateX(-50%);
-  max-width:min(96vw,720px);
-  background:#16293a;border-radius:10px;padding:6px 8px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
-  border:1px solid rgba(255,255,255,.12);
+  top:54px;left:0;right:0;                /* צמוד מתחת לסרגל האדמין השחור (54px) */
+  background:#0e1b27;padding:6px 10px;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+  border-top:1px solid rgba(255,255,255,.1);
 }
 .fmt-toolbar.show{display:flex}
-@media(max-width:768px){.fmt-toolbar{top:104px}}
+@media(max-width:768px){.fmt-toolbar{top:96px}}
 .fmt-toolbar button{
   width:32px;height:32px;border-radius:7px;color:#f4f2e9;font-size:.9rem;font-weight:800;
   display:grid;place-items:center;transition:.12s;cursor:pointer;background:transparent;
@@ -160,10 +159,21 @@ body.admin-on .custom-block .cb-ba-img:hover{outline:2px dashed var(--sand);outl
 /* מצב עריכה — מסגרת, ידית שינוי גודל וכלים */
 body.admin-on .custom-block.cb-editing{
   outline:2px dashed var(--sea);outline-offset:6px;border-radius:8px;
-  resize:horizontal;overflow:hidden;min-width:280px;
+  overflow:visible;min-width:200px;min-height:80px;
   padding:48px 8px 8px;            /* רווח עליון לסרגל הכלים הפנימי */
   background:rgba(31,135,176,.04);
 }
+/* ידיות שינוי-גודל — 8 כיוונים */
+.cb-rz{position:absolute;z-index:7;background:var(--sea-deep);border:1.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.cb-rz-n,.cb-rz-s{left:50%;width:34px;height:9px;margin-left:-17px;border-radius:5px;cursor:ns-resize}
+.cb-rz-e,.cb-rz-w{top:50%;width:9px;height:34px;margin-top:-17px;border-radius:5px;cursor:ew-resize}
+.cb-rz-n{top:-5px}.cb-rz-s{bottom:-5px}.cb-rz-e{right:-5px}.cb-rz-w{left:-5px}
+.cb-rz-ne,.cb-rz-nw,.cb-rz-se,.cb-rz-sw{width:13px;height:13px;border-radius:50%}
+.cb-rz-ne{top:-6px;right:-6px;cursor:nesw-resize}
+.cb-rz-nw{top:-6px;left:-6px;cursor:nwse-resize}
+.cb-rz-se{bottom:-6px;right:-6px;cursor:nwse-resize}
+.cb-rz-sw{bottom:-6px;left:-6px;cursor:nesw-resize}
+.cb-rz:hover{background:var(--sea)}
 body.admin-on .custom-block.cb-editing::-webkit-resizer{background:var(--sea)}
 .custom-block.cb-flash{animation:cbFlash 1.4s ease}
 @keyframes cbFlash{0%,100%{background:transparent}30%{background:rgba(226,166,61,.18)}}
@@ -260,8 +270,8 @@ body.admin-on .pd-moved{outline:1px dashed var(--sand)}
 body.admin-on .pd-moved > .pd-move-handle{background:var(--sand-deep)}
 @media print{.pd-move-handle{display:none !important}}
 
-@media print{.admin-fab,.admin-bar,.fmt-toolbar,.theme-panel,.admin-modal,.cb-bar{display:none !important}
-  body.admin-on .custom-block.cb-editing{outline:none;resize:none}}
+@media print{.admin-fab,.admin-bar,.fmt-toolbar,.theme-panel,.admin-modal,.cb-bar,.cb-rz,.cb-insert,.cb-inline-host{display:none !important}
+  body.admin-on .custom-block.cb-editing{outline:none}}
 @media(max-width:768px){
   .admin-bar{height:auto;flex-wrap:wrap;padding:8px 12px;gap:6px}
   body.admin-on{padding-top:96px}
