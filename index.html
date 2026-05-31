@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>פריצת דרך · מנהרת ראש העין–פצאל | קן דן ירדן</title>
+  <meta name="description" content="פרויקט פריצת דרך — מנהרת ראש העין–פצאל: חיבור אסטרטגי בין גוש דן, בקעת הירדן וציר הסחר הבין-יבשתי IMEC." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css?v=8" />
+  <link rel="stylesheet" href="assets/css/admin.css?v=8" />
+  <link rel="icon" href="assets/img/logo.png" />
+</head>
+<body>
+
+  <!-- ===== ספריית אייקונים (קו, בשפת הלוגו) ===== -->
+  <svg class="svgsprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="ic-future" viewBox="0 0 24 24"><path d="M2 19h20"/><path d="M6.5 19a5.5 5.5 0 0 1 11 0"/><path d="M12 5v2.5M4.6 9.1l1.5 1.4M19.4 9.1l-1.5 1.4"/></symbol>
+      <symbol id="ic-vision" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10h4v11M11 21V5h4v16M17 21V13h3v8"/><path d="M6.5 13h1M6.5 16h1M12.5 9h1M12.5 12h1M12.5 15h1"/></symbol>
+      <symbol id="ic-growth" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M7 14l3.5-3.5 3 2.5L20 7"/><path d="M16 7h4v4"/></symbol>
+      <symbol id="ic-lab" viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6l-4.6 8.3A2 2 0 0 0 7.2 21h9.6a2 2 0 0 0 1.8-3.7L14 9V3"/><path d="M7.6 15h8.8"/></symbol>
+      <symbol id="ic-world" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c3.2 3 3.2 15 0 18c-3.2-3-3.2-15 0-18Z"/></symbol>
+      <symbol id="ic-exec" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></symbol>
+      <symbol id="ic-bluegreen" viewBox="0 0 24 24"><path d="M12 3s6.5 6.4 6.5 11.5a6.5 6.5 0 0 1-13 0C5.5 9.4 12 3 12 3Z"/><path d="M8.5 14c1 1 2 1 3 0s2-1 3 0"/></symbol>
+      <symbol id="ic-cta" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></symbol>
+      <symbol id="ic-water" viewBox="0 0 24 24"><path d="M12 3s6.5 6.4 6.5 11.5a6.5 6.5 0 0 1-13 0C5.5 9.4 12 3 12 3Z"/></symbol>
+      <symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></symbol>
+      <symbol id="ic-cpu" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/><rect x="10" y="10" width="4" height="4" rx="1"/><path d="M10 3v2M14 3v2M10 19v2M14 19v2M3 10h2M3 14h2M19 10h2M19 14h2"/></symbol>
+      <symbol id="ic-train" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="13" rx="3"/><path d="M6 10h12"/><path d="M9.5 13h.01M14.5 13h.01"/><path d="M8 16l-2 5M16 16l2 5M9 21h6"/></symbol>
+      <symbol id="ic-box" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8Z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol>
+      <symbol id="ic-bank" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5"/><path d="M3.5 9h17"/><path d="M5 9v9M9.5 9v9M14.5 9v9M19 9v9"/><path d="M3 21h18"/></symbol>
+      <symbol id="ic-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14Z"/><path d="M5 19C9 15 13 11 17 7"/></symbol>
+      <symbol id="ic-mountain" viewBox="0 0 24 24"><path d="M3 20l6-11 4 6 2.5-4L21 20Z"/><path d="M8 12l1.5-2"/></symbol>
+      <symbol id="ic-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8 16.5C12 14 12 9 16 7.5" stroke-dasharray="1.5 2.5"/></symbol>
+      <symbol id="ic-tunnel" viewBox="0 0 24 24"><path d="M3 20v-7a9 9 0 0 1 18 0v7"/><path d="M3 20h18"/><path d="M12 20v-7M8 20l1-5M16 20l-1-5"/></symbol>
+      <symbol id="ic-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="8" rx="6" ry="3"/><path d="M3 8v4c0 1.66 2.69 3 6 3s6-1.34 6-3"/><ellipse cx="15" cy="15" rx="6" ry="3"/><path d="M9 15v1c0 1.66 2.69 3 6 3s6-1.34 6-3v-4"/></symbol>
+      <symbol id="ic-palm" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c-2.5-2.5-6-2.8-8-1.5M12 12c2.5-2.5 6-2.8 8-1.5M12 12c-1-3-3.5-5-6.5-5.2M12 12c1-3 3.5-5 6.5-5.2M12 12c0-3 0-5 0-6.5"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ===== כפתור תפריט נייד ===== -->
+  <button class="menu-toggle" id="menuToggle" aria-label="פתיחת תפריט">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ===== תפריט צד (ימין) ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <img src="assets/img/logo.png" alt="פריצת דרך — קן דן ירדן" />
+      </div>
+      <div class="brand-text">
+        <h1>פריצת דרך</h1>
+        <p>קן דן ירדן</p>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <a href="#home" class="nav-link active" data-target="home">
+        <span class="nav-ico"><svg class="ic"><use href="#ic-future"/></svg></span><span class="nav-label">העתיד כבר כאן</span>
+      </a>
+      <a href="#vision" class="nav-link" data-target="vision">
+        <span class="nav-ico"><svg class="ic"><use href="#ic-vision"/></svg></span><span class="nav-label">החזון האורבני</span>
+      </a>
+      <a href="#growth" class="nav-link" data-target="growth">
+        <span class="nav-ico"><svg class="ic"><use href="#ic-growth"/></svg></span><span class="nav-label">מנוע הצמיחה</span>
+      </a>
+      <a href="#lab" class="nav-link" data-target="lab">
+        <span class="nav-ico"><svg class="ic"><use href="#ic-lab"/></svg></span><span class="nav-label">המעבדה</span>
+      </a>
+      <a href="#world" class="nav-link" data-target="world">
+        <span class="nav-ico"><svg class="ic"><use href="#ic-world"/></svg></span><span class="nav-label">צומת העולם</span>
+      </a>
+      <a href="#exec" class="nav-link" data-target="exec">
+        <span class="nav-ico"><svg class="ic"><use href="#ic-exec"/></svg></span><span class="nav-label">תשתית הביצוע</span>
+      </a>
+      <a href="#bluegreen" class="nav-link" data-target="bluegreen">
+        <span class="nav-ico"><svg class="ic"><use href="#ic-bluegreen"/></svg></span><span class="nav-label">המהפכה הכחולה-ירוקה</span>
+      </a>
+      <a href="#cta" class="nav-link" data-target="cta">
+        <span class="nav-ico"><svg class="ic"><use href="#ic-cta"/></svg></span><span class="nav-label">קריאה לפעולה</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="route-mini">
+        <span class="dot a"></span>
+        <span class="line"></span>
+        <span class="dot b"></span>
+      </div>
+      <p>ראש העין · פצאל</p>
+      <small>≈ 35 ק"מ · פחות מחצי שעה</small>
+    </div>
+  </aside>
+
+  <!-- ===== תוכן ראשי ===== -->
+  <main class="content" id="content">
+
+    <!-- ========== 1. עמוד שער ========== -->
+    <section class="page active" id="home">
+      <div class="hero">
+        <div class="hero-bg">
+          <div class="hero-layer sky"></div>
+          <div class="hero-layer hills"></div>
+          <div class="hero-particles" id="particles"></div>
+          <div class="hero-glow"></div>
+        </div>
+        <div class="hero-inner">
+          <span class="eyebrow">מנהרת ראש העין–פצאל</span>
+          <h2 class="hero-title">העתיד <span class="hl">כבר כאן</span></h2>
+          <p class="hero-sub">
+            חיבור ישיר, מהיר ותת-קרקעי בין מזרח גוש דן לבקעת הירדן —
+            מהלך תשתיתי שמשנה את מפת הפיתוח של מדינת ישראל.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" data-goto="world">גלו את החזון</button>
+            <button class="btn btn-ghost" data-goto="cta">הצטרפו ליוזמה</button>
+          </div>
+          <div class="hero-scroll">החזון המלא ⌄</div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="lead">
+          <h3>החוליה הפיזית החסרה</h3>
+          <p>
+            פרויקט "מנהרת ראש העין–פצאל" מציע מערכת מנהרות באורך של כ-35 ק"מ —
+            הכוללת נתיבי רכב, מסילת רכבת דו-כיוונית, מערכות בטיחות, אוורור, בקרה ותשתיות משלימות.
+            המטרה אינה רק לקצר נסיעה, אלא להפוך את בקעת הירדן מאזור קצה מנותק
+            ל<strong>"שער המזרחי" של ישראל</strong> — אזור מעבר, ייצור, לוגיסטיקה, מגורים, תיירות וביטחון.
+          </p>
+        </div>
+
+        <h4 class="section-kicker">שלושה תהליכים · נקודת הכרעה אחת</h4>
+        <div class="cards-3">
+          <article class="pillar reveal">
+            <div class="pillar-ico"><svg class="ic"><use href="#ic-vision"/></svg></div>
+            <div class="pillar-num">01 · גוש דן</div>
+            <h5>העומס בגוש דן</h5>
+            <p>ריכוז האוכלוסייה, התעסוקה, התעשייה והנדל"ן בליבת המרכז יוצר מחנק תכנוני, תחבורתי וחברתי.</p>
+          </article>
+          <article class="pillar reveal">
+            <div class="pillar-ico"><svg class="ic"><use href="#ic-mountain"/></svg></div>
+            <div class="pillar-num">02 · הבקעה</div>
+            <h5>הפוטנציאל של הבקעה</h5>
+            <p>מרחב אסטרטגי רחב ומישורי, בעל חשיבות ביטחונית וחקלאית — אך מנותק יחסית ממרכז הכובד של המדינה.</p>
+          </article>
+          <article class="pillar reveal">
+            <div class="pillar-ico"><svg class="ic"><use href="#ic-route"/></svg></div>
+            <div class="pillar-num">03 · IMEC</div>
+            <h5>ציר הסחר IMEC</h5>
+            <p>מסדרון הודו–המפרץ–ירדן–ישראל–אירופה: נמלים, רכבות, אנרגיה ותשתיות דיגיטליות בין אסיה לאירופה.</p>
+          </article>
+        </div>
+
+        <div class="stats-band reveal">
+          <div class="stat"><span class="num" data-count="35" data-suffix=" ק&quot;מ">0</span><label>אורך מערכת המנהרות</label></div>
+          <div class="stat"><span class="num" data-count="30" data-prefix="עד " data-suffix=" מיליארד ₪">0</span><label>אומדן עלות ראשוני</label></div>
+          <div class="stat"><span class="num" data-count="30" data-suffix=" דק'">0</span><label>זמן נסיעה למרכז</label></div>
+          <div class="stat"><span class="num" data-count="13.2" data-suffix=" מ'">0</span><label>אוכלוסיית ישראל 2040</label></div>
+        </div>
+
+        <h4 class="section-kicker">מסע באתר</h4>
+        <div class="nav-cards">
+          <button class="nav-card" data-goto="vision"><span class="nc-ico"><svg class="ic"><use href="#ic-vision"/></svg></span><b>החזון האורבני</b><span>מטרופולין המחר — סימביוזה בין אדם לטבע</span></button>
+          <button class="nav-card" data-goto="growth"><span class="nc-ico"><svg class="ic"><use href="#ic-growth"/></svg></span><b>מנוע הצמיחה</b><span>מודל כלכלי וזרימת הון גלובלית</span></button>
+          <button class="nav-card" data-goto="lab"><span class="nc-ico"><svg class="ic"><use href="#ic-lab"/></svg></span><b>המעבדה</b><span>התפלה, אנרגיה מתחדשת ו-AI</span></button>
+          <button class="nav-card" data-goto="world"><span class="nc-ico"><svg class="ic"><use href="#ic-world"/></svg></span><b>צומת העולם</b><span>הגאופוליטיקה של החיבור בין יבשות</span></button>
+          <button class="nav-card" data-goto="exec"><span class="nc-ico"><svg class="ic"><use href="#ic-exec"/></svg></span><b>תשתית הביצוע</b><span>ROI ושלבי פיתוח טכניים</span></button>
+          <button class="nav-card" data-goto="bluegreen"><span class="nc-ico"><svg class="ic"><use href="#ic-bluegreen"/></svg></span><b>המהפכה הכחולה-ירוקה</b><span>תעלת הימים ושינוי מיקרו-אקלימי</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 2. החזון האורבני ========== -->
+    <section class="page" id="vision">
+      <div class="page-head grad-1">
+        <div class="container">
+          <span class="eyebrow light">פרק 2</span>
+          <h2>החזון האורבני: מטרופולין המחר</h2>
+          <p>סימביוזה בין אדם לטבע — פתיחת מרחב חיים חדש, מתוכנן וירוק, המחובר לגוש דן בזמן נסיעה קצר.</p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="subtabs" data-group="vision">
+          <button class="subtab active" data-sub="v1">סימביוזה אדם-טבע</button>
+          <button class="subtab" data-sub="v2">דיור בר-השגה</button>
+          <button class="subtab" data-sub="v3">העיר החכמה</button>
+        </div>
+
+        <div class="subpanel active" id="v1">
+          <div class="split">
+            <div class="split-text">
+              <h3>מרחב חיים חדש, לא פריפריה</h3>
+              <p>אם הבקעה תחובר למרכז בזמן של פחות מחצי שעה, היא לא תיתפס עוד כפריפריה רחוקה אלא כמרחב חיים חדש. במקום לדחוס כל מפעל, מחסן ושכונה אל תוך המרכז העמוס — נפתח מרחב מתוכנן, רחב וזול יותר.</p>
+              <p>סביב פצאל, תומר, נתיב הגדוד, ייט"ב ועוג'ה ניתן לתכנן שכונות מודרניות, מרווחות וירוקות מלכתחילה: תחבורה ציבורית, תעסוקה מקומית, בנייה ירוקה ושימוש חוזר במים.</p>
+              <ul class="ticks">
+                <li>תכנון מבוסס אנרגיה סולארית מהיום הראשון</li>
+                <li>נגישות תחבורתית מהירה למרכז הכובד</li>
+                <li>שילוב בין חקלאות מתקדמת לעיר</li>
+              </ul>
+            </div>
+            <div class="split-visual viz-city"><svg class="viz-ic ic"><use href="#ic-vision"/></svg></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="v2">
+          <div class="split reverse">
+            <div class="split-text">
+              <h3>פתרון אמיתי ליוקר הדיור</h3>
+              <p>חיבור מהיר מרחיב את היצע הקרקע הזמין למגורים בעשרות אלפי יחידות פוטנציאליות, מפחית את הלחץ על גוש דן, ויכול להשפיע לאורך זמן גם על יוקר המחיה.</p>
+              <p>הבקעה הופכת מ"מרחק" ל"כתובת" — קרקע זמינה, תכנון מודרני ומחירים נגישים, במרחק נסיעה קצר ממוקדי התעסוקה.</p>
+            </div>
+            <div class="split-visual viz-housing"><svg class="viz-ic ic"><use href="#ic-bank"/></svg></div>
+          </div>
+          <div class="cards-3">
+            <article class="mini reveal"><h5>היצע קרקע</h5><p>פתיחת עתודות קרקע חדשות מחוץ למרכז הרווי.</p></article>
+            <article class="mini reveal"><h5>הורדת לחץ</h5><p>הקלה על שוק הדיור בגוש דן.</p></article>
+            <article class="mini reveal"><h5>איכות חיים</h5><p>שכונות מרווחות, ירוקות ומחוברות.</p></article>
+          </div>
+        </div>
+
+        <div class="subpanel" id="v3">
+          <div class="split">
+            <div class="split-text">
+              <h3>עיר חכמה מהקרקע ומעלה</h3>
+              <p>מטרופולין המחר נבנה כמערכת אחת: ניהול חכם של מים ואנרגיה, תחבורה ציבורית כעמוד שדרה, ובנייה המייצרת יותר ממה שהיא צורכת. הקיימות אינה תוספת — היא תשתית.</p>
+              <ul class="ticks">
+                <li>רשת חשמל סולארית מבוזרת ואגירה</li>
+                <li>ניהול משאבים מבוסס נתונים בזמן אמת</li>
+                <li>הפרדה בין תחבורת מטען לנוסעים</li>
+              </ul>
+            </div>
+            <div class="split-visual viz-smart"><svg class="viz-ic ic"><use href="#ic-cpu"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 3. מנוע הצמיחה ========== -->
+    <section class="page" id="growth">
+      <div class="page-head grad-2">
+        <div class="container">
+          <span class="eyebrow light">פרק 3</span>
+          <h2>מנוע הצמיחה</h2>
+          <p>מודל כלכלי פוסט-תעשייתי וזרימת הון גלובלית — כדאיות הנמדדת במכלול התועלות הלאומיות.</p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="subtabs" data-group="growth">
+          <button class="subtab active" data-sub="g1">מודל PPP/BOT</button>
+          <button class="subtab" data-sub="g2">שכבות ההכנסה</button>
+          <button class="subtab" data-sub="g3">זרימת הון גלובלית</button>
+        </div>
+
+        <div class="subpanel active" id="g1">
+          <h3>למה לא BOT טהור</h3>
+          <p>הכנסות מאגרות מעבר לבדן אינן מספיקות להחזיר השקעה של עשרות מיליארדי שקלים, במיוחד מול מימון חוב יקר, תחזוקה ארוכת טווח וסיכוני ביקוש. המודל הנכון הוא <strong>PPP/BOT משולב</strong>, המשלב כמה שכבות הכנסה ומימון.</p>
+          <div class="cards-3">
+            <article class="mini reveal"><h5>השתתפות מדינה</h5><p>"תשלומי זמינות" לזכיין, כמקובל בפרויקטים בעלי תועלת לאומית גבוהה.</p></article>
+            <article class="mini reveal"><h5>השבחת קרקע</h5><p>לכידת חלק מעליית ערך הקרקע בבקעה ובנקודות הקצה למימון התשתית.</p></article>
+            <article class="mini reveal"><h5>מימון אזורי</h5><p>מימון בינלאומי אם הפרויקט יוכר כחוליה ישראלית בציר IMEC.</p></article>
+          </div>
+          <div class="callout reveal">
+            <strong>השורה התחתונה:</strong> כדאיות הפרויקט נמדדת לא רק באגרות, אלא במכלול — פיתוח אזורי, הפחתת גודש, הורדת לחץ ממחירי הדיור, צמיחת תעסוקה, חיזוק הגבול המזרחי, והפיכת ישראל לשחקן מרכזי בציר סחר בין-יבשתי.
+          </div>
+        </div>
+
+        <div class="subpanel" id="g2">
+          <h3>שכבות הכנסה ומימון</h3>
+          <div class="layers">
+            <div class="layer reveal"><span class="lyr-i"><svg class="ic"><use href="#ic-route"/></svg></span><div><b>אגרות מעבר דיפרנציאליות</b><p>לרכב פרטי, רכב מסחרי ומשאיות.</p></div></div>
+            <div class="layer reveal"><span class="lyr-i"><svg class="ic"><use href="#ic-train"/></svg></span><div><b>תשלום שימוש לרכבות</b><p>רכבות מטען ונוסעים לאורך המסילה הכפולה.</p></div></div>
+            <div class="layer reveal"><span class="lyr-i"><svg class="ic"><use href="#ic-box"/></svg></span><div><b>מסופי לוגיסטיקה ומסחר</b><p>אחסנה, קירור, שטחי מסחר, אנרגיה ותקשורת.</p></div></div>
+            <div class="layer reveal"><span class="lyr-i"><svg class="ic"><use href="#ic-bank"/></svg></span><div><b>השתתפות מדינה</b><p>תשלומי זמינות לזכיין על בסיס התועלת הלאומית.</p></div></div>
+            <div class="layer reveal"><span class="lyr-i"><svg class="ic"><use href="#ic-world"/></svg></span><div><b>מימון בינלאומי</b><p>הכרה בפרויקט כחוליה מרכזית בציר IMEC.</p></div></div>
+            <div class="layer reveal"><span class="lyr-i"><svg class="ic"><use href="#ic-coins"/></svg></span><div><b>השבחת קרקע</b><p>לכידת ערך מעליית מחירי הקרקע סביב נקודות הקצה.</p></div></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="g3">
+          <div class="split">
+            <div class="split-text">
+              <h3>ממרכז צריכה למרכז צמיחה</h3>
+              <p>סביב פצאל והמרחב שבין צפון הבקעה לעוג'ה ניתן לפתח אזורי תעסוקה, תעשייה קלה, לוגיסטיקה, חקלאות מתקדמת, תיירות מדברית, אנרגיה סולארית, מסופי קירור ומתחמי סחר.</p>
+              <p>החיבור לציר IMEC הופך את ישראל מצרכן פסיבי של מהלכים אזוריים לשחקן מוביל בלב מסדרון כלכלי בין אסיה לאירופה.</p>
+            </div>
+            <div class="split-visual viz-flow"><svg class="viz-ic ic"><use href="#ic-route"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 4. המעבדה ========== -->
+    <section class="page" id="lab">
+      <div class="page-head grad-3">
+        <div class="container">
+          <span class="eyebrow light">פרק 4</span>
+          <h2>המעבדה</h2>
+          <p>טכנולוגיות התפלה, אנרגיה מתחדשת ו-AI בניהול משאבים — התשתית הטכנולוגית של מטרופולין המדבר.</p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="subtabs" data-group="lab">
+          <button class="subtab active" data-sub="l1">התפלה ומים</button>
+          <button class="subtab" data-sub="l2">אנרגיה מתחדשת</button>
+          <button class="subtab" data-sub="l3">AI בניהול משאבים</button>
+        </div>
+
+        <div class="subpanel active" id="l1">
+          <div class="split">
+            <div class="split-text">
+              <h3>מים כתשתית לחיים</h3>
+              <p>פיתוח עירוני וחקלאי בבקעה נשען על ניהול מים מתקדם: שימוש חוזר, השבת קולחין, ובאופק — חיבור למקורות מים אזוריים. הקיימות מתחילה במים.</p>
+              <ul class="ticks">
+                <li>מערכות השבה ושימוש חוזר במים</li>
+                <li>חקלאות מדברית עתירת-טכנולוגיה ודלת-מים</li>
+                <li>תשתית מים משולבת לעיר ולחקלאות</li>
+              </ul>
+            </div>
+            <div class="split-visual viz-water"><svg class="viz-ic ic"><use href="#ic-water"/></svg></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="l2">
+          <div class="split reverse">
+            <div class="split-text">
+              <h3>שמש המדבר כמנוע</h3>
+              <p>הבקעה היא אחד המרחבים האידיאליים בישראל לאנרגיה סולארית: שטח, קרינה ושמש לאורך כל השנה. פיתוח חדש יכול להיבנות מראש על אנרגיה נקייה ואגירה.</p>
+              <ul class="ticks">
+                <li>שדות סולאריים ואגירת אנרגיה</li>
+                <li>רכבת מטען מחליפה תנועת משאיות</li>
+                <li>טביעת רגל פחמנית נמוכה בתכנון</li>
+              </ul>
+            </div>
+            <div class="split-visual viz-solar"><svg class="viz-ic ic"><use href="#ic-sun"/></svg></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="l3">
+          <div class="split">
+            <div class="split-text">
+              <h3>בינה מלאכותית בלב הניהול</h3>
+              <p>ניהול מנהרה באורך 35 ק"מ ומטרופולין שלם דורש שליטה חכמה: ניטור סיסמי, בקרת אוורור ועשן, ניהול תנועה, ואופטימיזציה של מים ואנרגיה בזמן אמת.</p>
+              <ul class="ticks">
+                <li>מרכז בקרה תפעולי ורציפות תפקודית בחירום</li>
+                <li>ניטור סיסמי ובטיחות מתמשכת</li>
+                <li>אופטימיזציה של משאבים מבוססת נתונים</li>
+              </ul>
+            </div>
+            <div class="split-visual viz-ai"><svg class="viz-ic ic"><use href="#ic-cpu"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 5. צומת העולם ========== -->
+    <section class="page" id="world">
+      <div class="page-head grad-4">
+        <div class="container">
+          <span class="eyebrow light">פרק 5</span>
+          <h2>צומת העולם</h2>
+          <p>הגאופוליטיקה של השלום והחיבור בין יבשות — ישראל בלב מסדרון הסחר הבין-יבשתי.</p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="subtabs" data-group="world">
+          <button class="subtab active" data-sub="w1">ציר IMEC</button>
+          <button class="subtab" data-sub="w2">חיבור בין יבשות</button>
+          <button class="subtab" data-sub="w3">השער המזרחי</button>
+        </div>
+
+        <div class="subpanel active" id="w1">
+          <div class="split">
+            <div class="split-text">
+              <h3>מסדרון הודו–המפרץ–אירופה</h3>
+              <p>מזכר ההבנות של IMEC מתאר מעבר סחורות בין הודו, איחוד האמירויות, סעודיה, ירדן, ישראל ואירופה — לצד תשתיות דיגיטליות, חשמל ומימן נקי לאורך הציר. בפברואר 2025 חזרו הודו והאיחוד האירופי על מחויבותם לנקוט "צעדים קונקרטיים" למימוש המסדרון.</p>
+              <div class="corridor reveal">
+                <span class="node">הודו</span><span class="arr">→</span>
+                <span class="node">המפרץ</span><span class="arr">→</span>
+                <span class="node">ירדן</span><span class="arr">→</span>
+                <span class="node hl">פצאל · ישראל</span><span class="arr">→</span>
+                <span class="node">אירופה</span>
+              </div>
+              <p class="muted">המנהרה היא החוליה הישראלית הפיזית שמחברת את הבקעה — ודרכה את הציר — אל נמלי הים ומרכז הארץ.</p>
+            </div>
+            <figure class="imec-map reveal">
+              <img src="assets/img/imec-map.png" alt="מפת מסדרון IMEC: מומבאי → דובאי → ריאד → עמאן → חיפה/פצאל (ישראל) → פיראוס (אירופה)" loading="lazy" />
+              <figcaption>מסלול IMEC על מפה מדינית — עובר דרך ישראל ובקעת הירדן</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="subpanel" id="w2">
+          <div class="split">
+            <div class="split-text">
+              <h3>תשתית לפני שהציר מבשיל</h3>
+              <p>IMEC עדיין תלוי ביציבות אזורית, בהסכמות מדיניות ובתכנון הנדסי-פיננסי מפורט. דווקא משום כך על ישראל להכין מראש את התשתית שתהפוך אותה משחקן פסיבי לשחקן מוביל.</p>
+              <p>נוכחות אזרחית וכלכלית חזקה במזרח יוצרת ביטחון מסוג אחר: היא הופכת גבול למרחב חי, יצרני ומיושב.</p>
+            </div>
+            <div class="split-visual viz-globe"><svg class="viz-ic ic"><use href="#ic-world"/></svg></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="w3">
+          <div class="split reverse">
+            <div class="split-text">
+              <h3>"השער המזרחי" של ישראל</h3>
+              <p>בקעת הירדן יכולה להפוך מאזור קצה מנותק לשער המזרחי — אזור מעבר, ייצור, לוגיסטיקה, מגורים, תיירות וביטחון. שלושת האינטרסים הלאומיים נפגשים בה: ביטחון גבול מזרחי, פיתוח עתודות קרקע, וחיבור לציר סחר גלובלי.</p>
+              <ul class="ticks">
+                <li>חיזוק יכולת התמרון והשליטה במרחב</li>
+                <li>גבול מזרחי חי ומיושב</li>
+                <li>שער יצוא ויבוא חדש למשק הישראלי</li>
+              </ul>
+            </div>
+            <div class="split-visual viz-gate"><svg class="viz-ic ic"><use href="#ic-tunnel"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 6. תשתית הביצוע ========== -->
+    <section class="page" id="exec">
+      <div class="page-head grad-5">
+        <div class="container">
+          <span class="eyebrow light">פרק 6</span>
+          <h2>תשתית הביצוע</h2>
+          <p>מודלים של ROI חברתי וכלכלי, שלבי פיתוח טכניים, ותכנון לפי סטנדרטים בינלאומיים.</p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="subtabs" data-group="exec">
+          <button class="subtab active" data-sub="e1">תיאור הנדסי</button>
+          <button class="subtab" data-sub="e2">שלבי פיתוח</button>
+          <button class="subtab" data-sub="e3">ROI חברתי וכלכלי</button>
+        </div>
+
+        <div class="subpanel active" id="e1">
+          <h3>מערכת, לא צינור אחד</h3>
+          <p>נכון לראות את הפרויקט כמערכת הכוללת כמה חללים נפרדים או מקבילים: מנהרות כביש חד-כיווניות לשני כיוונים, חלל מסילתי עצמאי לרכבת נוסעים ומטענים, מעברי חירום, אוורור, ניקוז, כיבוי אש, תקשורת, ניטור סיסמי ובקרה תפעולית.</p>
+          <figure class="photo-band reveal">
+            <img src="assets/img/site/infra-tbm.jpg" alt="מכונת כרייה (TBM) לחפירת מנהרות" loading="lazy" />
+            <figcaption>מכונת כרייה (TBM) — שיטת הביצוע המרכזית למנהרות ארוכות</figcaption>
+          </figure>
+          <div class="specs">
+            <div class="spec reveal"><b>4 נתיבי נסיעה</b><span>שניים לכל כיוון</span></div>
+            <div class="spec reveal"><b>מסילה כפולה</b><span>רכבות נוסעים ומטען</span></div>
+            <div class="spec reveal"><b>קצה מערבי</b><span>חיבור לכביש 6, כביש 5 וראש העין</span></div>
+            <div class="spec reveal"><b>קצה מזרחי</b><span>חיבור לכביש 90 ומסופי מטען</span></div>
+            <div class="spec reveal"><b>שיטת ביצוע</b><span>TBM משולב בכרייה קונבנציונלית</span></div>
+            <div class="spec reveal"><b>בטיחות</b><span>פינוי, שליטה בעשן, מוקדי חילוץ</span></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="e2">
+          <h3>מתכנון להפעלה</h3>
+          <figure class="photo-band reveal">
+            <img src="assets/img/site/infra-tunnel-build.jpg" alt="מנהרה בשלבי חפירה וביצוע" loading="lazy" />
+            <figcaption>חלל המנהרה בשלבי כרייה — לפני התקנת המערכות</figcaption>
+          </figure>
+          <div class="timeline">
+            <div class="tl-item reveal"><span class="tl-dot"></span><b>בדיקת היתכנות ממשלתית</b><p>תוואי הנדסי, סקר גאולוגי, אומדן עלויות וחלופות מנהור.</p></div>
+            <div class="tl-item reveal"><span class="tl-dot"></span><b>מודל פיננסי</b><p>גיבוש PPP/BOT, הערכת השבחת קרקע ובחינת מימון אזורי.</p></div>
+            <div class="tl-item reveal"><span class="tl-dot"></span><b>שילוב תשתיות</b><p>תיאום עם מסילות ישראל, נמלי הים וציר IMEC.</p></div>
+            <div class="tl-item reveal"><span class="tl-dot"></span><b>ביצוע ההנדסה</b><p>כרייה, מערכות בטיחות, מסילות ומסופי קצה.</p></div>
+            <div class="tl-item reveal"><span class="tl-dot"></span><b>הפעלה ופיתוח אזורי</b><p>פתיחת המנהרה ופריחת המטרופולין המזרחי.</p></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="e3">
+          <div class="split">
+            <div class="split-text">
+              <h3>אומדן ותשואה לאומית</h3>
+              <p>אומדן עבודה ראשוני נע בטווח של כ-<strong>20–30 מיליארד ש"ח</strong>, בהתאם לחלופות התכנון: מספר מנהרות, עומק כרייה, מורכבות גאולוגית, מערכות בטיחות, מסילות, הפקעות ומסופי קצה. זהו אומדן מוקדם בלבד שאינו מחליף בדיקת היתכנות.</p>
+              <p>ה-ROI האמיתי הוא לאומי: הפחתת גודש, מיתון מחירי דיור, צמיחת תעסוקה, חיזוק הגבול המזרחי, וצמצום פגיעה עילית בנוף בזכות המנהור.</p>
+            </div>
+            <div class="split-visual viz-roi">
+              <div class="bar-chart">
+                <div class="bar" style="--h:55%"><span>פיתוח אזורי</span></div>
+                <div class="bar" style="--h:80%"><span>הפחתת גודש</span></div>
+                <div class="bar" style="--h:70%"><span>דיור</span></div>
+                <div class="bar" style="--h:65%"><span>תעסוקה</span></div>
+                <div class="bar" style="--h:90%"><span>ביטחון</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 7. המהפכה הכחולה-ירוקה ========== -->
+    <section class="page" id="bluegreen">
+      <div class="page-head grad-6">
+        <div class="container">
+          <span class="eyebrow light">פרק 7</span>
+          <h2>המהפכה הכחולה-ירוקה</h2>
+          <p>תעלת הימים, אגמים מלאכותיים ושינוי מיקרו-אקלימי — חזון אקולוגי ארוך-טווח לבקעה.</p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="subtabs" data-group="bluegreen">
+          <button class="subtab active" data-sub="b1">תעלת הימים</button>
+          <button class="subtab" data-sub="b2">אגמים מלאכותיים</button>
+          <button class="subtab" data-sub="b3">שינוי מיקרו-אקלים</button>
+        </div>
+
+        <div class="subpanel active" id="b1">
+          <div class="split">
+            <div class="split-text">
+              <h3>מים שמחזירים חיים למדבר</h3>
+              <p>חזון תעלת הימים משלים את מהלך התשתית: הזרמת מים והפקת אנרגיה לאורך הציר המזרחי, כבסיס לפיתוח אקולוגי וכלכלי. המים הם המנוף שהופך מדבר למרחב חי.</p>
+              <p class="muted">חזון ארוך-טווח, המחייב בחינת היתכנות הנדסית, סביבתית ומדינית נפרדת.</p>
+            </div>
+            <div class="split-visual viz-canal"><svg class="viz-ic ic"><use href="#ic-water"/></svg></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="b2">
+          <div class="split reverse">
+            <div class="split-text">
+              <h3>אגמים כעוגני נוף וכלכלה</h3>
+              <p>אגמים מלאכותיים מתוכננים יכולים לשמש לוויסות מים, תיירות מדברית, נופש ואקלים מקומי — ולהפוך נקודות קצה לנקודות משיכה.</p>
+              <ul class="ticks">
+                <li>תיירות ונופש מבוססי מים</li>
+                <li>וויסות וניהול מקורות מים</li>
+                <li>עוגני נדל"ן ופיתוח סביבם</li>
+              </ul>
+            </div>
+            <div class="split-visual viz-lake"><svg class="viz-ic ic"><use href="#ic-water"/></svg></div>
+          </div>
+        </div>
+
+        <div class="subpanel" id="b3">
+          <div class="split">
+            <div class="split-text">
+              <h3>אקלים מקומי מתון יותר</h3>
+              <p>שילוב של גופי מים, שטחים ירוקים ובנייה מתוכננת יכול להשפיע על המיקרו-אקלים: מיתון חום, הגדלת לחות והפיכת המרחב לנעים יותר למגורים ולחקלאות.</p>
+              <p>הפיתוח נשען על עקרונות ירוקים: אנרגיה סולארית, שימוש חוזר במים ובנייה ירוקה — כך שהמהפכה הכחולה משלימה את המהפכה הירוקה.</p>
+            </div>
+            <div class="split-visual viz-climate"><svg class="viz-ic ic"><use href="#ic-leaf"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 8. קריאה לפעולה ========== -->
+    <section class="page" id="cta">
+      <div class="page-head grad-7">
+        <div class="container">
+          <span class="eyebrow light">פרק 8</span>
+          <h2>קריאה לפעולה</h2>
+          <p>הצטרפות ליוזמה ומפת דרכים ל-2050 — הצעד הבא הוא בדיקת היתכנות ממשלתית מלאה.</p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="subtabs" data-group="cta">
+          <button class="subtab active" data-sub="c1">הצטרפות ליוזמה</button>
+          <button class="subtab" data-sub="c2">מפת דרכים ל-2050</button>
+        </div>
+
+        <div class="subpanel active" id="c1">
+          <div class="split">
+            <div class="split-text">
+              <h3>זה יותר מפרויקט תחבורתי</h3>
+              <p>מנהרת ראש העין–פצאל היא הצעה לשינוי מבנה המדינה: ממדינה שמרכזה מתכווץ תחת עומס — למדינה בעלת ציר מזרחי חדש; מבקעה מרוחקת — לבקעה מחוברת ומשגשגת; ומישראל בקצה נתיבי הסחר — לישראל בלב מסדרון כלכלי בין אסיה לאירופה.</p>
+              <p>הצטרפו ליוזמה, שתפו את החזון, ועזרו לקדם את בדיקת ההיתכנות הלאומית.</p>
+            </div>
+            <form class="cta-form" id="ctaForm" novalidate>
+              <h4>הצטרפו ליוזמה</h4>
+              <div class="field"><label>שם מלא</label><input type="text" name="name" required placeholder="השם שלך" /></div>
+              <div class="field"><label>דוא"ל</label><input type="email" name="email" required placeholder="name@example.com" /></div>
+              <div class="field"><label>תחום עניין</label>
+                <select name="topic">
+                  <option>השקעה ומימון</option><option>תכנון והנדסה</option>
+                  <option>מדיניות וממשל</option><option>סביבה וקיימות</option><option>אחר</option>
+                </select>
+              </div>
+              <div class="field"><label>הודעה</label><textarea name="msg" rows="3" placeholder="ספרו לנו איך תרצו להירתם"></textarea></div>
+              <button type="submit" class="btn btn-primary full">שליחה</button>
+              <p class="form-msg" id="formMsg" hidden>תודה! פנייתך נקלטה. נחזור אליך בהקדם.</p>
+            </form>
+          </div>
+        </div>
+
+        <div class="subpanel" id="c2">
+          <h3>מפת דרכים ל-2050</h3>
+          <div class="roadmap">
+            <div class="rm reveal"><span class="rm-year">היום</span><b>בדיקת היתכנות</b><p>תוואי, סקר גאולוגי, אומדן עלויות וחלופות מנהור.</p></div>
+            <div class="rm reveal"><span class="rm-year">שלב ב'</span><b>מודל ותכנון</b><p>גיבוש PPP/BOT, השבחת קרקע, השפעות סביבתיות ושילוב מסילות.</p></div>
+            <div class="rm reveal"><span class="rm-year">שלב ג'</span><b>ביצוע</b><p>כרייה, מערכות בטיחות, מסילות ומסופי קצה.</p></div>
+            <div class="rm reveal"><span class="rm-year">2050</span><b>מטרופולין מזרחי</b><p>ציר מזרחי חי — מגורים, תעסוקה, סחר וביטחון.</p></div>
+          </div>
+          <div class="callout reveal">
+            אם בדיקת ההיתכנות תאשר את הפרויקט — מדובר באחד הפרויקטים האסטרטגיים החשובים שישראל יכולה לקדם בעשורים הקרובים.
+          </div>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <div class="container">
+          <p><strong>פריצת דרך</strong> · מנהרת ראש העין–פצאל · קן דן ירדן</p>
+          <small>אתר מידע ויזואלי. הנתונים מבוססים על תקציר המיזם ומהווים אומדן מוקדם בלבד, שאינו מחליף בדיקת היתכנות הנדסית, סביבתית ופיננסית.</small>
+        </div>
+      </footer>
+    </section>
+
+  </main>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

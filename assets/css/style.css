@@ -1,0 +1,432 @@
+/* ===================================================================
+   פריצת דרך · קן דן ירדן
+   מערכת עיצוב אדמתית · מינימליסטית · ממסדית
+   פלטה נגזרת מהלוגו: קרם · ירוק-זית (דן) · חום-טרקוטה (בקעה) · תכלת ים
+   =================================================================== */
+
+:root{
+  /* ניטרליים — נקי ובהיר (הלוגו על רקע לבן) */
+  --white:#ffffff;
+  --paper:#f5f8fa;        /* תכלת-לבן עדין */
+  --paper-2:#eaf1f5;      /* תכלת בהיר */
+  --line:#dde7ec;         /* קו הפרדה */
+  --line-soft:#e9f0f3;
+
+  /* דיו — כחול כהה מהלוגו (לא ירוק!) */
+  --ink:#16293a;          /* כחול-נייבי כהה (טקסט) */
+  --ink-2:#3c5161;        /* טקסט משני */
+  --muted:#7c8e9a;        /* אפור-כחלחל */
+
+  /* צבעי הלוגו המלאים */
+  --sea:#1f87b0;          /* כחול-תכלת ים (ראשי) */
+  --sea-deep:#15637f;
+  --olive:#4e9a45;        /* ירוק */
+  --olive-deep:#3a7733;
+  --sand:#dd7a3c;         /* כתום-טרקוטה */
+  --sand-deep:#bd5c25;
+  --gold:#e2a63d;         /* זהב-כתום */
+  --gold-deep:#c5862a;
+
+  --accent:var(--sea);    /* נדרס לכל מקטע */
+  --accent-deep:var(--sea-deep);
+
+  --shadow-xs:0 1px 2px rgba(40,38,25,.05);
+  --shadow-sm:0 4px 16px rgba(40,38,25,.06);
+  --shadow:0 12px 34px rgba(40,38,25,.09);
+
+  --r:14px;
+  --r-sm:10px;
+  --sidebar-w:284px;
+  --font:'Heebo','Assistant',system-ui,Arial,sans-serif;
+
+  /* קו מתאר עדין (טופוגרפיה) לרקעים מרומזים */
+  --contour:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='120'%3E%3Cg fill='none' stroke='%23bcae8f' stroke-width='1' opacity='0.5'%3E%3Cpath d='M-10 30 Q40 8 80 28 T170 26'/%3E%3Cpath d='M-10 58 Q40 36 80 56 T170 54'/%3E%3Cpath d='M-10 86 Q40 64 80 84 T170 82'/%3E%3Cpath d='M-10 114 Q40 92 80 112 T170 110'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:var(--paper);
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+  font-weight:400;
+}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+.svgsprite{position:absolute;width:0;height:0;overflow:hidden}
+
+/* אייקונים */
+.ic{width:1em;height:1em;display:inline-block;vertical-align:-.125em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* ===================================================================
+   תפריט צד — צד ימין
+   =================================================================== */
+.sidebar{
+  position:fixed;inset-block:0;inset-inline-start:0;   /* start = ימין ב-RTL */
+  width:var(--sidebar-w);
+  background:var(--white);
+  border-inline-end:1px solid var(--line);
+  display:flex;flex-direction:column;
+  padding:24px 18px 18px;
+  z-index:50;
+  box-shadow:-2px 0 24px rgba(40,38,25,.04);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+.brand{display:flex;align-items:center;gap:13px;padding-bottom:20px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.brand-logo{width:54px;height:54px;flex:0 0 auto;border-radius:12px;overflow:hidden;background:var(--paper-2);display:grid;place-items:center}
+.brand-logo img{width:100%;height:100%;object-fit:contain}
+.brand-text h1{font-size:1.34rem;font-weight:800;letter-spacing:-.5px;line-height:1;color:var(--ink)}
+.brand-text p{font-size:.78rem;color:var(--sand-deep);font-weight:700;margin-top:5px;letter-spacing:1.5px}
+
+.nav{display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;padding-block:10px;margin-inline:-4px;padding-inline:4px}
+.nav::-webkit-scrollbar{width:5px}
+.nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+.nav-link{
+  display:flex;align-items:center;gap:13px;
+  padding:11px 13px;border-radius:11px;
+  color:var(--ink-2);font-weight:600;font-size:1rem;
+  position:relative;transition:background .2s,color .2s;
+}
+.nav-ico{width:34px;height:34px;flex:0 0 auto;display:grid;place-items:center;border-radius:9px;background:var(--paper-2);color:var(--muted);transition:.2s}
+.nav-ico .ic{width:20px;height:20px;stroke-width:1.6}
+.nav-link:hover{background:var(--paper)}
+.nav-link:hover .nav-ico{color:var(--accent)}
+.nav-link.active{background:var(--paper-2);color:var(--ink)}
+.nav-link.active .nav-ico{background:var(--accent);color:#fff}
+.nav-link.active::before{content:"";position:absolute;inset-inline-end:-18px;top:50%;transform:translateY(-50%);width:3px;height:56%;border-radius:3px;background:var(--accent)}
+/* מבטא צבע לכל פריט תפריט */
+.nav-link[data-target="home"]{--accent:var(--sea)}
+.nav-link[data-target="vision"]{--accent:var(--olive)}
+.nav-link[data-target="growth"]{--accent:var(--gold)}
+.nav-link[data-target="lab"]{--accent:var(--sea)}
+.nav-link[data-target="world"]{--accent:var(--sea-deep)}
+.nav-link[data-target="exec"]{--accent:var(--sand)}
+.nav-link[data-target="bluegreen"]{--accent:var(--olive)}
+.nav-link[data-target="cta"]{--accent:var(--sand)}
+
+.sidebar-footer{padding-top:16px;border-top:1px solid var(--line);text-align:center}
+.sidebar-footer p{font-weight:700;font-size:.92rem;margin-top:7px;color:var(--ink)}
+.sidebar-footer small{color:var(--muted);font-size:.76rem}
+.route-mini{display:flex;align-items:center;justify-content:center}
+.route-mini .dot{width:9px;height:9px;border-radius:50%}
+.route-mini .dot.a{background:var(--sea)}
+.route-mini .dot.b{background:var(--sand)}
+.route-mini .line{width:64px;height:2px;background:linear-gradient(90deg,var(--sea),var(--olive),var(--sand));border-radius:3px}
+
+/* ===================================================================
+   תוכן
+   =================================================================== */
+.content{margin-inline-start:var(--sidebar-w);min-height:100vh}
+.page{display:none;animation:fade .45s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.container{max-width:1060px;margin-inline:auto;padding:0 38px}
+
+/* מבטא לכל מקטע */
+#home{--accent:var(--sea);--accent-deep:var(--sea-deep)}
+#vision{--accent:var(--olive);--accent-deep:var(--olive-deep)}
+#growth{--accent:var(--gold);--accent-deep:var(--gold-deep)}
+#lab{--accent:var(--sea);--accent-deep:var(--sea-deep)}
+#world{--accent:var(--sea-deep);--accent-deep:var(--sea-deep)}
+#exec{--accent:var(--sand);--accent-deep:var(--sand-deep)}
+#bluegreen{--accent:var(--sea);--accent-deep:var(--olive-deep)}
+#cta{--accent:var(--sand);--accent-deep:var(--sand-deep)}
+
+/* ===================================================================
+   HERO — קולנועי, מבוסס תמונה במסך מלא
+   =================================================================== */
+.hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden;background:var(--ink)}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-layer{position:absolute;inset:0}
+/* תמונת הרקע הקולנועית — זום איטי */
+.hero-layer.sky{
+  background:url("../img/site/valley-wide.jpg") center 40%/cover no-repeat;
+  animation:heroZoom 22s ease-in-out infinite alternate;
+}
+@keyframes heroZoom{from{transform:scale(1)}to{transform:scale(1.09)}}
+/* שכבת קירוב/הכהיה לקריאוּת הטקסט */
+.hero-layer.hills{
+  background:
+    linear-gradient(180deg,rgba(20,28,18,.30) 0%,rgba(20,28,18,.05) 32%,rgba(20,28,18,.55) 78%,rgba(20,28,18,.86) 100%),
+    linear-gradient(80deg,rgba(20,28,18,.5) 0%,transparent 55%);
+}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(60% 50% at 30% 80%,rgba(53,107,116,.35),transparent 70%)}
+.hero-particles{position:absolute;inset:0;overflow:hidden;opacity:.4}
+.hero-particles span{position:absolute;border-radius:50%;background:rgba(255,255,255,.6);animation:float linear infinite}
+@keyframes float{0%{transform:translateY(105vh);opacity:0}12%{opacity:.6}88%{opacity:.4}100%{transform:translateY(-8vh);opacity:0}}
+
+.hero-inner{position:relative;z-index:2;width:100%;max-width:1060px;margin-inline:auto;padding:0 38px 9vh;text-align:start}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:700;letter-spacing:2px;font-size:.82rem;color:#fff;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);padding:8px 18px;border-radius:30px;margin-bottom:24px}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint,#a7d3c0);background:#7fd1c4}
+.hero-title{
+  font-size:clamp(3rem,8vw,6.4rem);font-weight:900;line-height:.98;letter-spacing:-2.5px;
+  color:#fff;margin-bottom:24px;max-width:14ch;text-shadow:0 2px 30px rgba(0,0,0,.35);
+}
+.hero-title .hl{color:#7fd1c4}
+.hero-sub{font-size:clamp(1.1rem,2vw,1.4rem);color:rgba(255,255,255,.92);max-width:620px;margin:0 0 34px;font-weight:400;text-shadow:0 1px 16px rgba(0,0,0,.4)}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.hero-scroll{margin-top:42px;color:rgba(255,255,255,.8);font-weight:600;font-size:.92rem;animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+/* כפתורים על רקע כהה */
+.hero .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3);backdrop-filter:blur(6px)}
+.hero .btn-ghost:hover{background:rgba(255,255,255,.22);color:#fff;border-color:#fff}
+
+/* ===================================================================
+   כפתורים
+   =================================================================== */
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 28px;border-radius:10px;font-weight:700;font-size:1rem;transition:.22s;border:1px solid transparent}
+.btn-primary{background:var(--accent-deep);color:#fff;box-shadow:var(--shadow-sm)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow);filter:brightness(1.05)}
+.btn-ghost{background:var(--white);color:var(--ink);border-color:var(--line);box-shadow:var(--shadow-xs)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent-deep);transform:translateY(-2px)}
+.btn.full{width:100%;justify-content:center}
+
+/* ===================================================================
+   בלוקים כלליים
+   =================================================================== */
+.lead{max-width:760px;margin:84px auto 0;text-align:center}
+.lead h3{font-size:clamp(1.7rem,3.6vw,2.4rem);font-weight:800;margin-bottom:18px;letter-spacing:-.6px}
+.lead p{font-size:1.12rem;color:var(--ink-2)}
+.lead strong{color:var(--accent-deep);font-weight:700}
+
+.section-kicker{
+  text-align:center;font-size:.82rem;font-weight:800;letter-spacing:2.5px;color:var(--accent-deep);
+  text-transform:uppercase;margin:80px 0 30px;
+}
+.section-kicker::after{content:"";display:block;width:42px;height:3px;border-radius:3px;background:var(--accent);margin:14px auto 0}
+
+/* כרטיסי שלושה */
+.cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pillar{background:var(--white);border-radius:var(--r);padding:28px 24px;border:1px solid var(--line);transition:.25s;position:relative}
+.pillar:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--line-soft)}
+.pillar-ico{width:46px;height:46px;border-radius:11px;background:var(--paper-2);color:var(--accent-deep);display:grid;place-items:center;margin-bottom:16px}
+.pillar-ico .ic{width:24px;height:24px}
+.pillar-num{font-size:.8rem;font-weight:800;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
+.pillar h5{font-size:1.22rem;font-weight:800;margin-bottom:9px;color:var(--ink)}
+.pillar p{color:var(--ink-2);font-size:.98rem}
+
+.mini{background:var(--white);border-radius:var(--r-sm);padding:22px;border:1px solid var(--line);transition:.25s}
+.mini:hover{transform:translateY(-4px);box-shadow:var(--shadow-sm)}
+.mini h5{font-size:1.1rem;font-weight:800;margin-bottom:7px;color:var(--ink)}
+.mini p{color:var(--ink-2);font-size:.95rem}
+
+/* פס סטטיסטיקות */
+.stats-band{display:grid;grid-template-columns:repeat(4,1fr);margin:48px 0 0;background:var(--white);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.stat{padding:32px 18px;text-align:center;border-inline-start:1px solid var(--line)}
+.stat:first-child{border-inline-start:none}
+.stat .num{display:block;font-size:clamp(1.7rem,3.2vw,2.5rem);font-weight:900;color:var(--ink);line-height:1;letter-spacing:-1px}
+.stat .num::first-letter{color:var(--accent-deep)}
+.stat label{display:block;margin-top:9px;color:var(--muted);font-weight:600;font-size:.88rem}
+
+/* כרטיסי ניווט */
+.nav-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-bottom:96px}
+.nav-card{text-align:start;background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:22px;transition:.25s;display:flex;flex-direction:column;gap:6px;position:relative}
+.nav-card .nc-ico{width:40px;height:40px;border-radius:10px;background:var(--paper-2);color:var(--accent-deep);display:grid;place-items:center;margin-bottom:8px}
+.nav-card .nc-ico .ic{width:22px;height:22px}
+.nav-card b{font-size:1.1rem;color:var(--ink)}
+.nav-card span{color:var(--muted);font-size:.92rem}
+.nav-card::after{content:"←";position:absolute;top:22px;inset-inline-start:22px;color:var(--line);font-weight:700;transition:.25s}
+.nav-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--accent)}
+.nav-card:hover::after{color:var(--accent);inset-inline-start:16px}
+.nav-card:nth-child(1){--accent:var(--olive);--accent-deep:var(--olive-deep)}
+.nav-card:nth-child(2){--accent:var(--gold);--accent-deep:var(--gold-deep)}
+.nav-card:nth-child(3){--accent:var(--sea);--accent-deep:var(--sea-deep)}
+.nav-card:nth-child(4){--accent:var(--sea-deep);--accent-deep:var(--sea-deep)}
+.nav-card:nth-child(5){--accent:var(--sand);--accent-deep:var(--sand-deep)}
+.nav-card:nth-child(6){--accent:var(--sea);--accent-deep:var(--sea-deep)}
+
+/* ===================================================================
+   כותרת עמוד — באנר תמונתי קולנועי עם שכבת כהוי
+   =================================================================== */
+.page-head{padding:130px 0 70px;position:relative;overflow:hidden;background:var(--ink) center/cover no-repeat}
+.page-head::before{content:"";position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(20,28,18,.45) 0%,rgba(20,28,18,.30) 45%,rgba(20,28,18,.78) 100%),
+  linear-gradient(80deg,rgba(20,28,18,.55) 0%,transparent 60%)}
+.page-head::after{content:"";position:absolute;inset-block-end:0;inset-inline:0;height:5px;background:var(--accent)}
+.page-head .container{position:relative}
+.page-head h2{font-size:clamp(2.1rem,4.8vw,3.4rem);font-weight:900;letter-spacing:-1px;margin-bottom:13px;color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.4)}
+.page-head p{font-size:1.12rem;max-width:660px;color:rgba(255,255,255,.92);text-shadow:0 1px 14px rgba(0,0,0,.4)}
+.eyebrow.light{color:#fff;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}
+.eyebrow.light::before{background:#7fd1c4}
+/* רקע לכל פרק — צילום אמיתי היכן שהנושא קיים, איור-חזון היכן שהוא עתידי */
+#vision .page-head{background-image:url("../img/scenes/city.png")}          /* מטרופולין עתידי */
+#growth .page-head{background-image:url("../img/site/agri-plantation.jpg")} /* כלכלה: מטעי תמרים */
+#lab    .page-head{background-image:url("../img/scenes/solar.png")}         /* אנרגיה/מים/AI */
+#world  .page-head{background-image:url("../img/scenes/globe.png")}         /* IMEC גלובלי */
+#exec   .page-head{background-image:url("../img/site/infra-highway.jpg")}   /* תשתית: מנהרות אמיתיות */
+#bluegreen .page-head{background-image:url("../img/scenes/water.png")}      /* תעלת הימים (חזון) */
+#cta    .page-head{background-image:url("../img/site/valley-wide.jpg")}     /* הבקעה — הזירה */
+.grad-1,.grad-2,.grad-3,.grad-4,.grad-5,.grad-6,.grad-7{background-color:var(--ink)}
+
+/* ===================================================================
+   טאבי משנה
+   =================================================================== */
+.subtabs{display:inline-flex;gap:4px;flex-wrap:wrap;margin:-26px 0 38px;position:relative;z-index:5;background:var(--white);padding:5px;border-radius:12px;box-shadow:var(--shadow-sm);border:1px solid var(--line)}
+.subtab{padding:10px 22px;border-radius:9px;font-weight:700;font-size:.98rem;color:var(--ink-2);transition:.2s}
+.subtab:hover{color:var(--accent-deep);background:var(--paper)}
+.subtab.active{background:var(--accent-deep);color:#fff}
+
+.subpanel{display:none;animation:fade .35s ease;padding-bottom:84px}
+.subpanel.active{display:block}
+.subpanel h3{font-size:clamp(1.5rem,3.2vw,2.05rem);font-weight:800;margin-bottom:15px;letter-spacing:-.5px;color:var(--ink)}
+.subpanel>p{font-size:1.08rem;color:var(--ink-2);max-width:760px;margin-bottom:15px}
+.subpanel strong{color:var(--accent-deep);font-weight:700}
+.muted{color:var(--muted);font-size:.96rem}
+
+/* split */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;margin-bottom:30px}
+.split.reverse{direction:ltr}
+.split.reverse>*{direction:rtl}
+.split-text h3{margin-bottom:14px}
+.split-text p{color:var(--ink-2);font-size:1.06rem;margin-bottom:13px}
+
+/* ויזואל מרומז — נייר קרם + מתאר עדין + סמל קו דהוי */
+.split-visual{height:330px;border-radius:var(--r);border:1px solid var(--line);position:relative;overflow:hidden;background:var(--paper-2) center/cover no-repeat}
+/* אייקון הקו הפך לסמל-פינה עדין מעל הסצנה */
+.viz-ic{position:absolute;bottom:14px;inset-inline-start:14px;width:38px;height:38px;color:var(--accent-deep);opacity:.45;stroke-width:1.4;background:rgba(248,246,239,.7);border-radius:9px;padding:6px}
+.split-visual:hover .viz-ic{opacity:.7;transition:opacity .3s}
+/* רקעים — צילומי בקעת הירדן, חקלאות ותשתית (אמיתיים) + סצנות נאנו-בננה */
+.viz-city{background-image:url("../img/scenes/city.png")}        /* סימביוזה אדם-טבע: עיר ירוקה */
+.viz-housing{background-image:url("../img/scenes/climate.png")}  /* דיור: שכונות ירוקות מרווחות */
+.viz-smart{background-image:url("../img/scenes/network.png")}    /* עיר חכמה */
+.viz-flow{background-image:url("../img/site/agri-plantation.jpg")} /* מרכז צמיחה: חקלאות מסחרית */
+.viz-water{background-image:url("../img/scenes/water.png")}      /* מים */
+.viz-solar{background-image:url("../img/scenes/solar.png")}      /* אנרגיה סולארית */
+.viz-ai{background-image:url("../img/scenes/network.png")}       /* AI */
+.viz-globe{background-image:url("../img/scenes/globe.png")}      /* חיבור בין יבשות */
+.viz-gate{background-image:url("../img/site/infra-tunnel-rail.jpg")} /* השער המזרחי: מנהרת רכבת */
+.viz-canal{background-image:url("../img/scenes/water.png")}      /* תעלת הימים */
+.viz-lake{background-image:url("../img/scenes/water.png")}       /* אגמים */
+.viz-climate{background-image:url("../img/site/valley-green.jpg")} /* מיקרו-אקלים: בקעה ירוקה */
+.viz-roi{background:var(--white);border:1px solid var(--line);display:flex;align-items:flex-end;padding:30px}
+/* רצועת תמונה אמיתית בתוך פאנל */
+.photo-band{margin:0 0 26px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-sm);background:var(--paper-2)}
+.photo-band img{width:100%;height:300px;object-fit:cover;display:block}
+.photo-band figcaption{padding:10px 16px;font-size:.86rem;font-weight:600;color:var(--muted);background:var(--white);text-align:center}
+/* כאשר המשתמש מחליף לתמונה אמיתית במצב אדמין — להסתיר את הסמל */
+.split-visual.has-custom-bg .viz-ic{display:none}
+
+.ticks{list-style:none;margin-top:8px}
+.ticks li{position:relative;padding-inline-start:28px;margin-bottom:11px;color:var(--ink-2);font-size:1.03rem}
+.ticks li::before{content:"";position:absolute;inset-inline-start:0;top:.55em;width:8px;height:8px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+
+.callout{background:var(--white);border:1px solid var(--line);border-inline-start:4px solid var(--accent);padding:22px 24px;border-radius:var(--r-sm);margin-top:24px;font-size:1.05rem;color:var(--ink-2);box-shadow:var(--shadow-xs)}
+.callout strong{color:var(--ink)}
+
+/* שכבות הכנסה */
+.layers{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.layer{display:flex;align-items:center;gap:16px;background:var(--white);padding:16px 20px;border-radius:var(--r-sm);border:1px solid var(--line);transition:.22s}
+.layer:hover{box-shadow:var(--shadow-sm);border-color:var(--accent)}
+.layer .lyr-i{width:46px;height:46px;flex:0 0 auto;display:grid;place-items:center;background:var(--paper-2);color:var(--accent-deep);border-radius:11px}
+.layer .lyr-i .ic{width:23px;height:23px}
+.layer b{font-size:1.08rem;color:var(--ink)}
+.layer p{color:var(--muted);font-size:.94rem}
+
+/* corridor */
+.corridor{display:flex;align-items:center;flex-wrap:wrap;gap:6px;justify-content:center;margin:30px 0;padding:26px;background:var(--white);border-radius:var(--r);border:1px solid var(--line)}
+.corridor .node{padding:10px 20px;border-radius:8px;background:var(--paper);border:1px solid var(--line);font-weight:700;color:var(--ink-2)}
+.corridor .node.hl{background:var(--accent-deep);color:#fff;border-color:transparent}
+.corridor .arr{color:var(--accent);font-weight:800;font-size:1.2rem}
+
+/* מפת IMEC */
+.imec-map{margin:0;background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--shadow-sm)}
+.imec-map img{width:100%;height:auto;display:block;border-radius:var(--r-sm)}
+.imec-map figcaption{margin-top:10px;text-align:center;font-size:.86rem;font-weight:600;color:var(--muted)}
+/* בטאב "ציר IMEC": מפה גדולה יותר (~30%) ומורמת לגובה שורת הכפתורים */
+#w1 .split{grid-template-columns:.9fr 1.25fr;align-items:start}
+#w1 .imec-map{margin-top:-74px}
+@media(max-width:1024px){
+  #w1 .split{grid-template-columns:1fr}
+  #w1 .imec-map{margin-top:0}
+}
+
+/* specs */
+.specs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+.spec{background:var(--white);border:1px solid var(--line);border-radius:var(--r-sm);padding:20px;transition:.22s}
+.spec:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm)}
+.spec b{display:block;font-size:1.14rem;color:var(--accent-deep);margin-bottom:4px}
+.spec span{color:var(--muted);font-size:.94rem}
+
+/* timeline / roadmap */
+.timeline{position:relative;margin-top:26px;padding-inline-start:28px}
+.timeline::before{content:"";position:absolute;inset-inline-start:6px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tl-item{position:relative;padding:0 0 26px 0;margin-inline-start:8px}
+.tl-dot{position:absolute;inset-inline-start:-28px;top:5px;width:13px;height:13px;border-radius:50%;background:var(--white);border:3px solid var(--accent)}
+.tl-item b{font-size:1.12rem;color:var(--ink)}
+.tl-item p{color:var(--ink-2)}
+
+.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+.rm{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:22px;transition:.25s;position:relative}
+.rm::before{content:"";position:absolute;top:0;inset-inline-start:0;width:100%;height:3px;background:var(--accent);border-radius:var(--r) var(--r) 0 0}
+.rm:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.rm-year{display:inline-block;font-weight:800;color:var(--accent-deep);background:var(--paper-2);padding:4px 14px;border-radius:30px;font-size:.84rem;margin-bottom:12px}
+.rm b{display:block;font-size:1.1rem;color:var(--ink);margin-bottom:5px}
+.rm p{color:var(--ink-2);font-size:.93rem}
+
+/* bar chart */
+.bar-chart{display:flex;align-items:flex-end;justify-content:space-around;gap:14px;width:100%;height:100%}
+.bar{flex:1;height:var(--h);min-height:24px;background:var(--accent);opacity:.85;border-radius:6px 6px 0 0;position:relative;display:flex;align-items:flex-end;justify-content:center;transition:height 1s cubic-bezier(.4,0,.2,1)}
+.bar:nth-child(even){background:var(--accent-deep)}
+.bar span{position:absolute;bottom:-25px;font-size:.74rem;color:var(--muted);font-weight:600;white-space:nowrap}
+
+/* ===================================================================
+   טופס
+   =================================================================== */
+.cta-form{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:28px;box-shadow:var(--shadow-sm)}
+.cta-form h4{font-size:1.32rem;font-weight:800;margin-bottom:18px;color:var(--ink)}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px;color:var(--ink-2)}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;font-size:1rem;background:var(--paper);transition:.2s;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(63,138,147,.12)}
+.form-msg{margin-top:14px;color:var(--olive-deep);font-weight:700;text-align:center}
+
+/* ===================================================================
+   פוטר
+   =================================================================== */
+.site-footer{background:var(--ink);color:#b9cad6;padding:38px 0;text-align:center;margin-top:24px}
+.site-footer strong{color:#fff}
+.site-footer small{display:block;margin-top:10px;opacity:.65;font-size:.8rem;max-width:660px;margin-inline:auto}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ===================================================================
+   נייד — מגירה מימין
+   =================================================================== */
+.menu-toggle{position:fixed;top:14px;inset-inline-start:14px;z-index:60;width:46px;height:46px;border-radius:11px;background:var(--white);border:1px solid var(--line);box-shadow:var(--shadow-sm);display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px}
+.menu-toggle span{width:21px;height:2.4px;background:var(--ink);border-radius:3px;transition:.3s}
+.menu-toggle.open span:nth-child(1){transform:translateY(7.4px) rotate(45deg)}
+.menu-toggle.open span:nth-child(2){opacity:0}
+.menu-toggle.open span:nth-child(3){transform:translateY(-7.4px) rotate(-45deg)}
+.overlay{position:fixed;inset:0;background:rgba(35,39,27,.4);backdrop-filter:blur(2px);z-index:45;opacity:0;visibility:hidden;transition:.3s}
+.overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:1024px){
+  .cards-3,.nav-cards,.specs,.roadmap{grid-template-columns:repeat(2,1fr)}
+  .split{grid-template-columns:1fr;gap:24px}
+  .split.reverse{direction:rtl}
+  .split-visual{height:230px}
+}
+@media(max-width:768px){
+  :root{--sidebar-w:280px}
+  .menu-toggle{display:flex}
+  .sidebar{transform:translateX(100%)}
+  .sidebar.open{transform:translateX(0)}
+  .content{margin-inline-start:0}
+  .container,.hero-inner{padding:0 20px}
+  .cards-3,.nav-cards,.specs,.roadmap,.stats-band{grid-template-columns:1fr}
+  .stat{border-inline-start:none;border-top:1px solid var(--line)}
+  .stat:first-child{border-top:none}
+  .subtabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
+  .subtab{white-space:nowrap}
+  .page-head{padding:92px 0 52px}
+}
+@media(max-width:480px){
+  .corridor{flex-direction:column}
+  .corridor .arr{transform:rotate(90deg)}
+}
