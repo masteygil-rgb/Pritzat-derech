@@ -286,7 +286,10 @@ body.admin-on .custom-block .cb-img::after{content:"📷 החלפת תמונה"}
 /* ===================================================================
    הזזת אלמנטים קיימים (מונה, כותרות, כרטיסים וכו')
    =================================================================== */
-body.admin-on .pd-movable{outline:1px dashed rgba(31,135,176,.4);outline-offset:3px;transition:outline-color .15s}
+body.admin-on .pd-movable{outline:1px dashed rgba(31,135,176,.4);outline-offset:3px}
+/* ביטול אנימציות מעבר בזמן עריכה — מונע "רדיפה" של ההזזה אחרי העכבר */
+body.admin-on .pd-movable,
+body.admin-on .pd-movable.pd-moving{transition:none !important}
 body.admin-on .pd-movable:hover{outline-color:var(--sea)}
 .pd-move-handle{
   position:absolute;top:-12px;inset-inline-start:-12px;z-index:40;

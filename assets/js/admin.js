@@ -214,7 +214,8 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v29</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v30</b></div>' +
+      '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="grid">▦ רשת עזר</button>' +
@@ -229,7 +230,8 @@
     bar.addEventListener('click', function(e){
       var b = e.target.closest('[data-act]'); if (!b) return;
       var act = b.dataset.act;
-      if (act==='add') addBlockFlow();
+      if (act==='save'){ flush(); save(THEME_KEY, theme); save(BLOCKS_KEY, blocks); takeSnapshot(); setStatus('הכול נשמר ✓', true); }
+      else if (act==='add') addBlockFlow();
       else if (act==='theme') toggleTheme();
       else if (act==='grid') toggleGrid(b);
       else if (act==='export') doExport();
@@ -440,30 +442,33 @@
     enableHeroPickers(on);
   }
 
-  /* כפתור בחירת תמונת רקע ראשית לכל פרק (page-head) ול-hero בעמוד הבית */
+  /* כפתור בחירת תמונת רקע ראשית — מוצב על מיכל (host) אך מחליף רקע ביעד (target) */
   function enableHeroPickers(on){
-    var targets = [];
-    document.querySelectorAll('.page-head').forEach(function(n){ targets.push(n); });
-    var sky = document.querySelector('.hero-layer.sky');
-    if (sky) targets.push(sky);
-    targets.forEach(function(el){
-      var has = el.querySelector(':scope > .pd-hero-pick') ||
-                (el.parentNode && el.classList.contains('sky') && document.querySelector('.hero .pd-hero-pick'));
+    var specs = [];
+    /* כל page-head: הכפתור והיעד הם אותו אלמנט */
+    document.querySelectorAll('.page-head').forEach(function(n){ specs.push({host:n, target:n}); });
+    /* עמוד הבית: הכפתור על .hero (לחיץ), היעד הוא שכבת התמונה .sky */
+    var hero = document.querySelector('.hero');
+    var sky  = document.querySelector('.hero-layer.sky');
+    if (hero && sky) specs.push({host:hero, target:sky});
+
+    specs.forEach(function(sp){
+      var host = sp.host;
       if (on){
-        if (el.querySelector(':scope > .pd-hero-pick')) return;
-        if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+        if (host.querySelector(':scope > .pd-hero-pick')) return;
+        if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
         var b = document.createElement('button');
         b.className = 'pd-hero-pick';
         b.type = 'button';
         b.textContent = '📷 תמונת רקע';
         b.addEventListener('click', function(e){
           e.preventDefault(); e.stopPropagation();
-          heroPickTarget = el;
+          heroPickTarget = sp.target;
           document.getElementById('admImgInput').click();
         });
-        el.appendChild(b);
+        host.appendChild(b);
       } else {
-        var ex = el.querySelector(':scope > .pd-hero-pick');
+        var ex = host.querySelector(':scope > .pd-hero-pick');
         if (ex) ex.remove();
       }
     });
