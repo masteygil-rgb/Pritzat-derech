@@ -143,7 +143,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v15</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v16</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -661,11 +661,15 @@
       '<span class="cb-op" title="שקיפות התמונה">🌫' +
         '<input type="range" class="cb-op-range" min="0" max="100" value="'+Math.round(opVal*100)+'" />' +
       '</span>' : '';
+    /* בלוק לפני/אחרי — שני כפתורי העלאה מפורשים */
+    var baCtl = (b.type === 'before-after') ?
+      '<button class="cb-ctl" data-baup="imgB" title="העלאת התמונה הראשונה">📷 לפני</button>' +
+      '<button class="cb-ctl" data-baup="imgA" title="העלאת התמונה השנייה">📷 אחרי</button>' : '';
     var bar = el('div','cb-bar');
     bar.innerHTML =
       '<button class="cb-ctl cb-drag" data-drag title="גררו כדי להזיז">✥ הזז</button>' +
       '<span class="cb-types-inline">' + typeBtns + '</span>' +
-      opCtl +
+      baCtl + opCtl +
       '<span class="cb-bar-sp"></span>' +
       (b.free ? '<button class="cb-ctl" data-anchor title="החזר לזרימת העמוד">📌 עגן</button>' : '') +
       '<button class="cb-ctl danger" data-del title="מחיקת הבלוק">🗑 מחק</button>';
@@ -673,6 +677,14 @@
     bar.addEventListener('click', function(e){
       var tb = e.target.closest('[data-type]');
       if (tb){ b.type = tb.dataset.type; saveBlocks(); renderBlocks(); return; }
+      var up = e.target.closest('[data-baup]');
+      if (up){
+        var field = up.dataset.baup;
+        var sel = field === 'A' || field === 'imgA' ? '.cb-ba-after' : '.cb-ba-before';
+        blockImgTarget = { pid: pid, id: b.id, el: wrap.querySelector(sel), field: field };
+        document.getElementById('admImgInput').click();
+        return;
+      }
       if (e.target.closest('[data-del]')){ deleteBlock(pid, b.id); return; }
       if (e.target.closest('[data-anchor]')){ b.free=false; b.x=null; b.y=null; saveBlocks(); renderBlocks(); return; }
     });
