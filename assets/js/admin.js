@@ -156,7 +156,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v19</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v20</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -698,22 +698,36 @@
     bar.addEventListener('click', function(e){
       var tb = e.target.closest('[data-type]');
       if (tb){ b.type = tb.dataset.type; saveBlocks(); renderBlocks(); return; }
-      var up = e.target.closest('[data-baup]');
-      if (up){
-        var field = up.dataset.baup;
-        var sel = field === 'A' || field === 'imgA' ? '.cb-ba-after' : '.cb-ba-before';
-        blockImgTarget = { pid: pid, id: b.id, el: wrap.querySelector(sel), field: field };
-        document.getElementById('admImgInput').click();
-        return;
-      }
       if (e.target.closest('[data-anchor]')){ b.free=false; b.x=null; b.y=null; saveBlocks(); renderBlocks(); return; }
     });
-    /* מחיקה — מאזין ישיר על הכפתור, לחיצה אחת מוחקת מיד */
+    /* כפתורי העלאת תמונה בלפני/אחרי — מאזין ישיר על כל כפתור */
+    bar.querySelectorAll('[data-baup]').forEach(function(up){
+      up.onclick = function(e){
+        e.preventDefault(); e.stopPropagation();
+        var field = up.dataset.baup;                       /* imgA / imgB */
+        var sel = (field === 'imgA') ? '.cb-ba-after' : '.cb-ba-before';
+        blockImgTarget = { pid: pid, id: b.id, el: wrap.querySelector(sel), field: field };
+        document.getElementById('admImgInput').click();
+      };
+    });
+    /* מחיקה — שלב אזהרה: לחיצה ראשונה מהבהבת, שנייה מוחקת */
     var delBtn = bar.querySelector('[data-del]');
     if (delBtn){
       delBtn.onclick = function(e){
         e.preventDefault(); e.stopPropagation();
-        deleteBlock(pid, b.id);
+        if (delBtn.dataset.armed === '1'){
+          deleteBlock(pid, b.id);
+          return;
+        }
+        delBtn.dataset.armed = '1';
+        delBtn.textContent = '⚠ לחצו שוב למחיקה';
+        delBtn.classList.add('cb-arm');
+        clearTimeout(delBtn._t);
+        delBtn._t = setTimeout(function(){
+          delBtn.dataset.armed = '';
+          delBtn.textContent = '🗑 מחק';
+          delBtn.classList.remove('cb-arm');
+        }, 3000);
       };
     }
     /* מחוון שקיפות תמונה — חי, בלי רינדור מחדש */
