@@ -142,9 +142,10 @@ body.admin-on [data-img]:hover::after{opacity:1}
 
 /* מצב עריכה — מסגרת, ידית שינוי גודל וכלים */
 body.admin-on .custom-block.cb-editing{
-  outline:2px dashed var(--sea);outline-offset:12px;border-radius:8px;
-  resize:horizontal;overflow:auto;min-width:280px;
-  padding:4px;background:rgba(31,135,176,.025);
+  outline:2px dashed var(--sea);outline-offset:6px;border-radius:8px;
+  resize:horizontal;overflow:hidden;min-width:280px;
+  padding:48px 8px 8px;            /* רווח עליון לסרגל הכלים הפנימי */
+  background:rgba(31,135,176,.04);
 }
 body.admin-on .custom-block.cb-editing::-webkit-resizer{background:var(--sea)}
 .custom-block.cb-flash{animation:cbFlash 1.4s ease}
@@ -164,8 +165,8 @@ body.admin-on .custom-block.cb-free.cb-editing{outline-offset:4px}
 .cb-ctl.cb-drag:active{cursor:grabbing}
 
 .custom-block .cb-bar{
-  position:absolute;top:-30px;inset-inline-start:0;inset-inline-end:0;
-  display:flex;align-items:center;gap:4px;z-index:6;
+  position:absolute;top:8px;inset-inline-start:8px;inset-inline-end:8px;
+  display:flex;align-items:center;gap:4px;z-index:6;flex-wrap:wrap;
 }
 .cb-bar .cb-bar-sp{flex:1}
 .cb-types-inline{display:inline-flex;gap:3px;background:#1c2016;border-radius:8px;padding:3px}
