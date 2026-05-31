@@ -1,0 +1,55 @@
+/* ===================================================================
+   פריצת דרך · עיצוב שער הכניסה
+   =================================================================== */
+#gate{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  font-family:'Heebo','Assistant',system-ui,Arial,sans-serif;
+  animation:gateIn .4s ease;
+}
+@keyframes gateIn{from{opacity:0}to{opacity:1}}
+#gate.gate-out{opacity:0;transition:opacity .45s ease;pointer-events:none}
+
+.gate-bg{
+  position:absolute;inset:0;z-index:0;
+  background:linear-gradient(160deg,#16293a 0%,#15637f 60%,#1f87b0 100%);
+}
+.gate-bg::after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(60% 50% at 80% 10%,rgba(126,205,196,.25),transparent 70%),
+    radial-gradient(50% 50% at 15% 95%,rgba(78,154,69,.22),transparent 70%);
+}
+
+.gate-card{
+  position:relative;z-index:1;width:100%;max-width:380px;text-align:center;
+  background:rgba(255,255,255,.97);backdrop-filter:blur(8px);
+  border-radius:20px;padding:38px 32px;
+  box-shadow:0 30px 80px rgba(0,0,0,.35);
+}
+.gate-logo{width:72px;height:72px;object-fit:contain;margin:0 auto 14px;display:block}
+.gate-card h1{font-size:1.7rem;font-weight:900;color:#16293a;letter-spacing:-.5px;margin-bottom:4px}
+.gate-sub{font-size:.85rem;font-weight:700;color:#1f87b0;letter-spacing:1px;margin-bottom:22px}
+.gate-msg{font-size:.98rem;color:#3c5161;margin-bottom:20px}
+
+#gateForm{display:flex;flex-direction:column;gap:12px}
+#gatePass{
+  width:100%;padding:13px 15px;border:1.5px solid #dde7ec;border-radius:11px;
+  font-family:inherit;font-size:1.05rem;text-align:center;background:#f5f8fa;color:#16293a;transition:.2s;
+}
+#gatePass:focus{outline:none;border-color:#1f87b0;background:#fff;box-shadow:0 0 0 4px rgba(31,135,176,.14)}
+.gate-remember{display:flex;align-items:center;justify-content:center;gap:7px;font-size:.85rem;color:#7c8e9a;cursor:pointer}
+.gate-remember input{width:15px;height:15px;accent-color:#1f87b0;cursor:pointer}
+.gate-err{min-height:1.1em;color:#bd5c25;font-size:.86rem;font-weight:700}
+#gateForm button{
+  width:100%;padding:13px;border-radius:11px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#1f87b0,#15637f);color:#fff;
+  font-family:inherit;font-size:1.05rem;font-weight:800;transition:.2s;
+}
+#gateForm button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.gate-foot{margin-top:20px;font-size:.76rem;color:#9fb0bc}
+
+#gate.gate-shake .gate-card{animation:gateShake .42s}
+@keyframes gateShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+
+@media(max-width:480px){.gate-card{padding:30px 22px}}
