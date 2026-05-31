@@ -143,7 +143,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v13</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v14</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -541,33 +541,38 @@
     if (!b.free && b.w) wrap.style.maxWidth = b.w + 'px';
     var textHTML = b.html || '<h3>כותרת חדשה</h3><p>כאן אפשר לכתוב טקסט חופשי…</p>';
     var imgSrc  = b.img || IMG_PLACEHOLDER;
+    /* שקיפות תמונה שמורה */
+    var op = (b.imgOpacity != null ? b.imgOpacity : 1);
+    var opStyle = 'opacity:' + op + ';';
+    var hStyle = b.h ? 'height:'+b.h+'px;' : '';
+    var imgStyleAttr = ' style="'+opStyle+hStyle+'"';
     var T = '<div class="cb-text">'+textHTML+'</div>';
     var inner = '';
 
     if (b.type === 'text'){
       inner = T;
     } else if (b.type === 'image'){
-      inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" '+(b.h?'style="height:'+b.h+'px"':'')+' />' +
+      inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' />' +
               '<figcaption class="cb-cap">'+(b.caption||'כיתוב תמונה')+'</figcaption></figure>';
     } else if (b.type === 'text-side'){
       /* טקסט בצד התמונה */
       inner = '<div class="cb-split"><div class="cb-col">'+T+'</div>' +
-              '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure></div>';
+              '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' /></figure></div>';
     } else if (b.type === 'text-below'){
       /* תמונה למעלה, טקסט מתחת (ממורכז) */
-      inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure>' +
+      inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' /></figure>' +
               '<div class="cb-text cb-center">'+textHTML+'</div>';
     } else if (b.type === 'text-over'){
       /* טקסט מעל התמונה */
       inner = '<div class="cb-over">' +
-                '<img class="cb-img" src="'+imgSrc+'" alt="" '+(b.h?'style="height:'+b.h+'px"':'')+' />' +
+                '<img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' />' +
                 '<div class="cb-over-text"><div class="cb-text">'+textHTML+'</div></div>' +
               '</div>';
     } else { /* text-image (ברירת מחדל = טקסט בצד) */
       b.type = 'text-side';
       wrap.setAttribute('data-type','text-side');
       inner = '<div class="cb-split"><div class="cb-col">'+T+'</div>' +
-              '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure></div>';
+              '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' /></figure></div>';
     }
     wrap.innerHTML = '<div class="cb-inner">'+inner+'</div>';
     if (adminOn) addBlockControls(wrap, b, pid, idx, total);
@@ -588,10 +593,17 @@
     var typeBtns = TYPES.map(function(o){
       return '<button class="cb-tbtn'+(b.type===o.t?' on':'')+'" data-type="'+o.t+'" title="'+o.l+'">'+o.i+'</button>';
     }).join('');
+    var hasImg = (b.type !== 'text');
+    var opVal = (b.imgOpacity != null ? b.imgOpacity : 1);
+    var opCtl = hasImg ?
+      '<span class="cb-op" title="שקיפות התמונה">🌫' +
+        '<input type="range" class="cb-op-range" min="0" max="100" value="'+Math.round(opVal*100)+'" />' +
+      '</span>' : '';
     var bar = el('div','cb-bar');
     bar.innerHTML =
       '<button class="cb-ctl cb-drag" data-drag title="גררו כדי להזיז">✥ הזז</button>' +
       '<span class="cb-types-inline">' + typeBtns + '</span>' +
+      opCtl +
       '<span class="cb-bar-sp"></span>' +
       (b.free ? '<button class="cb-ctl" data-anchor title="החזר לזרימת העמוד">📌 עגן</button>' : '') +
       '<button class="cb-ctl danger" data-del title="מחיקת הבלוק">🗑 מחק</button>';
@@ -602,6 +614,17 @@
       if (e.target.closest('[data-del]')){ deleteBlock(pid, b.id); return; }
       if (e.target.closest('[data-anchor]')){ b.free=false; b.x=null; b.y=null; saveBlocks(); renderBlocks(); return; }
     });
+    /* מחוון שקיפות תמונה — חי, בלי רינדור מחדש */
+    var opRange = bar.querySelector('.cb-op-range');
+    if (opRange){
+      opRange.addEventListener('input', function(){
+        b.imgOpacity = (+opRange.value) / 100;
+        wrap.querySelectorAll('.cb-img').forEach(function(im){ im.style.opacity = b.imgOpacity; });
+        clearTimeout(wrap._ot); wrap._ot = setTimeout(saveBlocks, 400);
+      });
+      /* לא לגרור את הבלוק כששולטים במחוון */
+      opRange.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+    }
 
     /* גרירה חופשית — מהידית בלבד */
     var handle = bar.querySelector('[data-drag]');

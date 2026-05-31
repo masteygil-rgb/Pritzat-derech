@@ -173,6 +173,8 @@ body.admin-on .custom-block.cb-free.cb-editing{outline-offset:4px}
 .cb-tbtn{background:transparent;color:#cdd6cc;border-radius:6px;padding:4px 10px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--font);transition:.15s}
 .cb-tbtn:hover{background:rgba(255,255,255,.12);color:#fff}
 .cb-tbtn.on{background:var(--sea);color:#fff}
+.cb-op{display:inline-flex;align-items:center;gap:5px;background:#1c2016;border-radius:8px;padding:3px 9px;font-size:.8rem}
+.cb-op-range{width:78px;accent-color:var(--sea);cursor:pointer;vertical-align:middle}
 .custom-block .cb-ctl{background:#1c2016;color:#f4f2e9;border-radius:7px;padding:5px 10px;font-size:.82rem;font-weight:700;cursor:pointer;transition:.15s;font-family:var(--font)}
 .custom-block .cb-ctl:hover{background:#2c3326}
 .custom-block .cb-ctl.danger:hover{background:#b4452e}
