@@ -480,20 +480,39 @@
   /* רינדור כל הבלוקים השמורים */
   function renderBlocks(){
     ensureAddZones();
+    /* הסרת בלוקים צפים קודמים */
+    document.querySelectorAll('.custom-block.cb-free').forEach(function(n){ n.remove(); });
     document.querySelectorAll('.admin-blocks').forEach(function(zone){
       var pid = zone.getAttribute('data-addzone');
       var list = blocks[pid] || [];
       zone.innerHTML = '';
-      list.forEach(function(b, i){ zone.appendChild(renderBlock(b, pid, i, list.length)); });
+      list.forEach(function(b, i){
+        var node = renderBlock(b, pid, i, list.length);
+        if (b.free){
+          var page = document.getElementById(pid);
+          if (page){ applyFreePos(node, b); page.appendChild(node); }
+          else zone.appendChild(node);
+        } else {
+          zone.appendChild(node);
+        }
+      });
     });
+  }
+
+  function applyFreePos(node, b){
+    node.classList.add('cb-free');
+    node.style.position = 'absolute';
+    node.style.insetInlineStart = (b.x != null ? b.x : 50) + '%';
+    node.style.top = (b.y != null ? b.y : 18) + '%';
+    node.style.width = (b.w ? b.w + 'px' : 'min(420px,80vw)');
+    node.style.zIndex = 30;
   }
 
   function renderBlock(b, pid, idx, total){
     var wrap = el('div','custom-block');
     wrap.setAttribute('data-block-id', b.id);
     if (!b.type) b.type = 'text-image';
-    /* שחזור גודל שמור */
-    if (b.w) wrap.style.maxWidth = b.w + 'px';
+    if (!b.free && b.w) wrap.style.maxWidth = b.w + 'px';
     var textHTML = b.html || '<h3>כותרת חדשה</h3><p>כאן אפשר לכתוב טקסט חופשי…</p>';
     var imgSrc  = b.img || IMG_PLACEHOLDER;
     var inner = '';
@@ -514,26 +533,29 @@
   function addBlockControls(wrap, b, pid, idx, total){
     wrap.classList.add('cb-editing');
 
-    /* סרגל כלים עליון: סוג · הזזה · מחיקה */
+    /* סרגל כלים עליון: ידית-גרירה · סוג · עיגון · מחיקה */
     var bar = el('div','cb-bar');
     bar.innerHTML =
+      '<button class="cb-ctl cb-drag" data-drag title="גררו כדי להזיז">✥ הזז</button>' +
       '<span class="cb-types-inline">' +
-        '<button class="cb-tbtn'+(b.type==='text'?' on':'')+'" data-type="text" title="טקסט בלבד">¶ טקסט</button>' +
-        '<button class="cb-tbtn'+(b.type==='image'?' on':'')+'" data-type="image" title="תמונה בלבד">🖼 תמונה</button>' +
-        '<button class="cb-tbtn'+(b.type==='text-image'?' on':'')+'" data-type="text-image" title="טקסט + תמונה">⊞ שניהם</button>' +
+        '<button class="cb-tbtn'+(b.type==='text'?' on':'')+'" data-type="text" title="טקסט בלבד">¶</button>' +
+        '<button class="cb-tbtn'+(b.type==='image'?' on':'')+'" data-type="image" title="תמונה בלבד">🖼</button>' +
+        '<button class="cb-tbtn'+(b.type==='text-image'?' on':'')+'" data-type="text-image" title="טקסט + תמונה">⊞</button>' +
       '</span>' +
       '<span class="cb-bar-sp"></span>' +
-      (idx>0 ? '<button class="cb-ctl" data-mv="up" title="הזז למעלה">▲</button>' : '') +
-      (idx<total-1 ? '<button class="cb-ctl" data-mv="down" title="הזז למטה">▼</button>' : '') +
-      '<button class="cb-ctl danger" data-del title="מחיקה">🗑</button>';
+      (b.free ? '<button class="cb-ctl" data-anchor title="החזר לזרימת העמוד">📌 עגן</button>' : '') +
+      '<button class="cb-ctl danger" data-del title="מחיקת הבלוק">🗑 מחק</button>';
     wrap.appendChild(bar);
     bar.addEventListener('click', function(e){
       var tb = e.target.closest('[data-type]');
       if (tb){ b.type = tb.dataset.type; saveBlocks(); renderBlocks(); return; }
-      var btn = e.target.closest('[data-mv],[data-del]'); if(!btn) return;
-      if (btn.hasAttribute('data-del')) deleteBlock(pid, b.id);
-      else moveBlock(pid, b.id, btn.dataset.mv);
+      if (e.target.closest('[data-del]')){ deleteBlock(pid, b.id); return; }
+      if (e.target.closest('[data-anchor]')){ b.free=false; b.x=null; b.y=null; saveBlocks(); renderBlocks(); return; }
     });
+
+    /* גרירה חופשית — מהידית בלבד */
+    var handle = bar.querySelector('[data-drag]');
+    if (handle) enableDrag(handle, wrap, b, pid);
 
     /* טקסט נערך */
     wrap.querySelectorAll('.cb-text, .cb-cap').forEach(function(t){
@@ -559,7 +581,7 @@
       });
     }
 
-    /* שמירת גודל לאחר שינוי (resize ידני בפינה) */
+    /* שמירת גודל לאחר שינוי (גרירת פינה) */
     if (window.ResizeObserver){
       var ro = new ResizeObserver(function(){
         if (!wrap.offsetWidth) return;
@@ -568,6 +590,54 @@
       });
       ro.observe(wrap);
     }
+  }
+
+  /* ---------- מנגנון גרירה חופשית ---------- */
+  function enableDrag(handle, wrap, b, pid){
+    handle.style.touchAction = 'none';
+    handle.addEventListener('pointerdown', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var page = document.getElementById(pid);
+      if (!page) return;
+
+      /* בפעם הראשונה — הופכים לצף וממקמים במיקום הנוכחי */
+      if (!b.free){
+        var pr0 = page.getBoundingClientRect();
+        var wr0 = wrap.getBoundingClientRect();
+        b.free = true;
+        b.x = ((wr0.left - pr0.left) / pr0.width) * 100;
+        b.y = ((wr0.top  - pr0.top ) / pr0.height) * 100;
+        b.w = Math.round(wr0.width);
+        page.appendChild(wrap);
+        applyFreePos(wrap, b);
+      }
+
+      wrap.classList.add('cb-dragging');
+      var pr = page.getBoundingClientRect();
+      var wr = wrap.getBoundingClientRect();
+      var offX = e.clientX - wr.left;
+      var offY = e.clientY - wr.top;
+
+      function move(ev){
+        var x = ev.clientX - pr.left - offX;
+        var y = ev.clientY - pr.top  - offY;
+        /* גבולות */
+        x = Math.max(0, Math.min(x, pr.width  - wr.width));
+        y = Math.max(0, Math.min(y, pr.height - wr.height));
+        b.x = (x / pr.width)  * 100;
+        b.y = (y / pr.height) * 100;
+        wrap.style.insetInlineStart = b.x + '%';
+        wrap.style.top = b.y + '%';
+      }
+      function up(){
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', up);
+        wrap.classList.remove('cb-dragging');
+        saveBlocks();
+      }
+      document.addEventListener('pointermove', move);
+      document.addEventListener('pointerup', up);
+    });
   }
 
   var blocksDirtyTimer = null;
@@ -613,15 +683,14 @@
     saveBlocks();
     renderBlocks();
     setTimeout(function(){
-      var zone = document.querySelector('.admin-blocks[data-addzone="'+pid+'"]');
-      var first = zone && zone.querySelector('.custom-block');
-      if (first){
-        first.scrollIntoView({behavior:'smooth', block:'center'});
-        first.classList.add('cb-flash');
-        setTimeout(function(){ first.classList.remove('cb-flash'); }, 1400);
+      var node = document.querySelector('[data-block-id="'+nb.id+'"]');
+      if (node){
+        node.scrollIntoView({behavior:'smooth', block:'center'});
+        node.classList.add('cb-flash');
+        setTimeout(function(){ node.classList.remove('cb-flash'); }, 1400);
       }
     }, 60);
-    setStatus('בלוק נוסף — ערכו אותו', true);
+    setStatus('בלוק נוסף — גררו ב"✥ הזז" למיקום הרצוי', true);
   }
 
   /* ---------- מודאל גנרי ---------- */

@@ -135,6 +135,19 @@ body.admin-on .custom-block.cb-editing::-webkit-resizer{background:var(--sea)}
 .custom-block.cb-flash{animation:cbFlash 1.4s ease}
 @keyframes cbFlash{0%,100%{background:transparent}30%{background:rgba(226,166,61,.18)}}
 
+/* בלוק צף — ממוקם חופשי מעל התוכן/התמונה */
+.page{position:relative}
+.custom-block.cb-free{
+  background:rgba(255,255,255,.92);backdrop-filter:blur(4px);
+  padding:18px 20px;border-radius:14px;box-shadow:0 14px 40px rgba(20,30,40,.25);
+  margin:0;
+}
+body.admin-on .custom-block.cb-free.cb-editing{outline-offset:4px}
+.custom-block.cb-dragging{opacity:.92;cursor:grabbing;box-shadow:0 22px 60px rgba(20,30,40,.4)}
+.cb-ctl.cb-drag{cursor:grab;background:var(--sea-deep)}
+.cb-ctl.cb-drag:hover{background:var(--sea)}
+.cb-ctl.cb-drag:active{cursor:grabbing}
+
 .custom-block .cb-bar{
   position:absolute;top:-30px;inset-inline-start:0;inset-inline-end:0;
   display:flex;align-items:center;gap:4px;z-index:6;
