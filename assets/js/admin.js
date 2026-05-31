@@ -67,6 +67,21 @@
   var IMG_SELECTORS = ['.brand-logo img'];
   var BG_SELECTORS  = ['.split-visual'];
 
+  /* אלמנטים קיימים הניתנים להזזה (גרירה חופשית במצב אדמין) */
+  var MOVE_SELECTORS = [
+    '.stats-band', '.stat',
+    '.pillar', '.mini', '.spec', '.rm',
+    '.lead', '.callout',
+    '.cards-3', '.nav-card',
+    '.corridor', '.layer',
+    '.timeline', '.tl-item',
+    '.bar-chart',
+    '.split-text', '.split-visual',
+    '.hero-title', '.hero-sub', '.hero-actions',
+    '.section-kicker',
+    '.subpanel > h3'
+  ];
+
   var THEME_VARS = [
     { var: '--olive',     label: 'ירוק דן (ראשי)' },
     { var: '--olive-deep',label: 'ירוק כהה' },
@@ -130,8 +145,21 @@
         el.classList.add('has-custom-bg');
       }
     });
+    applyMoves();            /* מיקומי אלמנטים שהוזזו */
     applyTheme();
     renderBlocks();          /* בלוקים מותאמים אישית — תמיד מוצגים */
+  }
+
+  /* החלת הזזות שמורות על אלמנטים קיימים */
+  function applyMoves(){
+    eachSel(MOVE_SELECTORS, function(el){
+      var o = overrides[keyOf(el)];
+      if (o && o.move){
+        el.style.transform = 'translate(' + o.move.dx + 'px,' + o.move.dy + 'px)';
+        el.style.position = el.style.position || 'relative';
+        el.classList.add('pd-moved');
+      }
+    });
   }
   function applyTheme(){
     var root = document.documentElement;
@@ -156,7 +184,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v21</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v22</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -328,6 +356,70 @@
       if (on){ el.setAttribute('data-img',''); el.addEventListener('click', onImgClick); }
       else { el.removeAttribute('data-img'); el.removeEventListener('click', onImgClick); }
     });
+    enableMoving(on);
+  }
+
+  /* ---------- הזזת אלמנטים קיימים ---------- */
+  function enableMoving(on){
+    eachSel(MOVE_SELECTORS, function(el){
+      var existing = el.querySelector(':scope > .pd-move-handle');
+      if (on){
+        if (existing) return;
+        if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+        el.classList.add('pd-movable');
+        var h = document.createElement('button');
+        h.className = 'pd-move-handle';
+        h.type = 'button';
+        h.title = 'גררו כדי להזיז · לחיצה כפולה לאיפוס';
+        h.textContent = '✥';
+        h.addEventListener('pointerdown', function(e){ startMove(e, el, h); });
+        h.addEventListener('dblclick', function(e){ e.preventDefault(); e.stopPropagation(); resetMove(el); });
+        el.appendChild(h);
+      } else {
+        el.classList.remove('pd-movable');
+        if (existing) existing.remove();
+      }
+    });
+  }
+
+  function curMove(el){
+    var o = overrides[keyOf(el)];
+    return (o && o.move) ? { dx:o.move.dx, dy:o.move.dy } : { dx:0, dy:0 };
+  }
+  function startMove(e, el, handle){
+    e.preventDefault(); e.stopPropagation();
+    var start = curMove(el);
+    var sx = e.clientX, sy = e.clientY;
+    el.classList.add('pd-moving');
+    function move(ev){
+      var dx = start.dx + (ev.clientX - sx);
+      var dy = start.dy + (ev.clientY - sy);
+      el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      el._mv = { dx:dx, dy:dy };
+    }
+    function up(){
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      el.classList.remove('pd-moving');
+      if (el._mv){
+        var k = keyOf(el);
+        overrides[k] = overrides[k] || {};
+        overrides[k].move = el._mv;
+        el.classList.add('pd-moved');
+        flush();
+      }
+    }
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  }
+  function resetMove(el){
+    var k = keyOf(el);
+    if (overrides[k]) { delete overrides[k].move; }
+    el.style.transform = '';
+    el.classList.remove('pd-moved');
+    el._mv = null;
+    flush();
+    setStatus('המיקום אופס', true);
   }
 
   function onTextInput(e){

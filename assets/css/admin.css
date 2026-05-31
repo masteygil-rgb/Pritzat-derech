@@ -202,6 +202,28 @@ body.admin-on .custom-block .cb-img{cursor:pointer;outline:1.5px dashed transpar
 body.admin-on .custom-block .cb-img:hover{outline-color:var(--sand)}
 body.admin-on .custom-block .cb-img::after{content:"📷 החלפת תמונה"}
 
+/* ===================================================================
+   הזזת אלמנטים קיימים (מונה, כותרות, כרטיסים וכו')
+   =================================================================== */
+body.admin-on .pd-movable{outline:1px dashed rgba(31,135,176,.4);outline-offset:3px;transition:outline-color .15s}
+body.admin-on .pd-movable:hover{outline-color:var(--sea)}
+.pd-move-handle{
+  position:absolute;top:-12px;inset-inline-start:-12px;z-index:40;
+  width:26px;height:26px;border-radius:7px;
+  background:var(--sea-deep);color:#fff;border:2px solid #fff;
+  font-size:.8rem;font-weight:800;cursor:grab;
+  display:none;place-items:center;
+  box-shadow:0 3px 10px rgba(0,0,0,.3);font-family:var(--font);
+  touch-action:none;line-height:1;padding:0;
+}
+body.admin-on .pd-movable:hover > .pd-move-handle,
+body.admin-on .pd-moved > .pd-move-handle{display:grid}
+.pd-move-handle:active{cursor:grabbing}
+.pd-moving{opacity:.85;z-index:50 !important;cursor:grabbing}
+body.admin-on .pd-moved{outline:1px dashed var(--sand)}
+body.admin-on .pd-moved > .pd-move-handle{background:var(--sand-deep)}
+@media print{.pd-move-handle{display:none !important}}
+
 @media print{.admin-fab,.admin-bar,.fmt-toolbar,.theme-panel,.admin-modal,.cb-bar{display:none !important}
   body.admin-on .custom-block.cb-editing{outline:none;resize:none}}
 @media(max-width:768px){
