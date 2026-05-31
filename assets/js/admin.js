@@ -143,7 +143,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v17</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v18</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -685,7 +685,19 @@
         document.getElementById('admImgInput').click();
         return;
       }
-      if (e.target.closest('[data-del]')){ deleteBlock(pid, b.id); return; }
+      var del = e.target.closest('[data-del]');
+      if (del){
+        e.preventDefault(); e.stopPropagation();
+        if (del.dataset.armed === '1'){
+          deleteBlock(pid, b.id);
+        } else {
+          del.dataset.armed = '1';
+          del.textContent = '✓ בטוח? מחק';
+          del.classList.add('cb-arm');
+          setTimeout(function(){ if(del){ del.dataset.armed=''; del.textContent='🗑 מחק'; del.classList.remove('cb-arm'); } }, 3000);
+        }
+        return;
+      }
       if (e.target.closest('[data-anchor]')){ b.free=false; b.x=null; b.y=null; saveBlocks(); renderBlocks(); return; }
     });
     /* מחוון שקיפות תמונה — חי, בלי רינדור מחדש */
@@ -817,7 +829,6 @@
   }
   function deleteBlock(pid, id){
     var f = findBlock(pid, id); if(!f) return;
-    if (!window.confirm('למחוק את הבלוק הזה? לא ניתן לבטל.')) return;
     f.list.splice(f.i, 1);
     saveBlocks();
     renderBlocks();

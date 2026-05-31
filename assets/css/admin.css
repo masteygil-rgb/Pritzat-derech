@@ -192,6 +192,8 @@ body.admin-on .custom-block.cb-free.cb-editing{outline-offset:4px}
 .custom-block .cb-ctl{background:#1c2016;color:#f4f2e9;border-radius:7px;padding:5px 10px;font-size:.82rem;font-weight:700;cursor:pointer;transition:.15s;font-family:var(--font)}
 .custom-block .cb-ctl:hover{background:#2c3326}
 .custom-block .cb-ctl.danger:hover{background:#b4452e}
+.custom-block .cb-ctl.cb-arm{background:#b4452e;animation:cbArm .5s ease infinite alternate}
+@keyframes cbArm{from{transform:scale(1)}to{transform:scale(1.06)}}
 
 body.admin-on .custom-block [contenteditable]{outline:1.5px dashed transparent;outline-offset:3px;border-radius:4px;transition:.15s;cursor:text}
 body.admin-on .custom-block [contenteditable]:hover{outline-color:var(--sea);background:rgba(31,135,176,.05)}
