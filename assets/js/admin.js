@@ -13,6 +13,19 @@
 (function () {
   'use strict';
 
+  /* תופס שגיאות גלוי — מציג כל שגיאת ריצה על המסך */
+  window.addEventListener('error', function(ev){
+    try{
+      var box = document.getElementById('pdErr');
+      if(!box){
+        box = document.createElement('div'); box.id='pdErr';
+        box.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#b4452e;color:#fff;font:13px/1.5 monospace;padding:10px 14px;direction:ltr;white-space:pre-wrap;max-height:40vh;overflow:auto;box-shadow:0 -4px 20px rgba(0,0,0,.4)';
+        document.body.appendChild(box);
+      }
+      box.textContent = '⚠ JS ERROR: ' + ev.message + '\n@ ' + (ev.filename||'').split('/').pop() + ':' + ev.lineno + ':' + ev.colno;
+    }catch(e){}
+  });
+
   var STORE_KEY  = 'pd_admin_overrides_v1';
   var THEME_KEY  = 'pd_admin_theme_v1';
   var BLOCKS_KEY = 'pd_admin_blocks_v1';
@@ -143,7 +156,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v18</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v19</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -517,13 +530,17 @@
       var list = blocks[pid] || [];
       zone.innerHTML = '';
       list.forEach(function(b, i){
-        var node = renderBlock(b, pid, i, list.length);
-        if (b.free){
-          var page = document.getElementById(pid);
-          if (page){ applyFreePos(node, b); page.appendChild(node); }
-          else zone.appendChild(node);
-        } else {
-          zone.appendChild(node);
+        try {
+          var node = renderBlock(b, pid, i, list.length);
+          if (b.free){
+            var page = document.getElementById(pid);
+            if (page){ applyFreePos(node, b); page.appendChild(node); }
+            else zone.appendChild(node);
+          } else {
+            zone.appendChild(node);
+          }
+        } catch(err){
+          window.dispatchEvent(new ErrorEvent('error',{message:'renderBlock '+(b&&b.type)+': '+err.message, filename:'admin.js', lineno:0, colno:0}));
         }
       });
     });
@@ -598,8 +615,12 @@
               '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' /></figure></div>';
     }
     wrap.innerHTML = '<div class="cb-inner">'+inner+'</div>';
-    if (b.type === 'before-after') wireBeforeAfter(wrap, b);   /* וילון — פעיל גם למבקר */
-    if (adminOn) addBlockControls(wrap, b, pid, idx, total);
+    try { if (b.type === 'before-after') wireBeforeAfter(wrap, b); }   /* וילון — פעיל גם למבקר */
+    catch(e){ window.dispatchEvent(new ErrorEvent('error',{message:'wireBeforeAfter: '+e.message,filename:'admin.js'})); }
+    if (adminOn){
+      try { addBlockControls(wrap, b, pid, idx, total); }
+      catch(e){ window.dispatchEvent(new ErrorEvent('error',{message:'addBlockControls: '+e.message,filename:'admin.js'})); }
+    }
     return wrap;
   }
 
@@ -685,21 +706,16 @@
         document.getElementById('admImgInput').click();
         return;
       }
-      var del = e.target.closest('[data-del]');
-      if (del){
-        e.preventDefault(); e.stopPropagation();
-        if (del.dataset.armed === '1'){
-          deleteBlock(pid, b.id);
-        } else {
-          del.dataset.armed = '1';
-          del.textContent = '✓ בטוח? מחק';
-          del.classList.add('cb-arm');
-          setTimeout(function(){ if(del){ del.dataset.armed=''; del.textContent='🗑 מחק'; del.classList.remove('cb-arm'); } }, 3000);
-        }
-        return;
-      }
       if (e.target.closest('[data-anchor]')){ b.free=false; b.x=null; b.y=null; saveBlocks(); renderBlocks(); return; }
     });
+    /* מחיקה — מאזין ישיר על הכפתור, לחיצה אחת מוחקת מיד */
+    var delBtn = bar.querySelector('[data-del]');
+    if (delBtn){
+      delBtn.onclick = function(e){
+        e.preventDefault(); e.stopPropagation();
+        deleteBlock(pid, b.id);
+      };
+    }
     /* מחוון שקיפות תמונה — חי, בלי רינדור מחדש */
     var opRange = bar.querySelector('.cb-op-range');
     if (opRange){
