@@ -184,7 +184,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v22</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v23</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -314,22 +314,65 @@
     );
   }
 
+  /* צילום-מצב (snapshot) של המצב לפני תחילת העריכה — לצורך ביטול */
+  var snapshot = null;
+  function takeSnapshot(){
+    snapshot = {
+      overrides: localStorage.getItem(STORE_KEY),
+      theme:     localStorage.getItem(THEME_KEY),
+      blocks:    localStorage.getItem(BLOCKS_KEY)
+    };
+  }
+  function restoreSnapshot(){
+    if (!snapshot) return;
+    setItemOrRemove(STORE_KEY,  snapshot.overrides);
+    setItemOrRemove(THEME_KEY,  snapshot.theme);
+    setItemOrRemove(BLOCKS_KEY, snapshot.blocks);
+  }
+  function setItemOrRemove(k, v){
+    try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch(e){}
+  }
+
   function enterAdmin(){
     adminOn = true;
+    takeSnapshot();          /* שומר את המצב המקורי לפני העריכה */
     document.body.classList.add('admin-on');
     enableEditing(true);
     renderBlocks();          /* רינדור מחדש עם כלי עריכה לבלוקים */
     setStatus('מצב עריכה פעיל');
     try { sessionStorage.setItem('pd_admin_session','1'); } catch(e){}
   }
+
+  /* יציאה ממצב עריכה — שואל אם לשמור */
   function exitAdmin(){
     if (dirty) flush();
+    showModal(
+      '<h3>יציאה ממצב עריכה</h3><p>האם לשמור את השינויים שביצעת?</p>' +
+      '<div class="am-actions">' +
+        '<button class="admin-btn" data-close>המשך לערוך</button>' +
+        '<button class="admin-btn danger" id="exDiscard">בטל שינויים</button>' +
+        '<button class="admin-btn primary" id="exSave">שמור שינויים</button>' +
+      '</div>',
+      function(box){
+        box.querySelector('#exSave').addEventListener('click', function(){
+          hideModal(); finishExit();      /* השינויים כבר שמורים ב-localStorage */
+          setStatus('השינויים נשמרו ✓', true);
+        });
+        box.querySelector('#exDiscard').addEventListener('click', function(){
+          restoreSnapshot();               /* החזרה למצב לפני העריכה */
+          hideModal();
+          location.reload();               /* טעינה מחדש כדי להציג את המצב המקורי */
+        });
+      }
+    );
+  }
+  function finishExit(){
     adminOn = false;
     document.body.classList.remove('admin-on');
     enableEditing(false);
     renderBlocks();          /* רינדור מחדש ללא כלי עריכה */
     hideFmt();
-    document.getElementById('themePanel').classList.remove('show');
+    var tp = document.getElementById('themePanel'); if (tp) tp.classList.remove('show');
     try { sessionStorage.removeItem('pd_admin_session'); } catch(e){}
   }
 

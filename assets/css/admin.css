@@ -64,12 +64,15 @@ body.admin-on [data-img]:hover::after{opacity:1}
 
 /* ----- סרגל עיצוב טקסט צף ----- */
 .fmt-toolbar{
-  position:fixed;z-index:1100;display:none;align-items:center;gap:2px;flex-wrap:wrap;
-  max-width:min(96vw,640px);
-  background:#16293a;border-radius:10px;padding:5px;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  position:fixed;z-index:1100;display:none;align-items:center;gap:2px;flex-wrap:wrap;justify-content:center;
+  top:62px;left:50%;transform:translateX(-50%);
+  max-width:min(96vw,720px);
+  background:#16293a;border-radius:10px;padding:6px 8px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.12);
 }
 .fmt-toolbar.show{display:flex}
+@media(max-width:768px){.fmt-toolbar{top:104px}}
 .fmt-toolbar button{
   width:32px;height:32px;border-radius:7px;color:#f4f2e9;font-size:.9rem;font-weight:800;
   display:grid;place-items:center;transition:.12s;cursor:pointer;background:transparent;
