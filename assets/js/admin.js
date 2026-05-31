@@ -13,10 +13,14 @@
 (function () {
   'use strict';
 
-  var STORE_KEY = 'pd_admin_overrides_v1';
-  var THEME_KEY = 'pd_admin_theme_v1';
-  var PASS_KEY  = 'pd_admin_pass_v1';
+  var STORE_KEY  = 'pd_admin_overrides_v1';
+  var THEME_KEY  = 'pd_admin_theme_v1';
+  var BLOCKS_KEY = 'pd_admin_blocks_v1';
+  var PASS_KEY   = 'pd_admin_pass_v1';
   var DEFAULT_PASS = 'derech2050';          /* ניתן לשינוי בסרגל האדמין */
+
+  /* תמונת placeholder לבלוק תמונה חדש */
+  var IMG_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='360'%3E%3Crect width='600' height='360' fill='%23eaf1f5'/%3E%3Cg fill='none' stroke='%231f87b0' stroke-width='3' opacity='.55'%3E%3Crect x='30' y='30' width='540' height='300' rx='12'/%3E%3Ccircle cx='160' cy='150' r='40'/%3E%3Cpath d='M60 300 L230 170 L330 250 L430 160 L540 270'/%3E%3C/g%3E%3Ctext x='300' y='335' text-anchor='middle' font-family='Arial' font-size='20' fill='%237c8e9a'%3E%D7%9C%D7%97%D7%A6%D7%95 %D7%9C%D7%94%D7%A2%D7%9C%D7%90%D7%AA %D7%AA%D7%9E%D7%95%D7%A0%D7%94%3C/text%3E%3C/svg%3E";
 
   /* בוררים לאלמנטים הניתנים לעריכת טקסט */
   var TEXT_SELECTORS = [
@@ -63,6 +67,7 @@
 
   var overrides = load(STORE_KEY) || {};   /* { key: {html|text|src|bg|style} } */
   var theme     = load(THEME_KEY) || {};
+  var blocks    = load(BLOCKS_KEY) || {};  /* { pageId: [ {id,type,html,img,caption} ] } */
   var adminOn   = false;
   var dirty     = false;
 
@@ -113,6 +118,7 @@
       }
     });
     applyTheme();
+    renderBlocks();          /* בלוקים מותאמים אישית — תמיד מוצגים */
   }
   function applyTheme(){
     var root = document.documentElement;
@@ -138,6 +144,7 @@
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
       '<div class="ab-logo"><i>פד</i> מצב עריכה</div>' +
+      '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
       '<button class="admin-btn" data-act="import">⬆ ייבוא</button>' +
@@ -150,7 +157,8 @@
     bar.addEventListener('click', function(e){
       var b = e.target.closest('[data-act]'); if (!b) return;
       var act = b.dataset.act;
-      if (act==='theme') toggleTheme();
+      if (act==='add') addBlockFlow();
+      else if (act==='theme') toggleTheme();
       else if (act==='export') doExport();
       else if (act==='import') doImport();
       else if (act==='pass') changePass();
@@ -248,6 +256,7 @@
     adminOn = true;
     document.body.classList.add('admin-on');
     enableEditing(true);
+    renderBlocks();          /* רינדור מחדש עם כלי עריכה לבלוקים */
     setStatus('מצב עריכה פעיל');
     try { sessionStorage.setItem('pd_admin_session','1'); } catch(e){}
   }
@@ -256,6 +265,7 @@
     adminOn = false;
     document.body.classList.remove('admin-on');
     enableEditing(false);
+    renderBlocks();          /* רינדור מחדש ללא כלי עריכה */
     hideFmt();
     document.getElementById('themePanel').classList.remove('show');
     try { sessionStorage.removeItem('pd_admin_session'); } catch(e){}
@@ -331,18 +341,27 @@
 
   /* ---------- החלפת תמונות / רקעים ---------- */
   var imgTarget = null;
+  var blockImgTarget = null;   /* { pid, id, el } — תמונה בתוך בלוק מותאם */
   function onImgClick(e){
     e.preventDefault(); e.stopPropagation();
+    blockImgTarget = null;
     imgTarget = e.currentTarget;
     document.getElementById('admImgInput').click();
   }
   function initImgInput(){
     var fi = document.getElementById('admImgInput');
     fi.addEventListener('change', function(){
-      var f = fi.files && fi.files[0]; if (!f || !imgTarget) return;
+      var f = fi.files && fi.files[0]; if (!f) return;
       var reader = new FileReader();
       reader.onload = function(){
         var data = reader.result;
+        /* תמונה בתוך בלוק מותאם */
+        if (blockImgTarget){
+          var rec = findBlock(blockImgTarget.pid, blockImgTarget.id);
+          if (rec){ rec.b.img = data; blockImgTarget.el.src = data; saveBlocks(); setStatus('התמונה הוחלפה', true); }
+          blockImgTarget = null; fi.value=''; return;
+        }
+        if (!imgTarget) { fi.value=''; return; }
         var k = keyOf(imgTarget);
         overrides[k] = overrides[k] || {};
         if (imgTarget.tagName === 'IMG'){ imgTarget.src = data; overrides[k].src = data; }
@@ -379,7 +398,7 @@
 
   /* ---------- ייצוא / ייבוא / איפוס ---------- */
   function doExport(){
-    var payload = { overrides: overrides, theme: theme, exportedAt: new Date().toISOString() };
+    var payload = { overrides: overrides, theme: theme, blocks: blocks, exportedAt: new Date().toISOString() };
     var blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -397,7 +416,8 @@
           var d = JSON.parse(r.result);
           if (d.overrides) overrides = d.overrides;
           if (d.theme) theme = d.theme;
-          save(STORE_KEY, overrides); save(THEME_KEY, theme);
+          if (d.blocks) blocks = d.blocks;
+          save(STORE_KEY, overrides); save(THEME_KEY, theme); save(BLOCKS_KEY, blocks);
           setStatus('יובא ✓ טוען מחדש…', true);
           setTimeout(function(){ location.reload(); }, 500);
         }catch(e){ alert('קובץ לא תקין'); }
@@ -408,12 +428,12 @@
   }
   function doReset(){
     showModal(
-      '<h3>איפוס כל השינויים</h3><p>הפעולה תמחק את כל העריכות (טקסט, תמונות וצבעים) ותחזיר את האתר למקור. לא ניתן לבטל.</p>' +
+      '<h3>איפוס כל השינויים</h3><p>הפעולה תמחק את כל העריכות (טקסט, תמונות, צבעים ובלוקים שנוספו) ותחזיר את האתר למקור. לא ניתן לבטל.</p>' +
       '<div class="am-actions"><button class="admin-btn" data-close>ביטול</button>' +
       '<button class="admin-btn danger" id="resetGo">מחק הכול</button></div>',
       function(box){
         box.querySelector('#resetGo').addEventListener('click', function(){
-          localStorage.removeItem(STORE_KEY); localStorage.removeItem(THEME_KEY);
+          localStorage.removeItem(STORE_KEY); localStorage.removeItem(THEME_KEY); localStorage.removeItem(BLOCKS_KEY);
           hideModal(); location.reload();
         });
       }
@@ -436,6 +456,164 @@
   }
 
   function toggleTheme(){ document.getElementById('themePanel').classList.toggle('show'); }
+
+  /* ===================================================================
+     בלוקים מותאמים אישית — הוספת שדות טקסט/תמונה חדשים
+     =================================================================== */
+  function uid(){ return 'b' + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36); }
+  function saveBlocks(){ var ok = save(BLOCKS_KEY, blocks); setStatus(ok?'נשמר ✓':'שגיאת שמירה', ok); }
+
+  /* יצירת אזור-תוספות בכל פרק (פעם אחת) */
+  function ensureAddZones(){
+    document.querySelectorAll('.page').forEach(function(page){
+      if (page.querySelector(':scope > .admin-blocks')) return;
+      var zone = el('div', 'container admin-blocks');
+      zone.setAttribute('data-addzone', page.id);
+      var footer = page.querySelector('.site-footer');
+      if (footer) page.insertBefore(zone, footer);
+      else page.appendChild(zone);
+    });
+  }
+
+  /* רינדור כל הבלוקים השמורים */
+  function renderBlocks(){
+    ensureAddZones();
+    document.querySelectorAll('.admin-blocks').forEach(function(zone){
+      var pid = zone.getAttribute('data-addzone');
+      var list = blocks[pid] || [];
+      zone.innerHTML = '';
+      list.forEach(function(b, i){ zone.appendChild(renderBlock(b, pid, i, list.length)); });
+      if (adminOn){
+        var hint = el('div','cb-addhint');
+        hint.innerHTML = '<button class="cb-addbtn" data-addpage="'+pid+'">➕ הוסף בלוק לפרק זה</button>';
+        hint.querySelector('button').addEventListener('click', function(){ addBlock(pid); });
+        zone.appendChild(hint);
+      }
+    });
+  }
+
+  function renderBlock(b, pid, idx, total){
+    var wrap = el('div','custom-block');
+    wrap.setAttribute('data-block-id', b.id);
+    var body = '';
+    var textHTML = b.html || '<h3>כותרת חדשה</h3><p>לחצו כאן כדי לערוך את הטקסט…</p>';
+    var imgSrc  = b.img || IMG_PLACEHOLDER;
+    if (b.type === 'text'){
+      body = '<div class="cb-text">'+textHTML+'</div>';
+    } else if (b.type === 'image'){
+      body = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" />' +
+             '<figcaption class="cb-cap">'+(b.caption||'כיתוב תמונה')+'</figcaption></figure>';
+    } else { /* text-image */
+      body = '<div class="cb-split"><div class="cb-text">'+textHTML+'</div>' +
+             '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure></div>';
+    }
+    wrap.innerHTML = body;
+    if (adminOn) addBlockControls(wrap, b, pid, idx, total);
+    return wrap;
+  }
+
+  function addBlockControls(wrap, b, pid, idx, total){
+    wrap.classList.add('cb-editing');
+    /* סרגל כלים לבלוק */
+    var bar = el('div','cb-bar');
+    bar.innerHTML =
+      (idx>0 ? '<button class="cb-ctl" data-mv="up" title="העלה">▲</button>' : '') +
+      (idx<total-1 ? '<button class="cb-ctl" data-mv="down" title="הורד">▼</button>' : '') +
+      '<button class="cb-ctl danger" data-del title="מחיקה">🗑 מחק</button>';
+    wrap.appendChild(bar);
+    bar.addEventListener('click', function(e){
+      var btn = e.target.closest('[data-mv],[data-del]'); if(!btn) return;
+      if (btn.hasAttribute('data-del')) deleteBlock(pid, b.id);
+      else moveBlock(pid, b.id, btn.dataset.mv);
+    });
+    /* טקסט נערך */
+    wrap.querySelectorAll('.cb-text, .cb-cap').forEach(function(t){
+      t.setAttribute('contenteditable','true');
+      t.setAttribute('data-editable','');
+      t.addEventListener('input', function(){
+        if (t.classList.contains('cb-cap')) b.caption = t.textContent;
+        else b.html = t.innerHTML;
+        markBlocksDirty();
+      });
+      t.addEventListener('mouseup', onSelect);
+      t.addEventListener('keyup', onSelect);
+    });
+    /* תמונה ניתנת להחלפה */
+    var img = wrap.querySelector('.cb-img');
+    if (img){
+      img.setAttribute('data-img','');
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', function(e){
+        e.preventDefault();
+        blockImgTarget = { pid: pid, id: b.id, el: img };
+        document.getElementById('admImgInput').click();
+      });
+    }
+  }
+
+  var blocksDirtyTimer = null;
+  function markBlocksDirty(){
+    setStatus('עריכה…');
+    clearTimeout(blocksDirtyTimer);
+    blocksDirtyTimer = setTimeout(saveBlocks, 700);
+  }
+
+  function findBlock(pid, id){
+    var list = blocks[pid] || [];
+    for (var i=0;i<list.length;i++) if (list[i].id===id) return {list:list, i:i, b:list[i]};
+    return null;
+  }
+  function deleteBlock(pid, id){
+    var f = findBlock(pid, id); if(!f) return;
+    showModal('<h3>מחיקת בלוק</h3><p>למחוק את הבלוק הזה? לא ניתן לבטל.</p>' +
+      '<div class="am-actions"><button class="admin-btn" data-close>ביטול</button>' +
+      '<button class="admin-btn danger" id="delGo">מחק</button></div>',
+      function(box){
+        box.querySelector('#delGo').addEventListener('click', function(){
+          f.list.splice(f.i,1); saveBlocks(); hideModal(); renderBlocks();
+        });
+      });
+  }
+  function moveBlock(pid, id, dir){
+    var f = findBlock(pid, id); if(!f) return;
+    var j = dir==='up' ? f.i-1 : f.i+1;
+    if (j<0 || j>=f.list.length) return;
+    var tmp = f.list[j]; f.list[j]=f.list[f.i]; f.list[f.i]=tmp;
+    saveBlocks(); renderBlocks();
+  }
+
+  /* הוספת בלוק — בחירת פרק (אם לא ידוע) + סוג */
+  function addBlockFlow(){
+    var active = document.querySelector('.page.active');
+    addBlock(active ? active.id : 'home');
+  }
+  function addBlock(pid){
+    showModal(
+      '<h3>הוספת בלוק חדש</h3><p>בחרו את סוג התוכן להוספה לפרק.</p>' +
+      '<div class="cb-types">' +
+        '<button class="cb-type" data-t="text"><span>¶</span>טקסט</button>' +
+        '<button class="cb-type" data-t="image"><span>🖼</span>תמונה</button>' +
+        '<button class="cb-type" data-t="text-image"><span>⊞</span>טקסט + תמונה</button>' +
+      '</div>' +
+      '<div class="am-actions"><button class="admin-btn" data-close>ביטול</button></div>',
+      function(box){
+        box.querySelectorAll('.cb-type').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            var t = btn.dataset.t;
+            blocks[pid] = blocks[pid] || [];
+            blocks[pid].push({ id: uid(), type: t, html:'', img:'', caption:'' });
+            saveBlocks(); hideModal(); renderBlocks();
+            /* גלילה לבלוק החדש */
+            setTimeout(function(){
+              var zone = document.querySelector('.admin-blocks[data-addzone="'+pid+'"]');
+              var last = zone && zone.querySelector('.custom-block:last-of-type');
+              if (last) last.scrollIntoView({behavior:'smooth', block:'center'});
+            }, 100);
+          });
+        });
+      }
+    );
+  }
 
   /* ---------- מודאל גנרי ---------- */
   function showModal(html, onReady){

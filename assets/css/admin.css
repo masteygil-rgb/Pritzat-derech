@@ -110,7 +110,44 @@ body.admin-on [data-img]:hover::after{opacity:1}
 .admin-modal .am-actions{display:flex;gap:10px;justify-content:flex-end}
 .admin-modal .am-err{color:#b4452e;font-size:.85rem;font-weight:600;margin-bottom:10px;min-height:1em}
 
-@media print{.admin-fab,.admin-bar,.fmt-toolbar,.theme-panel,.admin-modal{display:none !important}}
+/* ===================================================================
+   בלוקים מותאמים אישית
+   =================================================================== */
+.admin-blocks{padding-top:8px;padding-bottom:60px}
+.admin-blocks:empty{display:none;padding:0}
+.custom-block{position:relative;margin:22px auto;max-width:1060px}
+.custom-block .cb-text h3{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;color:var(--ink);margin-bottom:12px;letter-spacing:-.5px}
+.custom-block .cb-text p{font-size:1.06rem;color:var(--ink-2);margin-bottom:12px;line-height:1.75}
+.custom-block .cb-figure{margin:0}
+.custom-block .cb-img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);box-shadow:0 4px 16px rgba(40,38,25,.06)}
+.custom-block .cb-cap{margin-top:10px;text-align:center;font-size:.88rem;font-weight:600;color:var(--muted)}
+.custom-block .cb-split{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center}
+@media(max-width:768px){.custom-block .cb-split{grid-template-columns:1fr;gap:20px}}
+
+/* מצב עריכה — מסגרת מקווקוות וכלים */
+body.admin-on .custom-block.cb-editing{outline:1.5px dashed var(--sea);outline-offset:10px;border-radius:6px}
+.custom-block .cb-bar{position:absolute;top:-14px;inset-inline-start:0;display:flex;gap:4px;z-index:5}
+.custom-block .cb-ctl{background:#1c2016;color:#f4f2e9;border-radius:7px;padding:4px 9px;font-size:.78rem;font-weight:700;cursor:pointer;transition:.15s;font-family:var(--font)}
+.custom-block .cb-ctl:hover{background:#2c3326}
+.custom-block .cb-ctl.danger:hover{background:#b4452e}
+body.admin-on .custom-block [contenteditable]{outline:1.5px dashed transparent;outline-offset:3px;border-radius:4px;transition:.15s}
+body.admin-on .custom-block [contenteditable]:hover{outline-color:var(--sea);background:rgba(31,135,176,.05)}
+body.admin-on .custom-block [contenteditable]:focus{outline:2px solid var(--sea);background:rgba(31,135,176,.07)}
+body.admin-on .custom-block .cb-img{outline:1.5px dashed transparent;outline-offset:4px;transition:.15s}
+body.admin-on .custom-block .cb-img:hover{outline-color:var(--sand)}
+
+/* כפתור "הוסף בלוק לפרק" */
+.cb-addhint{text-align:center;margin:18px auto;max-width:1060px}
+.cb-addbtn{background:var(--paper-2);border:1.5px dashed var(--sea);color:var(--sea-deep);border-radius:12px;padding:14px 26px;font-family:var(--font);font-weight:700;font-size:1rem;cursor:pointer;transition:.18s;width:100%}
+.cb-addbtn:hover{background:rgba(31,135,176,.08);border-style:solid}
+
+/* בורר סוג בלוק במודאל */
+.cb-types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 16px}
+.cb-type{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 8px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);cursor:pointer;font-family:var(--font);font-weight:700;font-size:.92rem;color:var(--ink);transition:.16s}
+.cb-type span{font-size:1.6rem;line-height:1}
+.cb-type:hover{border-color:var(--sea);background:#fff;transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+
+@media print{.admin-fab,.admin-bar,.fmt-toolbar,.theme-panel,.admin-modal,.cb-bar,.cb-addhint{display:none !important}}
 @media(max-width:768px){
   .admin-bar{height:auto;flex-wrap:wrap;padding:8px 12px;gap:6px}
   body.admin-on{padding-top:96px}
