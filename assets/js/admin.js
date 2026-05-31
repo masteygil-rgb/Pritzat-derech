@@ -156,7 +156,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v20</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v21</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -485,15 +485,24 @@
   function changePass(){
     showModal(
       '<h3>שינוי סיסמת אדמין</h3><p>בחרו סיסמה חדשה לכניסה למצב עריכה (נשמרת בדפדפן זה).</p>' +
-      '<input type="text" id="newPass" placeholder="סיסמה חדשה" />' +
+      '<input type="password" id="newPass" placeholder="סיסמה חדשה" />' +
+      '<input type="password" id="newPass2" placeholder="הקלידו שוב לאימות" />' +
+      '<div class="am-err" id="passErr"></div>' +
       '<div class="am-actions"><button class="admin-btn" data-close>ביטול</button>' +
       '<button class="admin-btn primary" id="passGo">שמירה</button></div>',
       function(box){
-        box.querySelector('#passGo').addEventListener('click', function(){
-          var v = box.querySelector('#newPass').value.trim();
-          if (v.length < 4){ alert('הסיסמה קצרה מדי (לפחות 4 תווים)'); return; }
-          localStorage.setItem(PASS_KEY, v); hideModal(); setStatus('הסיסמה עודכנה', true);
-        });
+        var p1 = box.querySelector('#newPass'), p2 = box.querySelector('#newPass2');
+        var err = box.querySelector('#passErr');
+        p1.focus();
+        function go(){
+          var v = p1.value.trim(), v2 = p2.value.trim();
+          if (v.length < 4){ err.textContent = 'הסיסמה קצרה מדי (לפחות 4 תווים)'; p1.focus(); return; }
+          if (v !== v2){ err.textContent = 'הסיסמאות אינן תואמות — נסו שוב'; p2.value=''; p2.focus(); return; }
+          localStorage.setItem(PASS_KEY, v); hideModal(); setStatus('הסיסמה עודכנה ✓', true);
+        }
+        box.querySelector('#passGo').addEventListener('click', go);
+        p2.addEventListener('keydown', function(e){ if(e.key==='Enter') go(); });
+        p1.addEventListener('keydown', function(e){ if(e.key==='Enter') p2.focus(); });
       }
     );
   }
