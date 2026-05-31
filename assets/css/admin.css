@@ -140,6 +140,20 @@ body.admin-on [data-img]:hover::after{opacity:1}
 .custom-block .cb-over-text .cb-text h3{color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.4)}
 .custom-block .cb-over-text .cb-text p,.custom-block .cb-over-text .cb-text li{color:rgba(255,255,255,.95);text-shadow:0 1px 12px rgba(0,0,0,.4)}
 
+/* ----- בלוק "לפני / אחרי" עם וילון נגרר ----- */
+.cb-ba-title{margin-bottom:14px}
+.custom-block .cb-ba{position:relative;width:100%;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 4px 16px rgba(40,38,25,.06);user-select:none;touch-action:none;background:#0a0f14}
+.custom-block .cb-ba-img{display:block;width:100%;height:100%;object-fit:cover}
+.custom-block .cb-ba-after{position:absolute;inset:0}
+.custom-block .cb-ba-before{position:absolute;inset:0;z-index:2}   /* clip-path נקבע inline */
+.custom-block .cb-ba-handle{position:absolute;top:0;bottom:0;left:50%;width:3px;background:#fff;transform:translateX(-50%);cursor:ew-resize;z-index:4;box-shadow:0 0 8px rgba(0,0,0,.35)}
+.custom-block .cb-ba-handle span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:#fff;color:var(--ink);display:grid;place-items:center;font-size:1.1rem;font-weight:800;box-shadow:0 3px 12px rgba(0,0,0,.35)}
+.custom-block .cb-ba-lab{position:absolute;top:12px;padding:5px 12px;border-radius:30px;background:rgba(20,30,40,.7);color:#fff;font-size:.82rem;font-weight:700;z-index:3;backdrop-filter:blur(4px)}
+.custom-block .cb-ba-lab-b{inset-inline-start:14px}   /* לפני — בצד ההתחלה */
+.custom-block .cb-ba-lab-a{inset-inline-end:14px}     /* אחרי — בצד הסיום */
+body.admin-on .custom-block .cb-ba-img{cursor:pointer}
+body.admin-on .custom-block .cb-ba-img:hover{outline:2px dashed var(--sand);outline-offset:-2px}
+
 /* מצב עריכה — מסגרת, ידית שינוי גודל וכלים */
 body.admin-on .custom-block.cb-editing{
   outline:2px dashed var(--sea);outline-offset:6px;border-radius:8px;
