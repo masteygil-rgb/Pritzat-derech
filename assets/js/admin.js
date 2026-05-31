@@ -67,6 +67,17 @@
   var IMG_SELECTORS = ['.brand-logo img'];
   var BG_SELECTORS  = ['.split-visual'];
 
+  /* אלמנטים קיימים שאחריהם ניתן להוסיף תוכן (מפריד ＋) */
+  var INSERT_AFTER_SELECTORS = [
+    '.lead', '.section-kicker',
+    '.cards-3', '.stats-band', '.nav-cards',
+    '.split', '.callout', '.corridor', '.layers',
+    '.specs', '.timeline', '.roadmap', '.bar-chart',
+    '.imec-map', '.photo-band',
+    '.subpanel > h3', '.subpanel > p',
+    '.pillar', '.mini', '.spec', '.rm', '.tl-item', '.layer'
+  ];
+
   /* אלמנטים קיימים הניתנים להזזה (גרירה חופשית במצב אדמין) */
   var MOVE_SELECTORS = [
     '.stats-band', '.stat',
@@ -148,6 +159,7 @@
     applyMoves();            /* מיקומי אלמנטים שהוזזו */
     applyTheme();
     renderBlocks();          /* בלוקים מותאמים אישית — תמיד מוצגים */
+    injectInlineInserts(false);  /* בלוקים מעוגנים בין אלמנטים קיימים — גם למבקר */
   }
 
   /* החלת הזזות שמורות על אלמנטים קיימים */
@@ -184,7 +196,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v24</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v25</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
@@ -339,6 +351,7 @@
     document.body.classList.add('admin-on');
     enableEditing(true);
     renderBlocks();          /* רינדור מחדש עם כלי עריכה לבלוקים */
+    injectInlineInserts(true);   /* מפרידי ＋ בין אלמנטים קיימים */
     setStatus('מצב עריכה פעיל');
     try { sessionStorage.setItem('pd_admin_session','1'); } catch(e){}
   }
@@ -371,6 +384,7 @@
     document.body.classList.remove('admin-on');
     enableEditing(false);
     renderBlocks();          /* רינדור מחדש ללא כלי עריכה */
+    injectInlineInserts(true);   /* משאיר את הבלוקים המעוגנים, מסיר מפרידי ＋ דרך CSS */
     hideFmt();
     var tp = document.getElementById('themePanel'); if (tp) tp.classList.remove('show');
     try { sessionStorage.removeItem('pd_admin_session'); } catch(e){}
@@ -703,6 +717,92 @@
     });
     z.appendChild(btn);
     return z;
+  }
+
+  /* ---------- מפרידי ＋ בין האלמנטים הקיימים של האתר ---------- */
+  /* בלוקים שמעוגנים "אחרי אלמנט קיים" נשמרים תחת b.after = keyOf(el) */
+  function injectInlineInserts(showPlus){
+    /* ניקוי קודמים */
+    document.querySelectorAll('.cb-inline-host').forEach(function(n){ n.remove(); });
+    document.querySelectorAll('.cb-anchored').forEach(function(n){ n.remove(); });
+
+    document.querySelectorAll('.page').forEach(function(page){
+      var pid = page.id;
+      INSERT_AFTER_SELECTORS.forEach(function(sel){
+        page.querySelectorAll(sel).forEach(function(elm){
+          /* לא בתוך בלוק מותאם וגם לא בתוך page-head/hero */
+          if (elm.closest('.custom-block')) return;
+          if (elm.closest('.page-head') || elm.closest('.hero')) return;
+          var key = keyOf(elm);
+          /* רנדר בלוקים שכבר עוגנו אחרי האלמנט הזה (תמיד, גם למבקר) */
+          renderAnchoredAfter(pid, key, elm);
+          /* מפריד ＋ — רק במצב אדמין */
+          if (showPlus){
+            var host = el('div','cb-inline-host');
+            var btn = el('button','cb-insert-btn cb-inline-btn','＋ הוסף כאן');
+            btn.type = 'button';
+            btn.addEventListener('click', function(e){
+              e.preventDefault(); e.stopPropagation();
+              chooseAnchoredAt(pid, key, elm);
+            });
+            host.appendChild(btn);
+            elm.parentNode.insertBefore(host, elm.nextSibling);
+          }
+        });
+      });
+    });
+  }
+
+  function anchoredKey(pid){ return 'anchored::' + pid; }
+  function renderAnchoredAfter(pid, key, elm){
+    var list = (blocks[anchoredKey(pid)] || []).filter(function(b){ return b.after === key; });
+    /* מרנדרים בסדר הפוך כי כל אחד מוכנס מיד אחרי elm */
+    for (var i = list.length - 1; i >= 0; i--){
+      (function(b){
+        var node = renderBlock(b, anchoredKey(pid), 0, 1);
+        node.classList.add('cb-anchored');
+        elm.parentNode.insertBefore(node, elm.nextSibling);
+      })(list[i]);
+    }
+  }
+  function chooseAnchoredAt(pid, key, elm){
+    var TYPES = [
+      {t:'text',i:'¶',l:'טקסט'},{t:'image',i:'🖼',l:'תמונה'},
+      {t:'text-side',i:'⊟',l:'טקסט בצד'},{t:'text-below',i:'⊏',l:'טקסט למטה'},
+      {t:'text-over',i:'▦',l:'טקסט על תמונה'},{t:'before-after',i:'⇄',l:'לפני/אחרי'},
+      {t:'spacer',i:'↕',l:'מרווח ריק'}
+    ];
+    var btns = TYPES.map(function(o){
+      return '<button class="ct-opt" data-t="'+o.t+'"><span>'+o.i+'</span>'+o.l+'</button>';
+    }).join('');
+    showModal('<h3>הוספת תוכן כאן</h3><p>הבלוק יתווסף מתחת לאלמנט הזה.</p>' +
+      '<div class="ct-grid">'+btns+'</div>' +
+      '<div class="am-actions"><button class="admin-btn" data-close>ביטול</button></div>',
+      function(box){
+        box.querySelectorAll('.ct-opt').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            hideModal();
+            addAnchoredBlock(pid, key, btn.dataset.t);
+          });
+        });
+      });
+  }
+  function addAnchoredBlock(pid, key, type){
+    var ak = anchoredKey(pid);
+    blocks[ak] = blocks[ak] || [];
+    var nb = { id: uid(), type: type || 'text', html:'', img:'', caption:'', after: key };
+    blocks[ak].push(nb);
+    saveBlocks();
+    injectInlineInserts(true);   /* רינדור מחדש של המעוגנים */
+    setTimeout(function(){
+      var node = document.querySelector('[data-block-id="'+nb.id+'"]');
+      if (node){
+        node.scrollIntoView({behavior:'smooth', block:'center'});
+        node.classList.add('cb-flash');
+        setTimeout(function(){ node.classList.remove('cb-flash'); }, 1400);
+      }
+    }, 60);
+    setStatus('בלוק נוסף מתחת לאלמנט', true);
   }
 
   function applyFreePos(node, b){
@@ -1052,6 +1152,7 @@
     f.list.splice(f.i, 1);
     saveBlocks();
     renderBlocks();
+    injectInlineInserts(adminOn);   /* רענון בלוקים מעוגנים בין אלמנטים */
     setStatus('הבלוק נמחק', true);
   }
   function moveBlock(pid, id, dir){

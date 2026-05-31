@@ -215,6 +215,16 @@ body.admin-on .cb-insert:hover{opacity:1;height:34px}
 .cb-insert-btn{position:relative;z-index:1;background:var(--sea-deep);color:#fff;border:none;border-radius:20px;padding:5px 16px;font-family:var(--font);font-weight:700;font-size:.82rem;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2)}
 .cb-insert-btn:hover{background:var(--sea);transform:scale(1.05)}
 
+/* מפריד ＋ בין אלמנטים קיימים של האתר */
+.cb-inline-host{position:relative;display:flex;align-items:center;justify-content:center;height:0;opacity:0;transition:opacity .15s,height .15s;margin:0}
+body.admin-on .cb-inline-host{opacity:.35;height:30px}
+body.admin-on .cb-inline-host:hover{opacity:1;height:36px}
+.cb-inline-host::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:linear-gradient(90deg,transparent,var(--sand) 20%,var(--sand) 80%,transparent)}
+.cb-inline-btn{background:var(--sand-deep)}
+.cb-inline-btn:hover{background:var(--sand)}
+/* בלוק שעוגן בין אלמנטים — מרווח אנכי תקין */
+.cb-anchored{margin:22px auto}
+
 /* ===== בורר סוג בלוק (chooseTypeAt) ===== */
 .ct-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
 .ct-opt{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);cursor:pointer;font-family:var(--font);font-weight:700;font-size:.82rem;color:var(--ink);transition:.15s}
