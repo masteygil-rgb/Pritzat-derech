@@ -463,15 +463,17 @@
   function uid(){ return 'b' + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36); }
   function saveBlocks(){ var ok = save(BLOCKS_KEY, blocks); setStatus(ok?'נשמר ✓':'שגיאת שמירה', ok); }
 
-  /* יצירת אזור-תוספות בכל פרק (פעם אחת) */
+  /* יצירת אזור-תוספות בראש התוכן של כל פרק (פעם אחת) */
   function ensureAddZones(){
     document.querySelectorAll('.page').forEach(function(page){
       if (page.querySelector(':scope > .admin-blocks')) return;
       var zone = el('div', 'container admin-blocks');
       zone.setAttribute('data-addzone', page.id);
-      var footer = page.querySelector('.site-footer');
-      if (footer) page.insertBefore(zone, footer);
-      else page.appendChild(zone);
+      /* ממקמים מיד אחרי כותרת הפרק (page-head) או אחרי ה-hero — בראש התוכן */
+      var anchor = page.querySelector(':scope > .page-head') || page.querySelector(':scope > .hero');
+      if (anchor && anchor.nextSibling) page.insertBefore(zone, anchor.nextSibling);
+      else if (anchor) page.appendChild(zone);
+      else page.insertBefore(zone, page.firstChild);
     });
   }
 
@@ -483,49 +485,56 @@
       var list = blocks[pid] || [];
       zone.innerHTML = '';
       list.forEach(function(b, i){ zone.appendChild(renderBlock(b, pid, i, list.length)); });
-      if (adminOn){
-        var hint = el('div','cb-addhint');
-        hint.innerHTML = '<button class="cb-addbtn" data-addpage="'+pid+'">➕ הוסף בלוק לפרק זה</button>';
-        hint.querySelector('button').addEventListener('click', function(){ addBlock(pid); });
-        zone.appendChild(hint);
-      }
     });
   }
 
   function renderBlock(b, pid, idx, total){
     var wrap = el('div','custom-block');
     wrap.setAttribute('data-block-id', b.id);
-    var body = '';
-    var textHTML = b.html || '<h3>כותרת חדשה</h3><p>לחצו כאן כדי לערוך את הטקסט…</p>';
+    if (!b.type) b.type = 'text-image';
+    /* שחזור גודל שמור */
+    if (b.w) wrap.style.maxWidth = b.w + 'px';
+    var textHTML = b.html || '<h3>כותרת חדשה</h3><p>כאן אפשר לכתוב טקסט חופשי…</p>';
     var imgSrc  = b.img || IMG_PLACEHOLDER;
+    var inner = '';
     if (b.type === 'text'){
-      body = '<div class="cb-text">'+textHTML+'</div>';
+      inner = '<div class="cb-text">'+textHTML+'</div>';
     } else if (b.type === 'image'){
-      body = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" />' +
-             '<figcaption class="cb-cap">'+(b.caption||'כיתוב תמונה')+'</figcaption></figure>';
-    } else { /* text-image */
-      body = '<div class="cb-split"><div class="cb-text">'+textHTML+'</div>' +
-             '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure></div>';
+      inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" '+(b.h?'style="height:'+b.h+'px"':'')+' />' +
+              '<figcaption class="cb-cap">'+(b.caption||'כיתוב תמונה')+'</figcaption></figure>';
+    } else {
+      inner = '<div class="cb-split"><div class="cb-text">'+textHTML+'</div>' +
+              '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure></div>';
     }
-    wrap.innerHTML = body;
+    wrap.innerHTML = '<div class="cb-inner">'+inner+'</div>';
     if (adminOn) addBlockControls(wrap, b, pid, idx, total);
     return wrap;
   }
 
   function addBlockControls(wrap, b, pid, idx, total){
     wrap.classList.add('cb-editing');
-    /* סרגל כלים לבלוק */
+
+    /* סרגל כלים עליון: סוג · הזזה · מחיקה */
     var bar = el('div','cb-bar');
     bar.innerHTML =
-      (idx>0 ? '<button class="cb-ctl" data-mv="up" title="העלה">▲</button>' : '') +
-      (idx<total-1 ? '<button class="cb-ctl" data-mv="down" title="הורד">▼</button>' : '') +
-      '<button class="cb-ctl danger" data-del title="מחיקה">🗑 מחק</button>';
+      '<span class="cb-types-inline">' +
+        '<button class="cb-tbtn'+(b.type==='text'?' on':'')+'" data-type="text" title="טקסט בלבד">¶ טקסט</button>' +
+        '<button class="cb-tbtn'+(b.type==='image'?' on':'')+'" data-type="image" title="תמונה בלבד">🖼 תמונה</button>' +
+        '<button class="cb-tbtn'+(b.type==='text-image'?' on':'')+'" data-type="text-image" title="טקסט + תמונה">⊞ שניהם</button>' +
+      '</span>' +
+      '<span class="cb-bar-sp"></span>' +
+      (idx>0 ? '<button class="cb-ctl" data-mv="up" title="הזז למעלה">▲</button>' : '') +
+      (idx<total-1 ? '<button class="cb-ctl" data-mv="down" title="הזז למטה">▼</button>' : '') +
+      '<button class="cb-ctl danger" data-del title="מחיקה">🗑</button>';
     wrap.appendChild(bar);
     bar.addEventListener('click', function(e){
+      var tb = e.target.closest('[data-type]');
+      if (tb){ b.type = tb.dataset.type; saveBlocks(); renderBlocks(); return; }
       var btn = e.target.closest('[data-mv],[data-del]'); if(!btn) return;
       if (btn.hasAttribute('data-del')) deleteBlock(pid, b.id);
       else moveBlock(pid, b.id, btn.dataset.mv);
     });
+
     /* טקסט נערך */
     wrap.querySelectorAll('.cb-text, .cb-cap').forEach(function(t){
       t.setAttribute('contenteditable','true');
@@ -538,16 +547,26 @@
       t.addEventListener('mouseup', onSelect);
       t.addEventListener('keyup', onSelect);
     });
+
     /* תמונה ניתנת להחלפה */
     var img = wrap.querySelector('.cb-img');
     if (img){
       img.setAttribute('data-img','');
-      img.style.cursor = 'pointer';
       img.addEventListener('click', function(e){
         e.preventDefault();
         blockImgTarget = { pid: pid, id: b.id, el: img };
         document.getElementById('admImgInput').click();
       });
+    }
+
+    /* שמירת גודל לאחר שינוי (resize ידני בפינה) */
+    if (window.ResizeObserver){
+      var ro = new ResizeObserver(function(){
+        if (!wrap.offsetWidth) return;
+        b.w = Math.round(wrap.offsetWidth);
+        clearTimeout(wrap._rt); wrap._rt = setTimeout(saveBlocks, 500);
+      });
+      ro.observe(wrap);
     }
   }
 
@@ -582,37 +601,27 @@
     saveBlocks(); renderBlocks();
   }
 
-  /* הוספת בלוק — בחירת פרק (אם לא ידוע) + סוג */
+  /* הוספת בלוק — מיידי, גלוי בראש הפרק הנוכחי */
   function addBlockFlow(){
     var active = document.querySelector('.page.active');
     addBlock(active ? active.id : 'home');
   }
   function addBlock(pid){
-    showModal(
-      '<h3>הוספת בלוק חדש</h3><p>בחרו את סוג התוכן להוספה לפרק.</p>' +
-      '<div class="cb-types">' +
-        '<button class="cb-type" data-t="text"><span>¶</span>טקסט</button>' +
-        '<button class="cb-type" data-t="image"><span>🖼</span>תמונה</button>' +
-        '<button class="cb-type" data-t="text-image"><span>⊞</span>טקסט + תמונה</button>' +
-      '</div>' +
-      '<div class="am-actions"><button class="admin-btn" data-close>ביטול</button></div>',
-      function(box){
-        box.querySelectorAll('.cb-type').forEach(function(btn){
-          btn.addEventListener('click', function(){
-            var t = btn.dataset.t;
-            blocks[pid] = blocks[pid] || [];
-            blocks[pid].push({ id: uid(), type: t, html:'', img:'', caption:'' });
-            saveBlocks(); hideModal(); renderBlocks();
-            /* גלילה לבלוק החדש */
-            setTimeout(function(){
-              var zone = document.querySelector('.admin-blocks[data-addzone="'+pid+'"]');
-              var last = zone && zone.querySelector('.custom-block:last-of-type');
-              if (last) last.scrollIntoView({behavior:'smooth', block:'center'});
-            }, 100);
-          });
-        });
+    blocks[pid] = blocks[pid] || [];
+    var nb = { id: uid(), type: 'text-image', html:'', img:'', caption:'' };
+    blocks[pid].unshift(nb);     /* חדש בראש — גלוי מיד */
+    saveBlocks();
+    renderBlocks();
+    setTimeout(function(){
+      var zone = document.querySelector('.admin-blocks[data-addzone="'+pid+'"]');
+      var first = zone && zone.querySelector('.custom-block');
+      if (first){
+        first.scrollIntoView({behavior:'smooth', block:'center'});
+        first.classList.add('cb-flash');
+        setTimeout(function(){ first.classList.remove('cb-flash'); }, 1400);
       }
-    );
+    }, 60);
+    setStatus('בלוק נוסף — ערכו אותו', true);
   }
 
   /* ---------- מודאל גנרי ---------- */
