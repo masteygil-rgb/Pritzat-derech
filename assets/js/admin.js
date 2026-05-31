@@ -196,9 +196,10 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v27</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v28</b></div>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
+      '<button class="admin-btn" data-act="grid">▦ רשת עזר</button>' +
       '<button class="admin-btn" data-act="export">⬇ ייצוא</button>' +
       '<button class="admin-btn" data-act="import">⬆ ייבוא</button>' +
       '<button class="admin-btn" data-act="pass">🔑 סיסמה</button>' +
@@ -212,6 +213,7 @@
       var act = b.dataset.act;
       if (act==='add') addBlockFlow();
       else if (act==='theme') toggleTheme();
+      else if (act==='grid') toggleGrid(b);
       else if (act==='export') doExport();
       else if (act==='import') doImport();
       else if (act==='pass') changePass();
@@ -645,6 +647,15 @@
   }
 
   function toggleTheme(){ document.getElementById('themePanel').classList.toggle('show'); }
+
+  /* רשת עזר למיקום מדויק — אופציונלית, לא נשמרת */
+  function toggleGrid(btn){
+    var g = document.getElementById('pdGrid');
+    if (g){ g.remove(); if (btn) btn.classList.remove('on'); return; }
+    g = el('div'); g.id = 'pdGrid';
+    document.body.appendChild(g);
+    if (btn) btn.classList.add('on');
+  }
 
   /* ===================================================================
      בלוקים מותאמים אישית — הוספת שדות טקסט/תמונה חדשים

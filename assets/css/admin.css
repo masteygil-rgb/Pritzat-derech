@@ -45,6 +45,19 @@ body.admin-on .menu-toggle{top:118px}
 .admin-btn.primary:hover{background:var(--olive-deep)}
 .admin-btn.danger:hover{background:#b4452e}
 .admin-btn.exit{background:rgba(255,255,255,.06)}
+.admin-btn.on{background:var(--sea);color:#fff}
+
+/* רשת עזר למיקום (אופציונלית, לא נשמרת) */
+#pdGrid{position:fixed;inset:0;z-index:998;pointer-events:none;
+  background-image:
+    linear-gradient(to right, rgba(31,135,176,.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31,135,176,.18) 1px, transparent 1px),
+    linear-gradient(to right, rgba(31,135,176,.30) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31,135,176,.30) 1px, transparent 1px);
+  background-size:20px 20px,20px 20px,100px 100px,100px 100px;
+}
+#pdGrid::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(221,122,60,.5)}
+@media print{#pdGrid{display:none !important}}
 
 /* ----- אלמנטים הניתנים לעריכה ----- */
 body.admin-on [data-editable]{

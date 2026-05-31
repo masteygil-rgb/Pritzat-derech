@@ -139,44 +139,39 @@ a{color:inherit;text-decoration:none}
 /* ===================================================================
    HERO — קולנועי, מבוסס תמונה במסך מלא
    =================================================================== */
-.hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden;background:var(--ink)}
-.hero-bg{position:absolute;inset:0;z-index:0}
+.hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden;background:#fff}
+.hero-bg{position:absolute;inset:0;z-index:0;background:#fff}
 .hero-layer{position:absolute;inset:0}
 /* תמונת הרקע הקולנועית — זום איטי */
 .hero-layer.sky{
   background:url("../img/site/valley-wide.jpg") center 40%/cover no-repeat;
   animation:heroZoom 22s ease-in-out infinite alternate;
-  /* דעיכה הדרגתית מימין (מלא) לשמאל (כמעט שקוף) — מקום לטקסט */
-  -webkit-mask:linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 32%, rgba(0,0,0,.12) 92%, rgba(0,0,0,.06) 100%);
-  mask:linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 32%, rgba(0,0,0,.12) 92%, rgba(0,0,0,.06) 100%);
 }
 @keyframes heroZoom{from{transform:scale(1)}to{transform:scale(1.09)}}
-/* שכבת קירוב/הכהיה לקריאוּת הטקסט */
+/* דעיכה הדרגתית של התמונה ללבן — מימין (תמונה מלאה) לשמאל (לבן) */
 .hero-layer.hills{
   background:
-    linear-gradient(180deg,rgba(20,28,18,.30) 0%,rgba(20,28,18,.05) 32%,rgba(20,28,18,.55) 78%,rgba(20,28,18,.86) 100%),
-    linear-gradient(80deg,rgba(20,28,18,.5) 0%,transparent 55%);
+    linear-gradient(to left, rgba(255,255,255,0) 30%, rgba(255,255,255,.7) 70%, rgba(255,255,255,.96) 100%),
+    linear-gradient(180deg, rgba(255,255,255,0) 70%, rgba(255,255,255,.5) 100%);
 }
-.hero-glow{position:absolute;inset:0;background:radial-gradient(60% 50% at 30% 80%,rgba(53,107,116,.35),transparent 70%)}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(70% 60% at 18% 60%,rgba(255,255,255,.5),transparent 70%)}
 .hero-particles{position:absolute;inset:0;overflow:hidden;opacity:.4}
-.hero-particles span{position:absolute;border-radius:50%;background:rgba(255,255,255,.6);animation:float linear infinite}
+.hero-particles span{position:absolute;border-radius:50%;background:rgba(31,135,176,.35);animation:float linear infinite}
 @keyframes float{0%{transform:translateY(105vh);opacity:0}12%{opacity:.6}88%{opacity:.4}100%{transform:translateY(-8vh);opacity:0}}
 
-.hero-inner{position:relative;z-index:2;width:100%;max-width:1060px;margin-inline:auto;padding:0 38px 9vh;text-align:start}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:700;letter-spacing:2px;font-size:.82rem;color:#fff;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);padding:8px 18px;border-radius:30px;margin-bottom:24px}
-.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint,#a7d3c0);background:#7fd1c4}
+/* הטקסט מיושר לשמאל — שם התמונה דהויה ללבן, כך שטקסט כהה נקרא היטב */
+.hero-inner{position:relative;z-index:2;width:100%;max-width:1060px;margin-inline:auto;padding:0 38px 9vh;text-align:left}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:700;letter-spacing:2px;font-size:.82rem;color:var(--sea-deep);background:rgba(255,255,255,.7);backdrop-filter:blur(6px);border:1px solid var(--line);padding:8px 18px;border-radius:30px;margin-bottom:24px}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sea)}
 .hero-title{
   font-size:clamp(3rem,8vw,6.4rem);font-weight:900;line-height:.98;letter-spacing:-2.5px;
-  color:#fff;margin-bottom:24px;max-width:14ch;text-shadow:0 2px 30px rgba(0,0,0,.35);
+  color:var(--ink);margin-bottom:24px;max-width:14ch;
 }
-.hero-title .hl{color:#7fd1c4}
-.hero-sub{font-size:clamp(1.1rem,2vw,1.4rem);color:rgba(255,255,255,.92);max-width:620px;margin:0 0 34px;font-weight:400;text-shadow:0 1px 16px rgba(0,0,0,.4)}
+.hero-title .hl{color:var(--sea-deep)}
+.hero-sub{font-size:clamp(1.1rem,2vw,1.4rem);color:var(--ink-2);max-width:620px;margin:0 0 34px;font-weight:400}
 .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
-.hero-scroll{margin-top:42px;color:rgba(255,255,255,.8);font-weight:600;font-size:.92rem;animation:bob 2.2s ease-in-out infinite}
+.hero-scroll{margin-top:42px;color:var(--muted);font-weight:600;font-size:.92rem;animation:bob 2.2s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
-/* כפתורים על רקע כהה */
-.hero .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3);backdrop-filter:blur(6px)}
-.hero .btn-ghost:hover{background:rgba(255,255,255,.22);color:#fff;border-color:#fff}
 
 /* ===================================================================
    כפתורים
