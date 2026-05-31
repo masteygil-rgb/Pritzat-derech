@@ -64,8 +64,9 @@ body.admin-on [data-img]:hover::after{opacity:1}
 
 /* ----- סרגל עיצוב טקסט צף ----- */
 .fmt-toolbar{
-  position:fixed;z-index:1100;display:none;align-items:center;gap:2px;
-  background:#23271b;border-radius:10px;padding:5px;
+  position:fixed;z-index:1100;display:none;align-items:center;gap:2px;flex-wrap:wrap;
+  max-width:min(96vw,640px);
+  background:#16293a;border-radius:10px;padding:5px;
   box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 .fmt-toolbar.show{display:flex}
@@ -124,6 +125,20 @@ body.admin-on [data-img]:hover::after{opacity:1}
 .custom-block .cb-cap{margin-top:10px;text-align:center;font-size:.88rem;font-weight:600;color:var(--muted)}
 .custom-block .cb-split{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center}
 @media(max-width:768px){.custom-block .cb-split{grid-template-columns:1fr;gap:20px}}
+/* רשימות בתוך בלוק */
+.custom-block .cb-text ul{list-style:disc;padding-inline-start:26px;margin:0 0 12px}
+.custom-block .cb-text ol{list-style:decimal;padding-inline-start:26px;margin:0 0 12px}
+.custom-block .cb-text li{font-size:1.06rem;color:var(--ink-2);line-height:1.7;margin-bottom:6px}
+/* טקסט ממורכז (טקסט-למטה) */
+.custom-block .cb-center{text-align:center;margin-top:18px}
+.custom-block [data-type="text-below"] .cb-figure+.cb-center{max-width:760px;margin-inline:auto}
+/* טקסט על התמונה */
+.custom-block .cb-over{position:relative;border-radius:14px;overflow:hidden}
+.custom-block .cb-over .cb-img{border-radius:14px;min-height:260px}
+.custom-block .cb-over-text{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  padding:34px 40px;background:linear-gradient(90deg,rgba(20,30,40,.62) 0%,rgba(20,30,40,.25) 60%,transparent 100%)}
+.custom-block .cb-over-text .cb-text h3{color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.4)}
+.custom-block .cb-over-text .cb-text p,.custom-block .cb-over-text .cb-text li{color:rgba(255,255,255,.95);text-shadow:0 1px 12px rgba(0,0,0,.4)}
 
 /* מצב עריכה — מסגרת, ידית שינוי גודל וכלים */
 body.admin-on .custom-block.cb-editing{

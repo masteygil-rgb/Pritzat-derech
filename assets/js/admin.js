@@ -170,16 +170,34 @@
     var fmt = el('div', 'fmt-toolbar');
     fmt.id = 'fmtToolbar';
     fmt.innerHTML =
+      '<select data-font title="גופן">' +
+        '<option value="">גופן</option>' +
+        '<option value="Heebo">Heebo</option>' +
+        '<option value="Assistant">Assistant</option>' +
+        '<option value="Arial">Arial</option>' +
+        '<option value="Times New Roman">Times</option>' +
+        '<option value="Georgia">Georgia</option>' +
+        '<option value="Courier New">Courier</option>' +
+      '</select>' +
+      '<select data-size title="גודל גופן">' +
+        '<option value="">גודל</option>' +
+        '<option value="1">זעיר</option><option value="2">קטן</option>' +
+        '<option value="3">רגיל</option><option value="4">בינוני</option>' +
+        '<option value="5">גדול</option><option value="6">גדול מאוד</option><option value="7">ענק</option>' +
+      '</select>' +
+      '<span class="sep"></span>' +
       '<button data-cmd="bold" title="מודגש">B</button>' +
       '<button data-cmd="italic" title="נטוי" style="font-style:italic">I</button>' +
       '<button data-cmd="underline" title="קו תחתי" style="text-decoration:underline">U</button>' +
+      '<input type="color" data-color title="צבע גופן" value="#16293a" />' +
       '<span class="sep"></span>' +
-      '<select data-size title="גודל"><option value="">גודל</option><option value="2">קטן</option><option value="3">רגיל</option><option value="5">גדול</option><option value="6">ענק</option></select>' +
-      '<input type="color" data-color title="צבע טקסט" value="#23271b" />' +
+      '<button data-cmd="justifyRight" title="יישור לימין">⇥</button>' +
+      '<button data-cmd="justifyCenter" title="מרכוז">≡</button>' +
+      '<button data-cmd="justifyLeft" title="יישור לשמאל">⇤</button>' +
+      '<button data-cmd="justifyFull" title="יישור דו-צדדי">☰</button>' +
       '<span class="sep"></span>' +
-      '<button data-cmd="justifyRight" title="ימין">⇥</button>' +
-      '<button data-cmd="justifyCenter" title="מרכז">≡</button>' +
-      '<button data-cmd="justifyLeft" title="שמאל">⇤</button>' +
+      '<button data-cmd="insertUnorderedList" title="רשימת נקודות">•≡</button>' +
+      '<button data-cmd="insertOrderedList" title="רשימה ממוספרת">1.≡</button>' +
       '<span class="sep"></span>' +
       '<button data-cmd="removeFormat" title="נקה עיצוב">⌫</button>';
     document.body.appendChild(fmt);
@@ -195,6 +213,9 @@
     });
     fmt.querySelector('[data-size]').addEventListener('change', function(e){
       if (e.target.value){ document.execCommand('fontSize', false, e.target.value); markDirtyFromActive(); }
+    });
+    fmt.querySelector('[data-font]').addEventListener('change', function(e){
+      if (e.target.value){ document.execCommand('fontName', false, e.target.value); markDirtyFromActive(); }
     });
 
     /* פאנל ערכת צבעים */
@@ -310,9 +331,13 @@
   function onSelect(e){
     activeEditable = e.currentTarget;
     var sel = window.getSelection();
-    if (!sel || sel.isCollapsed || !sel.rangeCount){ hideFmt(); return; }
-    var rect = sel.getRangeAt(0).getBoundingClientRect();
-    if (!rect.width && !rect.height){ hideFmt(); return; }
+    if (!sel || !sel.rangeCount){ hideFmt(); return; }
+    var range = sel.getRangeAt(0);
+    var rect = range.getBoundingClientRect();
+    /* גם כשהסמן בלבד (בלי סימון) — מציגים מעל האלמנט הנערך */
+    if (!rect.width && !rect.height){
+      rect = activeEditable.getBoundingClientRect();
+    }
     var tb = document.getElementById('fmtToolbar');
     tb.classList.add('show');
     var top = rect.top - tb.offsetHeight - 8;
@@ -512,17 +537,36 @@
     var wrap = el('div','custom-block');
     wrap.setAttribute('data-block-id', b.id);
     if (!b.type) b.type = 'text-image';
+    wrap.setAttribute('data-type', b.type);
     if (!b.free && b.w) wrap.style.maxWidth = b.w + 'px';
     var textHTML = b.html || '<h3>כותרת חדשה</h3><p>כאן אפשר לכתוב טקסט חופשי…</p>';
     var imgSrc  = b.img || IMG_PLACEHOLDER;
+    var T = '<div class="cb-text">'+textHTML+'</div>';
     var inner = '';
+
     if (b.type === 'text'){
-      inner = '<div class="cb-text">'+textHTML+'</div>';
+      inner = T;
     } else if (b.type === 'image'){
       inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" '+(b.h?'style="height:'+b.h+'px"':'')+' />' +
               '<figcaption class="cb-cap">'+(b.caption||'כיתוב תמונה')+'</figcaption></figure>';
-    } else {
-      inner = '<div class="cb-split"><div class="cb-text">'+textHTML+'</div>' +
+    } else if (b.type === 'text-side'){
+      /* טקסט בצד התמונה */
+      inner = '<div class="cb-split"><div class="cb-col">'+T+'</div>' +
+              '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure></div>';
+    } else if (b.type === 'text-below'){
+      /* תמונה למעלה, טקסט מתחת (ממורכז) */
+      inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure>' +
+              '<div class="cb-text cb-center">'+textHTML+'</div>';
+    } else if (b.type === 'text-over'){
+      /* טקסט מעל התמונה */
+      inner = '<div class="cb-over">' +
+                '<img class="cb-img" src="'+imgSrc+'" alt="" '+(b.h?'style="height:'+b.h+'px"':'')+' />' +
+                '<div class="cb-over-text"><div class="cb-text">'+textHTML+'</div></div>' +
+              '</div>';
+    } else { /* text-image (ברירת מחדל = טקסט בצד) */
+      b.type = 'text-side';
+      wrap.setAttribute('data-type','text-side');
+      inner = '<div class="cb-split"><div class="cb-col">'+T+'</div>' +
               '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt="" /></figure></div>';
     }
     wrap.innerHTML = '<div class="cb-inner">'+inner+'</div>';
@@ -533,15 +577,21 @@
   function addBlockControls(wrap, b, pid, idx, total){
     wrap.classList.add('cb-editing');
 
-    /* סרגל כלים עליון: ידית-גרירה · סוג · עיגון · מחיקה */
+    /* סרגל כלים עליון: ידית-גרירה · בורר סוג · עיגון · מחיקה */
+    var TYPES = [
+      {t:'text',       i:'¶',  l:'טקסט'},
+      {t:'image',      i:'🖼', l:'תמונה'},
+      {t:'text-side',  i:'⊟',  l:'טקסט בצד'},
+      {t:'text-below', i:'⊏',  l:'טקסט למטה'},
+      {t:'text-over',  i:'▦',  l:'טקסט על התמונה'}
+    ];
+    var typeBtns = TYPES.map(function(o){
+      return '<button class="cb-tbtn'+(b.type===o.t?' on':'')+'" data-type="'+o.t+'" title="'+o.l+'">'+o.i+'</button>';
+    }).join('');
     var bar = el('div','cb-bar');
     bar.innerHTML =
       '<button class="cb-ctl cb-drag" data-drag title="גררו כדי להזיז">✥ הזז</button>' +
-      '<span class="cb-types-inline">' +
-        '<button class="cb-tbtn'+(b.type==='text'?' on':'')+'" data-type="text" title="טקסט בלבד">¶</button>' +
-        '<button class="cb-tbtn'+(b.type==='image'?' on':'')+'" data-type="image" title="תמונה בלבד">🖼</button>' +
-        '<button class="cb-tbtn'+(b.type==='text-image'?' on':'')+'" data-type="text-image" title="טקסט + תמונה">⊞</button>' +
-      '</span>' +
+      '<span class="cb-types-inline">' + typeBtns + '</span>' +
       '<span class="cb-bar-sp"></span>' +
       (b.free ? '<button class="cb-ctl" data-anchor title="החזר לזרימת העמוד">📌 עגן</button>' : '') +
       '<button class="cb-ctl danger" data-del title="מחיקת הבלוק">🗑 מחק</button>';
