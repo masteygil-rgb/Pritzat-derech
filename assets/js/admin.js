@@ -214,7 +214,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v30</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v54</b></div>' +
       '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
@@ -241,58 +241,141 @@
       else if (act==='exit') exitAdmin();
     });
 
-    /* סרגל עיצוב טקסט */
+    /* סרגל עיצוב טקסט – גרסה משופרת */
     var fmt = el('div', 'fmt-toolbar');
     fmt.id = 'fmtToolbar';
     fmt.innerHTML =
       '<select data-font title="גופן">' +
         '<option value="">גופן</option>' +
-        '<option value="Heebo">Heebo</option>' +
-        '<option value="Assistant">Assistant</option>' +
-        '<option value="Arial">Arial</option>' +
-        '<option value="Times New Roman">Times</option>' +
-        '<option value="Georgia">Georgia</option>' +
-        '<option value="Courier New">Courier</option>' +
+        '<option value="Heebo" style="font-family:Heebo">Heebo</option>' +
+        '<option value="Assistant" style="font-family:Assistant">Assistant</option>' +
+        '<option value="Rubik" style="font-family:Rubik">Rubik</option>' +
+        '<option value="David" style="font-family:David">דוד (David)</option>' +
+        '<option value="Narkisim" style="font-family:Narkisim">נרקיסים</option>' +
+        '<option value="FrankRuehl" style="font-family:FrankRuehl">פרנק-רוהל</option>' +
+        '<option value="Miriam" style="font-family:Miriam">מרים</option>' +
+        '<option value="Levenim MT" style="font-family:\'Levenim MT\'">לבנים</option>' +
+        '<option value="Gisha" style="font-family:Gisha">גישה</option>' +
+        '<option value="Rod" style="font-family:Rod">רוד</option>' +
+        '<option value="Aharoni" style="font-family:Aharoni">אהרוני</option>' +
+        '<option value="Guttman Yad" style="font-family:\'Guttman Yad\'">גוטמן יד</option>' +
+        '<option value="Arial" style="font-family:Arial">Arial</option>' +
+        '<option value="Tahoma" style="font-family:Tahoma">Tahoma</option>' +
+        '<option value="Segoe UI" style="font-family:\'Segoe UI\'">Segoe UI</option>' +
+        '<option value="Calibri" style="font-family:Calibri">Calibri</option>' +
+        '<option value="Cambria" style="font-family:Cambria">Cambria</option>' +
+        '<option value="Times New Roman" style="font-family:\'Times New Roman\'">Times</option>' +
+        '<option value="Georgia" style="font-family:Georgia">Georgia</option>' +
+        '<option value="Verdana" style="font-family:Verdana">Verdana</option>' +
+        '<option value="Trebuchet MS" style="font-family:\'Trebuchet MS\'">Trebuchet</option>' +
+        '<option value="Courier New" style="font-family:\'Courier New\'">Courier</option>' +
+        '<option value="Impact" style="font-family:Impact">Impact</option>' +
       '</select>' +
       '<select data-size title="גודל גופן">' +
         '<option value="">גודל</option>' +
-        '<option value="1">זעיר</option><option value="2">קטן</option>' +
-        '<option value="3">רגיל</option><option value="4">בינוני</option>' +
-        '<option value="5">גדול</option><option value="6">גדול מאוד</option><option value="7">ענק</option>' +
+        '<option value="12px">12</option><option value="14px">14</option>' +
+        '<option value="16px">16</option><option value="18px">18</option>' +
+        '<option value="21px">21</option><option value="24px">24</option>' +
+        '<option value="28px">28</option><option value="32px">32</option>' +
+        '<option value="40px">40</option><option value="48px">48</option>' +
       '</select>' +
+      '<select data-lh title="מרווח שורות">' +
+        '<option value="">⇕ שורות</option>' +
+        '<option value="1">1.0</option>' +
+        '<option value="1.15">1.15</option>' +
+        '<option value="1.3">1.3</option>' +
+        '<option value="1.5">1.5</option>' +
+        '<option value="1.8">1.8</option>' +
+        '<option value="2">2.0</option>' +
+      '</select>' +
+      '<input type="color" data-color title="צבע טקסט" value="#16293a" />' +
       '<span class="sep"></span>' +
       '<button data-cmd="bold" title="מודגש">B</button>' +
       '<button data-cmd="italic" title="נטוי" style="font-style:italic">I</button>' +
-      '<button data-cmd="underline" title="קו תחתי" style="text-decoration:underline">U</button>' +
-      '<input type="color" data-color title="צבע גופן" value="#16293a" />' +
+      '<button data-cmd="underline" title="קו תחתי">U</button>' +
       '<span class="sep"></span>' +
       '<button data-cmd="justifyRight" title="יישור לימין">⇥</button>' +
       '<button data-cmd="justifyCenter" title="מרכוז">≡</button>' +
       '<button data-cmd="justifyLeft" title="יישור לשמאל">⇤</button>' +
-      '<button data-cmd="justifyFull" title="יישור דו-צדדי">☰</button>' +
+      '<button data-cmd="justifyFull" title="דו צדדי">☰</button>' +
       '<span class="sep"></span>' +
-      '<button data-cmd="insertUnorderedList" title="רשימת נקודות">•≡</button>' +
-      '<button data-cmd="insertOrderedList" title="רשימה ממוספרת">1.≡</button>' +
+      '<select data-bullet title="סגנון כוכביות">' +
+        '<option value="">•</option>' +
+        '<option value="disc">●</option><option value="circle">○</option>' +
+        '<option value="square">■</option><option value="check">✓</option>' +
+        '<option value="star">★</option><option value="arrow">→</option>' +
+      '</select>' +
+      '<select data-number title="מספור">' +
+        '<option value="">1.</option>' +
+        '<option value="decimal">1. 2.</option><option value="hebrew">א. ב.</option>' +
+        '<option value="upper-roman">I. II.</option><option value="lower-roman">i. ii.</option>' +
+      '</select>' +
       '<span class="sep"></span>' +
-      '<button data-cmd="removeFormat" title="נקה עיצוב">⌫</button>';
+      '<button data-cmd="removeFormat" title="נקה">⌫</button>' +
+      '<span class="sep"></span>' +
+      '<span class="bg-controls" style="display:none; gap:4px; align-items:center">' +
+        '<input type="color" data-bgcolor title="רקע תיבה" value="#ffffff" />' +
+        '<input type="range" data-bgopacity title="אטימות" min="0" max="100" step="5" value="100" />' +
+      '</span>';
     document.body.appendChild(fmt);
-    fmt.addEventListener('mousedown', function(e){ e.preventDefault(); }); /* שמירת הסימון */
+
+    /* הרשמה לאירועים
+       חוסמים את ברירת-המחדל רק עבור כפתורי הפקודה (כדי לא לאבד את בחירת הטקסט).
+       על select / input חובה לא לחסום — אחרת התפריט הנפתח / בוחר הצבע לא נפתחים כלל,
+       ולכן הבחירה משוחזרת ידנית דרך restoreSel(). */
+    fmt.addEventListener('mousedown', function(e){
+      if (e.target.closest('button')) e.preventDefault();
+    });
+
+    /* לחצנים בסיסיים (בולד, איטליק וכו') */
     fmt.addEventListener('click', function(e){
       var b = e.target.closest('[data-cmd]'); if (!b) return;
       document.execCommand(b.dataset.cmd, false, null);
       markDirtyFromActive();
-      refreshFmtState();
+      setTimeout(refreshActiveBlockBg, 30);
     });
-    fmt.querySelector('[data-color]').addEventListener('input', function(e){
-      document.execCommand('foreColor', false, e.target.value); markDirtyFromActive();
+
+    /* גופן + גודל + צבע – מנגנון אמין */
+    fmt.querySelector('[data-font]').addEventListener('change', function(e){
+      applyInlineStyle({fontFamily: e.target.value});
     });
     fmt.querySelector('[data-size]').addEventListener('change', function(e){
-      if (e.target.value){ document.execCommand('fontSize', false, e.target.value); markDirtyFromActive(); }
+      if (e.target.value) applyInlineStyle({fontSize: e.target.value});
     });
-    fmt.querySelector('[data-font]').addEventListener('change', function(e){
-      if (e.target.value){ document.execCommand('fontName', false, e.target.value); markDirtyFromActive(); }
+    fmt.querySelector('[data-color]').addEventListener('change', function(e){
+      applyInlineStyle({color: e.target.value});
     });
-    /* הסרגל הוא שורה שנייה קבועה בתוך סרגל האדמין — תמיד גלוי במצב עריכה */
+    /* מרווח שורות — בשליטה ידנית מלאה, חל על תיבת הטקסט כולה */
+    fmt.querySelector('[data-lh]').addEventListener('change', function(e){
+      if (!activeEditable || !e.target.value) return;
+      activeEditable.style.lineHeight = e.target.value;
+      markDirtyFromActive();
+      if (activeEditable.closest('.custom-block')) markBlocksDirty();
+    });
+
+    /* כוכביות ומספור משוכלל */
+    // מאזינים לכוכביות ומספור
+    const bulletSel = fmt.querySelector('[data-bullet]');
+    const numberSel = fmt.querySelector('[data-number]');
+
+    if (bulletSel) {
+      bulletSel.addEventListener('change', function() {
+        applyBulletStyle.call(this);
+      });
+    }
+    if (numberSel) {
+      numberSel.addEventListener('change', function() {
+        applyNumberStyle.call(this);
+      });
+    }
+
+    /* שליטה ברקע תיבת טקסט (מופיע רק בתוך בלוקים) */
+    var bgc = fmt.querySelector('[data-bgcolor]');
+    var bgo = fmt.querySelector('[data-bgopacity]');
+    if (bgc) bgc.addEventListener('input', applyTextBoxBg);
+    if (bgo) bgo.addEventListener('input', applyTextBoxBg);
+
+    /* הצמדה לסרגל האדמין */
     bar.appendChild(fmt);
     fmt.classList.add('show');
 
@@ -374,6 +457,7 @@
     adminOn = true;
     takeSnapshot();          /* שומר את המצב המקורי לפני העריכה */
     document.body.classList.add('admin-on');
+    document.body.classList.add('admin-mode');   /* מפעיל את סרגל הטקסט הצף (rich-text-toolbar) */
     enableEditing(true);
     renderBlocks();          /* רינדור מחדש עם כלי עריכה לבלוקים */
     injectInlineInserts(true);   /* מפרידי ＋ בין אלמנטים קיימים */
@@ -488,7 +572,11 @@
         h.title = 'גררו כדי להזיז · לחיצה כפולה לאיפוס';
         h.textContent = '✥';
         h.addEventListener('pointerdown', function(e){ startMove(e, el, h); });
-        h.addEventListener('dblclick', function(e){ e.preventDefault(); e.stopPropagation(); resetMove(el); });
+        h.addEventListener('dblclick', function(e){
+          e.preventDefault(); e.stopPropagation();
+          if (h._afterDrag) return;   /* לא לאפס בטעות אחרי גרירה */
+          resetMove(el);
+        });
         el.appendChild(h);
         /* כפתור הסתרה/מחיקה לאלמנט קיים */
         var dh = document.createElement('button');
@@ -518,12 +606,15 @@
     if (el.querySelector(':scope > .cb-rz')) return;
     var dirs = ['n','s','e','w','ne','nw','se','sw'];
     dirs.forEach(function(d){
-      var h = el2('div', 'cb-rz cb-rz-' + d);
+      var h = el2('div', 'cb-rz pd-rz cb-rz-' + d);
       h.addEventListener('pointerdown', function(e){
         e.preventDefault(); e.stopPropagation();
+        if (e.button != null && e.button !== 0) return;
         var sx = e.clientX, sy = e.clientY;
         var r = el.getBoundingClientRect();
         var startW = r.width, startH = r.height;
+        selOnly(el);
+        try { h.setPointerCapture(e.pointerId); } catch(_){}
         function mv(ev){
           var dx = ev.clientX - sx, dy = ev.clientY - sy;
           var nw = startW, nh = startH;
@@ -538,8 +629,10 @@
           el._sz = { w:nw, h:nh };
         }
         function up(){
-          document.removeEventListener('pointermove', mv);
-          document.removeEventListener('pointerup', up);
+          h.removeEventListener('pointermove', mv);
+          h.removeEventListener('pointerup', up);
+          h.removeEventListener('pointercancel', up);
+          try { h.releasePointerCapture(e.pointerId); } catch(_){}
           if (el._sz){
             var k = keyOf(el);
             overrides[k] = overrides[k] || {};
@@ -547,8 +640,9 @@
             flush();
           }
         }
-        document.addEventListener('pointermove', mv);
-        document.addEventListener('pointerup', up);
+        h.addEventListener('pointermove', mv);
+        h.addEventListener('pointerup', up);
+        h.addEventListener('pointercancel', up);
       });
       el.appendChild(h);
     });
@@ -572,35 +666,54 @@
     setTimeout(function(){ btn.dataset.armed=''; btn.textContent='🗑'; btn.classList.remove('pd-del-arm'); }, 3000);
   }
 
+  /* סימון אלמנט נבחר יחיד — רק עליו מוצגות הידיות */
+  function selOnly(el){
+    document.querySelectorAll('.pd-movable.pd-sel').forEach(function(n){
+      if (n !== el) n.classList.remove('pd-sel');
+    });
+    el.classList.add('pd-sel');
+  }
   function curMove(el){
     var o = overrides[keyOf(el)];
     return (o && o.move) ? { dx:o.move.dx, dy:o.move.dy } : { dx:0, dy:0 };
   }
   function startMove(e, el, handle){
     e.preventDefault(); e.stopPropagation();
+    if (e.button != null && e.button !== 0) return;   /* כפתור שמאלי בלבד */
     var start = curMove(el);
     var sx = e.clientX, sy = e.clientY;
+    var moved = false;
+    selOnly(el);
     el.classList.add('pd-moving');
+    /* לכידת המצביע על הידית — כל ה-pointermove מגיע אליה, מסונכרן לחלוטין עם העכבר */
+    try { handle.setPointerCapture(e.pointerId); } catch(_){}
     function move(ev){
       var dx = start.dx + (ev.clientX - sx);
       var dy = start.dy + (ev.clientY - sy);
+      if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) > 3) moved = true;
       el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
       el._mv = { dx:dx, dy:dy };
     }
     function up(){
-      document.removeEventListener('pointermove', move);
-      document.removeEventListener('pointerup', up);
+      handle.removeEventListener('pointermove', move);
+      handle.removeEventListener('pointerup', up);
+      handle.removeEventListener('pointercancel', up);
+      try { handle.releasePointerCapture(e.pointerId); } catch(_){}
       el.classList.remove('pd-moving');
-      if (el._mv){
+      if (moved && el._mv){
         var k = keyOf(el);
         overrides[k] = overrides[k] || {};
         overrides[k].move = el._mv;
         el.classList.add('pd-moved');
+        /* חסימת dblclick-איפוס בטעות מיד אחרי גרירה אמיתית */
+        handle._afterDrag = true;
+        setTimeout(function(){ handle._afterDrag = false; }, 400);
         flush();
       }
     }
-    document.addEventListener('pointermove', move);
-    document.addEventListener('pointerup', up);
+    handle.addEventListener('pointermove', move);
+    handle.addEventListener('pointerup', up);
+    handle.addEventListener('pointercancel', up);
   }
   function resetMove(el){
     var k = keyOf(el);
@@ -623,10 +736,33 @@
 
   /* ---------- סרגל עיצוב טקסט ---------- */
   var activeEditable = null;
+  var savedRange = null;
+  /* שמירת טווח הבחירה — לפני שלחיצה על select/color-picker גוזלת את המיקוד */
+  function saveSel(){
+    var sel = window.getSelection();
+    if (sel && sel.rangeCount){
+      var r = sel.getRangeAt(0);
+      if (activeEditable && activeEditable.contains(r.commonAncestorContainer)){
+        savedRange = r.cloneRange();
+      }
+    }
+  }
+  /* החזרת הבחירה לפני הפעלת פקודת עיצוב */
+  function restoreSel(){
+    if (!activeEditable) return false;
+    activeEditable.focus();
+    if (savedRange){
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      try { sel.addRange(savedRange); return true; } catch(e){ return false; }
+    }
+    return false;
+  }
   function onSelect(e){
-    /* הסרגל קבוע למעלה — רק עוקבים אחרי האלמנט הפעיל ומעדכנים מצב כפתורים */
     activeEditable = e.currentTarget;
+    saveSel();
     refreshFmtState();
+    refreshActiveBlockBg();
   }
   function refreshFmtState(){
     ['bold','italic','underline'].forEach(function(c){
@@ -644,6 +780,273 @@
     }
   }
 
+  /* === Helper: אוסף text nodes מהטווח בצורה אמינה === */
+  function getTextNodesInRange(range) {
+    const nodes = [];
+    var __root = range.commonAncestorContainer;
+    /* בחירה בתוך text-node יחיד — ה-TreeWalker לעולם לא מחזיר את שורש העץ עצמו,
+       לכן מחזירים אותו ישירות (אחרת אין צמתים והעיצוב לא חל). */
+    if (__root.nodeType === 3) return [__root];
+    const walker = document.createTreeWalker(
+      __root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (node.nodeValue.trim() === '') return NodeFilter.FILTER_REJECT;
+          const nodeRange = document.createRange();
+          nodeRange.selectNodeContents(node);
+          return range.compareBoundaryPoints(Range.END_TO_START, nodeRange) < 0 &&
+                 range.compareBoundaryPoints(Range.START_TO_END, nodeRange) > 0
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_REJECT;
+        }
+      }
+    );
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    return nodes;
+  }
+
+  /* === עיצוב טקסט יציב (Range + עטיפת text nodes) === */
+  function applyInlineStyle(styles) {
+    if (!activeEditable) return;
+    restoreSel();                       /* החזרת הבחירה שאבדה בלחיצה על הסרגל */
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+
+    const range = sel.getRangeAt(0);
+    if (range.collapsed) return;
+
+    try {
+      /* פיצול ה-text nodes בקצוות הבחירה — כדי שנעטוף רק את מה שסומן,
+         גם כשהבחירה מתחילה/נגמרת באמצע מילה או חוצה <strong> וכד'. */
+      if (range.startContainer.nodeType === 3 &&
+          range.startOffset > 0 && range.startOffset < range.startContainer.length) {
+        var tail = range.startContainer.splitText(range.startOffset);
+        range.setStart(tail, 0);
+      }
+      if (range.endContainer.nodeType === 3 &&
+          range.endOffset > 0 && range.endOffset < range.endContainer.length) {
+        range.endContainer.splitText(range.endOffset);
+        range.setEnd(range.endContainer, range.endContainer.length);
+      }
+
+      var textNodes = getTextNodesInRange(range);
+      if (textNodes.length === 0) return;
+
+      /* עוטפים כל text-node שבטווח ב-span מעוצב (השיטה שעבדה ב-v42) */
+      var spans = [];
+      textNodes.forEach(function(tn){
+        var span = document.createElement('span');
+        if (styles.fontFamily) span.style.fontFamily = styles.fontFamily;
+        if (styles.fontSize)   span.style.fontSize   = styles.fontSize;
+        if (styles.color)      span.style.color      = styles.color;
+        var copy = document.createTextNode(tn.nodeValue);
+        span.appendChild(copy);
+        tn.parentNode.replaceChild(span, tn);
+        spans.push(span);
+      });
+
+      /* בחירה מחדש של הקטע שעוצב */
+      sel.removeAllRanges();
+      var nr = document.createRange();
+      nr.setStartBefore(spans[0]);
+      nr.setEndAfter(spans[spans.length - 1]);
+      sel.addRange(nr);
+      savedRange = nr.cloneRange();
+
+      markDirtyFromActive();
+      if (activeEditable.closest('.custom-block')) markBlocksDirty();
+    } catch (e) {
+      /* נפילה-לאחור בטוחה */
+      if (styles.fontFamily) document.execCommand('fontName', false, styles.fontFamily);
+      if (styles.color)      document.execCommand('foreColor', false, styles.color);
+      markDirtyFromActive();
+    }
+  }
+
+  function applyBulletStyle() {
+    const val = this.value || 'disc';
+    if (!activeEditable) return;
+    restoreSel();
+    document.execCommand('insertUnorderedList', false, null);
+
+    // נותנים יותר זמן + חיפוש אגרסיבי
+    setTimeout(() => {
+      const sel = window.getSelection();
+      let list = null;
+
+      const tryFind = () => {
+        if (sel && sel.anchorNode) {
+          list = sel.anchorNode.closest ? sel.anchorNode.closest('ul') : null;
+          if (list) return true;
+        }
+        if (sel && sel.focusNode) {
+          let n = sel.focusNode;
+          while (n && n !== document.body) {
+            if (n.tagName === 'UL') { list = n; return true; }
+            n = n.parentNode;
+          }
+        }
+        // חיפוש דרך li
+        const li = sel && sel.anchorNode && sel.anchorNode.closest ? sel.anchorNode.closest('li') : null;
+        if (li && li.parentElement && li.parentElement.tagName === 'UL') {
+          list = li.parentElement;
+          return true;
+        }
+        return false;
+      };
+
+      if (!tryFind()) {
+        // ניסיון שני אחרי עוד זמן
+        setTimeout(() => {
+          if (tryFind() && list) applyListStyle(list, val, true);
+        }, 120);
+        return;
+      }
+
+      if (list) applyListStyle(list, val, true);
+    }, 70);
+  }
+
+  function applyNumberStyle() {
+    const val = this.value || 'decimal';
+    if (!activeEditable) return;
+    restoreSel();
+    document.execCommand('insertOrderedList', false, null);
+
+    setTimeout(() => {
+      const sel = window.getSelection();
+      let list = null;
+
+      const tryFind = () => {
+        if (sel && sel.anchorNode) {
+          list = sel.anchorNode.closest ? sel.anchorNode.closest('ol') : null;
+          if (list) return true;
+        }
+        if (sel && sel.focusNode) {
+          let n = sel.focusNode;
+          while (n && n !== document.body) {
+            if (n.tagName === 'OL') { list = n; return true; }
+            n = n.parentNode;
+          }
+        }
+        const li = sel && sel.anchorNode && sel.anchorNode.closest ? sel.anchorNode.closest('li') : null;
+        if (li && li.parentElement && li.parentElement.tagName === 'OL') {
+          list = li.parentElement;
+          return true;
+        }
+        return false;
+      };
+
+      if (!tryFind()) {
+        setTimeout(() => {
+          if (tryFind() && list) applyListStyle(list, val, false);
+        }, 120);
+        return;
+      }
+      if (list) applyListStyle(list, val, false);
+    }, 70);
+  }
+
+  function applyListStyle(listElement, value, isBullet) {
+    if (!listElement) return;
+
+    if (isBullet) {
+      const custom = ['check', 'star', 'arrow'];
+      if (custom.includes(value)) {
+        listElement.style.listStyleType = 'none';
+        listElement.setAttribute('data-bullet', value);
+      } else {
+        listElement.style.listStyleType = value || 'disc';
+        listElement.removeAttribute('data-bullet');
+      }
+    } else {
+      const map = {
+        'hebrew': 'hebrew',
+        'decimal': 'decimal',
+        'upper-roman': 'upper-roman',
+        'lower-roman': 'lower-roman'
+      };
+      listElement.style.listStyleType = map[value] || 'decimal';
+    }
+
+    markDirtyFromActive();
+
+    if (activeEditable && activeEditable.closest('.custom-block')) {
+      markBlocksDirty();
+    }
+  }
+
+  function applyTextBoxBg() {
+    if (!activeEditable) return;
+
+    // מוצא את תיבת הטקסט הכי קרובה (גם אם findBlock יכשל)
+    const txt = activeEditable.closest('.cb-text');
+    if (!txt) return;
+
+    const block = activeEditable.closest('.custom-block');
+    if (!block) return;
+
+    const c = document.querySelector('#fmtToolbar [data-bgcolor]');
+    const o = document.querySelector('#fmtToolbar [data-bgopacity]');
+
+    const color = c ? c.value : '#ffffff';
+    const alpha = o ? parseFloat(o.value || 100) / 100 : 1;
+
+    // עדכון חזותי מידי
+    let r = 255, g = 255, b = 255;
+    if (color && color[0] === '#') {
+      r = parseInt(color.slice(1, 3), 16) || 255;
+      g = parseInt(color.slice(3, 5), 16) || 255;
+      b = parseInt(color.slice(5, 7), 16) || 255;
+    }
+    txt.style.backgroundColor = `rgba(${r},${g},${b},${alpha})`;
+
+    // ניסיון לשמור בנתוני הבלוק
+    const pid = (block.closest('[data-addzone]') || {}).dataset ? block.closest('[data-addzone]').dataset.addzone : (block.closest('.page') || {}).id;
+    const id = block.dataset.blockId;
+    const rec = findBlock(pid, id) || findBlock(anchoredKey(pid), id);
+    if (rec) {
+      rec.b.bgColor = color;
+      rec.b.bgOpacity = alpha;
+      markBlocksDirty();
+    } else {
+      // לפחות נסמן dirty על האלמנט כדי שלקראת שמירה יילכד
+      markDirtyFromActive();
+    }
+  }
+
+  function showTextBoxBgControls(show){
+    var ctl = document.querySelector('#fmtToolbar .bg-controls');
+    if (ctl) ctl.style.display = show ? 'flex' : 'none';
+  }
+
+  function refreshActiveBlockBg(){
+    if (!activeEditable) return showTextBoxBgControls(false);
+    var block = activeEditable.closest('.custom-block');
+    showTextBoxBgControls(!!block);
+    if (!block) return;
+    var txt = block.querySelector('.cb-text');
+    var c = document.querySelector('#fmtToolbar [data-bgcolor]');
+    var o = document.querySelector('#fmtToolbar [data-bgopacity]');
+    var pid = (block.closest('[data-addzone]') || {}).dataset ? block.closest('[data-addzone]').dataset.addzone : (block.closest('.page')||{}).id;
+    var id = block.dataset.blockId;
+    var rec = findBlock(pid, id) || findBlock(anchoredKey(pid), id);
+    if (rec && rec.b) {
+      if (c) c.value = rec.b.bgColor || '#ffffff';
+      if (o) o.value = Math.round((rec.b.bgOpacity != null ? rec.b.bgOpacity : 1) * 100);
+      if (txt && rec.b.bgColor) {
+        var alpha = (rec.b.bgOpacity != null ? rec.b.bgOpacity : 1);
+        var hex = rec.b.bgColor;
+        var r = parseInt(hex.slice(1,3),16);
+        var g = parseInt(hex.slice(3,5),16);
+        var bb= parseInt(hex.slice(5,7),16);
+        txt.style.backgroundColor = 'rgba('+r+','+g+','+bb+','+alpha+')';
+      }
+    }
+  }
+
   /* ---------- החלפת תמונות / רקעים ---------- */
   var imgTarget = null;
   var blockImgTarget = null;   /* { pid, id, el } — תמונה בתוך בלוק מותאם */
@@ -656,11 +1059,36 @@
   }
   function initImgInput(){
     var fi = document.getElementById('admImgInput');
+    /* כיווץ תמונה גדולה לפני שמירה — localStorage מוגבל (~5MB), ושתי תמונות
+       מצלמה כ-base64 חורגות ממנו: הראשונה נשמרת והשנייה נכשלת בשקט.
+       מקטינים לצלע מקסימלית 1600px ו-JPEG 85%. */
+    function shrinkImage(data, cb){
+      var im = new Image();
+      im.onload = function(){
+        var MAX = 1600;
+        var w = im.naturalWidth, h = im.naturalHeight;
+        var sc = Math.min(1, MAX / Math.max(w, h));
+        try {
+          var c = document.createElement('canvas');
+          c.width = Math.max(1, Math.round(w * sc));
+          c.height = Math.max(1, Math.round(h * sc));
+          c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+          cb(c.toDataURL('image/jpeg', 0.85));
+        } catch(e){ cb(data); }
+      };
+      im.onerror = function(){ cb(data); };
+      im.src = data;
+    }
     fi.addEventListener('change', function(){
       var f = fi.files && fi.files[0]; if (!f) return;
       var reader = new FileReader();
       reader.onload = function(){
-        var data = reader.result;
+        var raw = reader.result;
+        /* GIF נשאר כמו שהוא (אנימציה); קבצים קטנים לא נוגעים בהם */
+        if (f.size > 300 * 1024 && f.type !== 'image/gif'){ shrinkImage(raw, applyData); }
+        else applyData(raw);
+      };
+      function applyData(data){
         /* תמונת רקע ראשית (page-head / hero) */
         if (heroPickTarget){
           var hk = keyOf(heroPickTarget);
@@ -673,14 +1101,17 @@
           flush(); setStatus('תמונת הרקע הוחלפה', true);
           heroPickTarget = null; fi.value=''; return;
         }
-        /* תמונה בתוך בלוק מותאם */
+        /* תמונה בתוך בלוק מותאם — כולל בלוק מעוגן בין אלמנטים קיימים */
         if (blockImgTarget){
-          var rec = findBlock(blockImgTarget.pid, blockImgTarget.id);
+          var rec = findBlock(blockImgTarget.pid, blockImgTarget.id) ||
+                    findBlock(anchoredKey(blockImgTarget.pid), blockImgTarget.id);
           if (rec){
             var field = blockImgTarget.field || 'img';
             rec.b[field] = data;
-            blockImgTarget.el.src = data;
+            if (blockImgTarget.el) blockImgTarget.el.src = data;
             saveBlocks(); setStatus('התמונה הוחלפה', true);
+          } else {
+            setStatus('שגיאה: הבלוק לא נמצא', false);
           }
           blockImgTarget = null; fi.value=''; return;
         }
@@ -955,6 +1386,19 @@
     setStatus('בלוק נוסף מתחת לאלמנט', true);
   }
 
+  /* רקע הבוקסה בשקיפות שבחר המשתמש (b.boxOpacity 0–100, b.boxBg צבע).
+     ההגדרה האינליינית גוברת על רקע ברירת-המחדל של בלוק צף (לבן 92%). */
+  function applyBoxBg(node, b){
+    if (b.boxOpacity == null) return;
+    var hex = b.boxBg || '#ffffff';
+    var r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), bl = parseInt(hex.slice(5,7),16);
+    var a = Math.max(0, Math.min(100, b.boxOpacity)) / 100;
+    node.style.background = 'rgba('+r+','+g+','+bl+','+a+')';
+    node.style.backdropFilter = 'none';
+    node.style.webkitBackdropFilter = 'none';
+    node.style.boxShadow = (a <= 0.05) ? 'none' : '';
+  }
+
   function applyFreePos(node, b){
     node.classList.add('cb-free');
     node.style.position = 'absolute';
@@ -978,7 +1422,16 @@
     var opStyle = 'opacity:' + op + ';';
     var hStyle = b.h ? 'height:'+b.h+'px;' : '';
     var imgStyleAttr = ' style="'+opStyle+hStyle+'"';
-    var T = '<div class="cb-text">'+textHTML+'</div>';
+    var bgStyle = '';
+    if (b.bgColor) {
+      var alpha = (b.bgOpacity != null ? b.bgOpacity : 1);
+      var hex = b.bgColor.replace('#','');
+      var r = parseInt(hex.substring(0,2),16);
+      var g = parseInt(hex.substring(2,4),16);
+      var bb = parseInt(hex.substring(4,6),16);
+      bgStyle = ' style="background-color:rgba('+r+','+g+','+bb+','+alpha+')"';
+    }
+    var T = '<div class="cb-text"'+bgStyle+'>'+textHTML+'</div>';
     var inner = '';
 
     if (b.type === 'spacer'){
@@ -987,8 +1440,15 @@
     } else if (b.type === 'text'){
       inner = T;
     } else if (b.type === 'image'){
-      inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' />' +
-              '<figcaption class="cb-cap">'+(b.caption||'כיתוב תמונה')+'</figcaption></figure>';
+      var figCls = 'cb-figure' + (b.frameless?' cb-frameless':'') + (b.feather?' cb-feather-'+b.feather:'');
+      var rotStyle = b.rotate ? 'transform:rotate('+b.rotate+'deg);' : '';
+      inner = '<figure class="'+figCls+'"><img class="cb-img" style="'+opStyle+hStyle+rotStyle+'" src="'+imgSrc+'" alt="" /></figure>';
+      if (adminOn) inner += '<div class="cb-imgfx">' +
+        '<button type="button" class="cb-imgfx-btn'+(b.frameless?' on':'')+'" data-frameless>⬚ ללא מסגרת</button>' +
+        '<label class="cb-imgfx-feather">ריכוך שוליים<input type="range" class="cb-feather-range" min="0" max="5" step="1" value="'+(b.feather||0)+'"></label>' +
+        '<label class="cb-imgfx-feather">סיבוב<input type="range" class="cb-rotate-range" min="-180" max="180" step="1" value="'+(b.rotate||0)+'"></label>' +
+        '<button type="button" class="cb-imgfx-btn" data-rotate90>↻ 90°</button>' +
+        '</div>';
     } else if (b.type === 'text-side'){
       /* טקסט בצד התמונה */
       inner = '<div class="cb-split"><div class="cb-col">'+T+'</div>' +
@@ -996,12 +1456,12 @@
     } else if (b.type === 'text-below'){
       /* תמונה למעלה, טקסט מתחת (ממורכז) */
       inner = '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' /></figure>' +
-              '<div class="cb-text cb-center">'+textHTML+'</div>';
+              '<div class="cb-text cb-center"'+bgStyle+'>'+textHTML+'</div>';
     } else if (b.type === 'text-over'){
       /* טקסט מעל התמונה */
       inner = '<div class="cb-over">' +
                 '<img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' />' +
-                '<div class="cb-over-text"><div class="cb-text">'+textHTML+'</div></div>' +
+                '<div class="cb-over-text"><div class="cb-text"'+bgStyle+'>'+textHTML+'</div></div>' +
               '</div>';
     } else if (b.type === 'before-after'){
       /* השוואת לפני/אחרי עם וילון נגרר */
@@ -1012,8 +1472,8 @@
       var pos  = (b.split != null ? b.split : 50);
       var hPx  = b.h ? b.h : 380;
       var titleHTML = b.html || '<h3>לפני ואחרי</h3>';
-      inner = '<div class="cb-text cb-center cb-ba-title">'+titleHTML+'</div>' +
-        '<div class="cb-ba" style="height:'+hPx+'px">' +
+      inner = (b.noTitle ? '' : '<div class="cb-text cb-center cb-ba-title">'+titleHTML+'</div>') +
+        '<div class="cb-ba'+(b.frameless ? ' cb-ba-frameless' : '')+'" style="height:'+hPx+'px">' +
           '<img class="cb-ba-img cb-ba-after" data-baimg="A" src="'+imgA+'" alt="" />' +
           '<img class="cb-ba-img cb-ba-before" data-baimg="B" src="'+imgB+'" alt="" style="clip-path:inset(0 '+(100-pos)+'% 0 0)" />' +
           '<span class="cb-ba-lab cb-ba-lab-b">'+labB+'</span>' +
@@ -1027,6 +1487,21 @@
               '<figure class="cb-figure"><img class="cb-img" src="'+imgSrc+'" alt=""'+imgStyleAttr+' /></figure></div>';
     }
     wrap.innerHTML = '<div class="cb-inner">'+inner+'</div>';
+    applyBoxBg(wrap, b);   /* שקיפות רקע הבוקסה — חל גם למבקר */
+    /* מחוון שקיפות רקע — בכל בוקסה עם טקסט (לא תמונה/מרווח) */
+    if (adminOn && b.type !== 'image' && b.type !== 'spacer'){
+      var bgfx = el('div','cb-imgfx');
+      var bgv = (b.boxOpacity != null ? b.boxOpacity : (b.free ? 92 : 0));
+      bgfx.innerHTML = '<label class="cb-imgfx-feather">שקיפות רקע ' +
+        '<input type="range" class="cb-bgop-range" min="0" max="100" step="5" value="'+bgv+'">' +
+        '<span class="cb-bgop-val">'+bgv+'%</span></label>';
+      if (b.type === 'before-after'){
+        bgfx.insertAdjacentHTML('afterbegin',
+          '<button type="button" class="cb-imgfx-btn'+(b.noTitle?' on':'')+'" data-ba-notitle>🚫 ללא כותרת</button>' +
+          '<button type="button" class="cb-imgfx-btn'+(b.frameless?' on':'')+'" data-ba-frameless>⬚ ללא מסגרת</button>');
+      }
+      wrap.appendChild(bgfx);
+    }
     try { if (b.type === 'before-after') wireBeforeAfter(wrap, b); }   /* וילון — פעיל גם למבקר */
     catch(e){ window.dispatchEvent(new ErrorEvent('error',{message:'wireBeforeAfter: '+e.message,filename:'admin.js'})); }
     if (adminOn){
@@ -1107,6 +1582,30 @@
       (b.free ? '<button class="cb-ctl" data-anchor title="החזר לזרימת העמוד">📌 עגן</button>' : '') +
       '<button class="cb-ctl danger" data-del title="מחיקת הבלוק">🗑 מחק</button>';
     wrap.appendChild(bar);
+
+    /* כפתור X צף פשוט ומדויק לסגירה מהירה של החלל (כמו בתמונה) */
+    var closeBtn = el('button', 'cb-close', '✕');
+    closeBtn.title = 'סגור חלל';
+    wrap.appendChild(closeBtn);
+
+    closeBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if (closeBtn.classList.contains('cb-armed')){
+        closeBtn.classList.remove('cb-armed');
+        // הסרה נקיה + עדכון נתונים
+        wrap.style.transition = 'all .18s ease';
+        wrap.style.opacity = '0';
+        wrap.style.transform = 'scale(.92)';
+        setTimeout(function(){
+          deleteBlock(pid, b.id);
+        }, 160);
+      } else {
+        closeBtn.classList.add('cb-armed');
+        setTimeout(function(){
+          if (closeBtn && closeBtn.parentNode) closeBtn.classList.remove('cb-armed');
+        }, 1800);
+      }
+    });
     bar.addEventListener('click', function(e){
       var tb = e.target.closest('[data-type]');
       if (tb){ b.type = tb.dataset.type; saveBlocks(); renderBlocks(); return; }
@@ -1449,6 +1948,82 @@
         setTimeout(refreshAdminTools, 60);
       }
     }, true);
+
+    /* בקרות תמונה: ללא מסגרת + ריכוך שוליים (האזנה מואצלת, פעם אחת) */
+    function pdImgBlockRec(el){
+      var blk = el.closest && el.closest('.custom-block'); if (!blk) return null;
+      var id = blk.getAttribute('data-block-id');
+      var host = blk.closest('[data-addzone]');
+      var pid = host ? host.getAttribute('data-addzone') : (blk.closest('.page')||{}).id;
+      var rec = findBlock(pid, id) || findBlock(anchoredKey(pid), id);
+      return rec ? { blk: blk, b: rec.b } : null;
+    }
+    document.addEventListener('click', function(e){
+      var fb = e.target.closest ? e.target.closest('[data-frameless]') : null;
+      if (!fb || !adminOn) return;
+      e.preventDefault(); e.stopPropagation();
+      var r = pdImgBlockRec(fb); if (!r) return;
+      r.b.frameless = !r.b.frameless;
+      fb.classList.toggle('on', !!r.b.frameless);
+      var fig = r.blk.querySelector('.cb-figure');
+      if (fig) fig.classList.toggle('cb-frameless', !!r.b.frameless);
+      saveBlocks();
+    });
+    document.addEventListener('input', function(e){
+      var fr = e.target.closest ? e.target.closest('.cb-feather-range') : null;
+      if (!fr || !adminOn) return;
+      var r = pdImgBlockRec(fr); if (!r) return;
+      var lvl = parseInt(fr.value, 10) || 0;
+      r.b.feather = lvl;
+      var fig = r.blk.querySelector('.cb-figure');
+      if (fig){ for (var i = 1; i <= 5; i++) fig.classList.remove('cb-feather-' + i); if (lvl) fig.classList.add('cb-feather-' + lvl); }
+      saveBlocks();
+    });
+    /* סיבוב תמונה על צירה */
+    function pdSetRotate(r, deg){
+      r.b.rotate = deg;
+      var img = r.blk.querySelector('.cb-img');
+      if (img) img.style.transform = deg ? 'rotate(' + deg + 'deg)' : '';
+      var rng = r.blk.querySelector('.cb-rotate-range');
+      if (rng && parseInt(rng.value,10) !== deg) rng.value = deg;
+      saveBlocks();
+    }
+    document.addEventListener('input', function(e){
+      var rr = e.target.closest ? e.target.closest('.cb-rotate-range') : null;
+      if (!rr || !adminOn) return;
+      var r = pdImgBlockRec(rr); if (!r) return;
+      pdSetRotate(r, parseInt(rr.value, 10) || 0);
+    });
+    document.addEventListener('click', function(e){
+      var rb = e.target.closest ? e.target.closest('[data-rotate90]') : null;
+      if (!rb || !adminOn) return;
+      e.preventDefault(); e.stopPropagation();
+      var r = pdImgBlockRec(rb); if (!r) return;
+      var d = (r.b.rotate || 0) + 90; if (d > 180) d -= 360;
+      pdSetRotate(r, d);
+    });
+    /* שקיפות רקע הבוקסה (0–100%) */
+    document.addEventListener('input', function(e){
+      var br = e.target.closest ? e.target.closest('.cb-bgop-range') : null;
+      if (!br || !adminOn) return;
+      var r = pdImgBlockRec(br); if (!r) return;
+      r.b.boxOpacity = parseInt(br.value, 10) || 0;
+      applyBoxBg(r.blk, r.b);
+      var v = r.blk.querySelector('.cb-bgop-val');
+      if (v) v.textContent = r.b.boxOpacity + '%';
+      saveBlocks();
+    });
+    /* לפני/אחרי: ביטול כותרת + העלמת מסגרת */
+    document.addEventListener('click', function(e){
+      var tb = e.target.closest ? e.target.closest('[data-ba-notitle], [data-ba-frameless]') : null;
+      if (!tb || !adminOn) return;
+      e.preventDefault(); e.stopPropagation();
+      var r = pdImgBlockRec(tb); if (!r) return;
+      if (tb.hasAttribute('data-ba-notitle')) r.b.noTitle = !r.b.noTitle;
+      else r.b.frameless = !r.b.frameless;
+      saveBlocks();
+      refreshAdminTools();   /* רינדור מחדש — גם לבלוקים מעוגנים */
+    });
   }
 
   /* מרענן ידיות הזזה, מפרידי ＋ ועריכת טקסט על התוכן הנראה כעת */

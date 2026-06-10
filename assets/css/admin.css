@@ -25,8 +25,10 @@ body.admin-on .admin-fab{display:none}
   font-family:var(--font);
 }
 body.admin-on .admin-bar{display:flex}
-body.admin-on{padding-top:108px}        /* מקום לשתי שורות הסרגל */
-body.admin-on .sidebar{margin-top:108px}
+body.admin-on{padding-top:60px}         /* שורת כלים אחת — סרגל הטקסט עכשיו צף */
+body.admin-on .sidebar{margin-top:60px}
+/* הסתרת סרגל הטקסט הישן — הוחלף ב-rich-text-toolbar הצף */
+body.admin-on .admin-bar .fmt-toolbar{display:none !important}
 body.admin-on .menu-toggle{top:118px}
 /* קו הפרדה לפני שורת כלי הטקסט */
 .admin-bar .fmt-toolbar{flex-basis:100%;border-top:1px solid rgba(255,255,255,.12);margin-top:2px;padding-top:8px}
@@ -74,6 +76,25 @@ body.admin-on .pd-movable:hover > .pd-del-handle{opacity:1}
 .pd-del-handle.pd-del-arm{opacity:1;animation:cbArm .5s ease infinite alternate}
 .pd-hidden{display:none !important}
 
+/* ===== בלוק תמונה: ללא מסגרת + ריכוך שוליים (feather) ===== */
+.custom-block .cb-figure.cb-frameless,
+.custom-block .cb-figure.cb-frameless img{border:none !important;box-shadow:none !important;background:transparent !important;padding:0 !important}
+.custom-block .cb-figure.cb-feather-1 img{-webkit-mask-image:radial-gradient(circle,#000 68%,transparent 100%);mask-image:radial-gradient(circle,#000 68%,transparent 100%)}
+.custom-block .cb-figure.cb-feather-2 img{-webkit-mask-image:radial-gradient(circle,#000 56%,transparent 100%);mask-image:radial-gradient(circle,#000 56%,transparent 100%)}
+.custom-block .cb-figure.cb-feather-3 img{-webkit-mask-image:radial-gradient(circle,#000 45%,transparent 100%);mask-image:radial-gradient(circle,#000 45%,transparent 100%)}
+.custom-block .cb-figure.cb-feather-4 img{-webkit-mask-image:radial-gradient(circle,#000 34%,transparent 100%);mask-image:radial-gradient(circle,#000 34%,transparent 100%)}
+.custom-block .cb-figure.cb-feather-5 img{-webkit-mask-image:radial-gradient(circle,#000 22%,transparent 100%);mask-image:radial-gradient(circle,#000 22%,transparent 100%)}
+/* לפני/אחרי ללא מסגרת — בלי גבול, צל, פינות מעוגלות ורקע כהה */
+.custom-block .cb-ba.cb-ba-frameless{border:none !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important}
+/* בקרות עריכת התמונה — מוצגות רק במצב אדמין */
+.cb-imgfx{display:none}
+body.admin-on .cb-imgfx{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;background:#1c2016;border-radius:9px}
+.cb-imgfx-btn{background:rgba(255,255,255,.1);color:#f4f2e9;border-radius:7px;padding:6px 12px;font-family:var(--font);font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid transparent}
+.cb-imgfx-btn:hover{background:rgba(255,255,255,.2)}
+.cb-imgfx-btn.on{background:var(--sea);color:#fff}
+.cb-imgfx-feather{display:inline-flex;align-items:center;gap:8px;color:#cdd6cc;font-size:.82rem;font-weight:700}
+.cb-imgfx-feather input[type=range]{width:120px;accent-color:var(--sea);cursor:pointer}
+
 /* כפתור בחירת תמונת רקע ראשית (page-head / hero) */
 .pd-hero-pick{
   position:absolute;top:12px;inset-inline-start:12px;z-index:45;
@@ -104,7 +125,7 @@ body.admin-on [data-img]:hover::after{opacity:1}
 
 /* ----- סרגל עיצוב טקסט צף ----- */
 .fmt-toolbar{
-  display:none;align-items:center;gap:2px;flex-wrap:wrap;justify-content:flex-start;
+  display:none;align-items:center;gap:3px;flex-wrap:wrap;justify-content:flex-start;
 }
 .fmt-toolbar.show{display:flex}
 .fmt-toolbar button{
@@ -113,13 +134,15 @@ body.admin-on [data-img]:hover::after{opacity:1}
 }
 .fmt-toolbar button:hover{background:rgba(255,255,255,.16)}
 .fmt-toolbar button.on{background:var(--olive)}
-.fmt-toolbar .sep{width:1px;height:22px;background:rgba(255,255,255,.18);margin:0 3px}
+.fmt-toolbar .sep{width:1px;height:22px;background:rgba(255,255,255,.18);margin:0 4px}
 .fmt-toolbar input[type=color]{width:30px;height:30px;border:none;border-radius:7px;background:none;cursor:pointer;padding:0}
 .fmt-toolbar select{
-  height:32px;border-radius:7px;border:none;background:rgba(255,255,255,.1);color:#f4f2e9;
-  font-family:var(--font);font-size:.8rem;font-weight:600;padding:0 6px;cursor:pointer;
+  height:28px;border-radius:6px;border:none;background:rgba(255,255,255,.1);color:#f4f2e9;
+  font-family:var(--font);font-size:.78rem;font-weight:600;padding:0 5px;cursor:pointer;max-width:74px;
 }
 .fmt-toolbar select option{color:#23271b}
+.fmt-toolbar .bg-controls input[type=color]{width:26px;height:26px}
+.fmt-toolbar .bg-controls input[type=range]{width:70px;vertical-align:middle;accent-color:var(--sea)}
 
 /* ----- פאנל עיצוב כללי (ערכת צבעים) ----- */
 .theme-panel{
@@ -209,6 +232,13 @@ body.admin-on .custom-block.cb-editing{
 .cb-rz-se{bottom:-6px;right:-6px;cursor:nwse-resize}
 .cb-rz-sw{bottom:-6px;left:-6px;cursor:nesw-resize}
 .cb-rz:hover{background:var(--sea)}
+/* ידיות מחוץ למצב עריכה — לעולם לא מוצגות (גם אם נותרו מאיזושהי סיבה) */
+body:not(.admin-on) .cb-rz{display:none !important}
+/* ידיות שינוי-גודל של אלמנט קיים (pd-rz) — רק בריחוף / בחירה / אחרי הזזה */
+body.admin-on .pd-movable > .pd-rz{display:none}
+body.admin-on .pd-movable:hover > .pd-rz,
+body.admin-on .pd-movable.pd-sel > .pd-rz,
+body.admin-on .pd-movable.pd-moved > .pd-rz{display:block}
 body.admin-on .custom-block.cb-editing::-webkit-resizer{background:var(--sea)}
 .custom-block.cb-flash{animation:cbFlash 1.4s ease}
 @keyframes cbFlash{0%,100%{background:transparent}30%{background:rgba(226,166,61,.18)}}
@@ -251,6 +281,18 @@ body.admin-on .custom-block .cb-spacer-lbl{display:inline-block}
 .custom-block .cb-spacer-grip{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:60px;height:14px;border-radius:7px;background:var(--sea-deep);cursor:ns-resize;display:none}
 body.admin-on .custom-block .cb-spacer-grip{display:block}
 .custom-block .cb-spacer-grip:hover{background:var(--sea)}
+
+/* === סגנונות כוכביות מותאמות (עובד גם בתוך בלוקים) === */
+ul[data-bullet] li { list-style: none; }
+ul[data-bullet] li::before {
+  display: inline-block;
+  width: 1.2em;
+  margin-inline-end: 0.4em;
+  font-weight: 700;
+}
+ul[data-bullet="check"] li::before { content: "✓"; color: var(--olive); }
+ul[data-bullet="star"]  li::before { content: "★"; color: var(--gold); }
+ul[data-bullet="arrow"] li::before { content: "→"; color: var(--sea); }
 
 /* ===== מפריד הוספה (＋ בין אלמנטים) ===== */
 .cb-insert{display:flex;align-items:center;justify-content:center;height:0;position:relative;margin:0;opacity:0;transition:opacity .15s,height .15s}
@@ -310,11 +352,29 @@ body.admin-on .pd-moved{outline:1px dashed var(--sand)}
 body.admin-on .pd-moved > .pd-move-handle{background:var(--sand-deep)}
 @media print{.pd-move-handle{display:none !important}}
 
-@media print{.admin-fab,.admin-bar,.fmt-toolbar,.theme-panel,.admin-modal,.cb-bar,.cb-rz,.cb-insert,.cb-inline-host{display:none !important}
+/* ===== כפתור "סגור / מחק" צף על חללים מותאמים (כמו בתמונת הדוגמה) ===== */
+.custom-block .cb-close{
+  position:absolute; top:8px; inset-inline-end:8px; z-index:30;
+  width:22px; height:22px; border-radius:999px;
+  background:#e6f3ff; color:#0b5c8a; border:1px solid #8bbfe1;
+  display:none; align-items:center; justify-content:center;
+  font-size:13px; font-weight:800; line-height:1;
+  cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.12);
+  transition:all .12s ease;
+  user-select:none;
+}
+body.admin-on .custom-block.cb-editing .cb-close{display:flex}
+.custom-block .cb-close:hover{
+  background:#0b5c8a; color:#fff; transform:scale(1.12);
+  border-color:#0b5c8a;
+}
+.custom-block .cb-close.cb-armed{background:#b4452e;border-color:#b4452e;color:#fff}
+
+@media print{.admin-fab,.admin-bar,.fmt-toolbar,.theme-panel,.admin-modal,.cb-bar,.cb-rz,.cb-insert,.cb-inline-host,.custom-block .cb-close{display:none !important}
   body.admin-on .custom-block.cb-editing{outline:none}}
 @media(max-width:768px){
   .admin-bar{padding:8px 12px;gap:6px}
-  body.admin-on{padding-top:150px}
-  body.admin-on .sidebar{margin-top:150px}
+  body.admin-on{padding-top:96px}
+  body.admin-on .sidebar{margin-top:96px}
   .admin-btn{padding:7px 10px;font-size:.8rem}
 }

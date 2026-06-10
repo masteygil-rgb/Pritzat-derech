@@ -62,41 +62,48 @@ a{color:inherit;text-decoration:none}
 .ic{width:1em;height:1em;display:inline-block;vertical-align:-.125em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 
 /* ===================================================================
-   תפריט צד — צד ימין
-   =================================================================== */
+    תפריט צד — צד ימין  (הגרסה המודרנית והאלגנטית)
+    =================================================================== */
 .sidebar{
-  position:fixed;inset-block:0;inset-inline-start:0;   /* start = ימין ב-RTL */
+  position:fixed;inset-block:0;inset-inline-start:0;
   width:var(--sidebar-w);
-  background:var(--white);
+  background:linear-gradient(160deg, #fff 0%, #f8fafc 100%);
   border-inline-end:1px solid var(--line);
   display:flex;flex-direction:column;
-  padding:24px 18px 18px;
+  padding:28px 22px 24px;
   z-index:50;
-  box-shadow:-2px 0 24px rgba(40,38,25,.04);
-  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  box-shadow:-4px 0 28px rgba(40,38,25,.06);
+  transition:transform .38s cubic-bezier(.25,.46,.45,1);
 }
-.brand{display:flex;align-items:center;gap:13px;padding-bottom:20px;margin-bottom:14px;border-bottom:1px solid var(--line)}
-.brand-logo{width:54px;height:54px;flex:0 0 auto;border-radius:12px;overflow:hidden;background:transparent;display:grid;place-items:center}
+.brand{display:flex;align-items:center;gap:16px;padding-bottom:26px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.brand-logo{width:62px;height:62px;flex:0 0 auto;border-radius:16px;overflow:hidden;background:transparent;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .brand-logo img{width:100%;height:100%;object-fit:contain}
-.brand-text h1{font-size:1.34rem;font-weight:800;letter-spacing:-.5px;line-height:1;color:var(--ink)}
-.brand-text p{font-size:.78rem;color:var(--sand-deep);font-weight:700;margin-top:5px;letter-spacing:1.5px}
+.brand-text h1{font-size:1.42rem;font-weight:800;letter-spacing:-.65px;line-height:1;color:var(--ink)}
+.brand-text p{font-size:.8rem;color:var(--sand-deep);font-weight:700;margin-top:6px;letter-spacing:2.1px}
 
-.nav{display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;padding-block:10px;margin-inline:-4px;padding-inline:4px}
-.nav::-webkit-scrollbar{width:5px}
-.nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+.nav{display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto;padding-block:14px;margin-inline:-6px;padding-inline:6px}
+.nav::-webkit-scrollbar{width:4px}
+.nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px}
+
 .nav-link{
-  display:flex;align-items:center;gap:13px;
-  padding:11px 13px;border-radius:11px;
-  color:var(--ink-2);font-weight:600;font-size:1rem;
-  position:relative;transition:background .2s,color .2s;
+  display:flex;align-items:center;gap:18px;
+  padding:14px 17px;border-radius:13px;
+  color:var(--ink-2);font-weight:550;font-size:1.02rem;letter-spacing:.2px;
+  position:relative;transition:background .22s color .22s, transform .18s cubic-bezier(.2,.8,.2,1);
 }
-.nav-ico{width:34px;height:34px;flex:0 0 auto;display:grid;place-items:center;border-radius:9px;background:var(--paper-2);color:var(--muted);transition:.2s}
-.nav-ico .ic{width:20px;height:20px;stroke-width:1.6}
-.nav-link:hover{background:var(--paper)}
-.nav-link:hover .nav-ico{color:var(--accent)}
-.nav-link.active{background:var(--paper-2);color:var(--ink)}
-.nav-link.active .nav-ico{background:var(--accent);color:#fff}
-.nav-link.active::before{content:"";position:absolute;inset-inline-end:-18px;top:50%;transform:translateY(-50%);width:3px;height:56%;border-radius:3px;background:var(--accent)}
+.nav-link:hover{background:rgba(0,0,0,0.018);transform:translateX(2px)}
+.nav-link.active{
+  background:var(--white);
+  color:var(--ink);
+  box-shadow:0 3px 9px rgba(40,38,25,.06);
+  transform:none;
+}
+
+.nav-ico{width:38px;height:38px;flex:0 0 auto;display:grid;place-items:center;border-radius:11px;transition:.22s;background:rgba(0,0,0,.018);overflow:hidden}
+.nav-link:hover .nav-ico{background:rgba(0,0,0,.035)}
+.nav-link.active .nav-ico{background:var(--white);box-shadow:0 1px 4px rgba(0,0,0,.08), inset 0 0 0 1.25px var(--accent)}
+.nav-link.active::before{content:"";position:absolute;inset-inline-end:-21px;top:50%;transform:translateY(-50%);width:5px;height:66%;border-radius:8px;background:var(--accent);box-shadow:0 0 6px var(--accent)}
+
 /* מבטא צבע לכל פריט תפריט */
 .nav-link[data-target="home"]{--accent:var(--sea)}
 .nav-link[data-target="vision"]{--accent:var(--olive)}
@@ -107,14 +114,22 @@ a{color:inherit;text-decoration:none}
 .nav-link[data-target="bluegreen"]{--accent:var(--olive)}
 .nav-link[data-target="cta"]{--accent:var(--sand)}
 
-.sidebar-footer{padding-top:16px;border-top:1px solid var(--line);text-align:center}
-.sidebar-footer p{font-weight:700;font-size:.92rem;margin-top:7px;color:var(--ink)}
-.sidebar-footer small{color:var(--muted);font-size:.76rem}
-.route-mini{display:flex;align-items:center;justify-content:center}
-.route-mini .dot{width:9px;height:9px;border-radius:50%}
+/* PNG icons (NanoBanana unique) */
+.nav-ico-img{width:26px;height:26px;object-fit:cover;border-radius:7px;opacity:.95;transition:transform .2s,filter .25s}
+.nav-link:hover .nav-ico-img{transform:scale(1.06);opacity:1}
+.nav-link.active .nav-ico-img{transform:scale(1.04);filter:contrast(1.06) saturate(1.12)}
+
+/* legacy svg icons if present (other elements) */
+.nav-ico .ic{width:20px;height:20px;stroke-width:1.6}
+
+.sidebar-footer{padding-top:22px;border-top:1px solid var(--line);text-align:center}
+.sidebar-footer p{font-weight:700;font-size:1rem;margin-top:8px;color:var(--ink);letter-spacing:.3px}
+.sidebar-footer small{color:var(--muted);font-size:.78rem}
+.route-mini{display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.route-mini .dot{width:10px;height:10px;border-radius:50%}
 .route-mini .dot.a{background:var(--sea)}
 .route-mini .dot.b{background:var(--sand)}
-.route-mini .line{width:64px;height:2px;background:linear-gradient(90deg,var(--sea),var(--olive),var(--sand));border-radius:3px}
+.route-mini .line{width:78px;height:2.5px;background:linear-gradient(90deg,var(--sea),var(--olive),var(--sand));border-radius:4px}
 
 /* ===================================================================
    תוכן
