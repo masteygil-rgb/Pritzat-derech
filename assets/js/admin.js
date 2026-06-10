@@ -214,7 +214,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v58</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v59</b></div>' +
       '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
@@ -1815,28 +1815,31 @@
       }
 
       wrap.classList.add('cb-dragging');
-      wrap.style.transition = 'none';            /* שום אנימציה לא תרכך את התנועה */
-      var wr = wrap.getBoundingClientRect();
-      var offX = e.clientX - wr.left;
-      var offY = e.clientY - wr.top;
-      var lastX = wrap.offsetLeft, lastY = wrap.offsetTop;
+      wrap.style.transition = 'none';
+      /* נלכד מיקום התחלתי בקואורדינטות של ה-page (offsetLeft/Top) ומיקום הסמן.
+         לא נשתמש ב-getBoundingClientRect בתוך onMove — כל שינוי ב-layout
+         של ה-page (גלילה, zoom, שינוי גודל) היה גורם לסטייה מוגדלת.
+         במקום זאת — delta טהור: 1:1 עם הסמן, ללא המרת קואורדינטות. */
+      var startLeft = wrap.offsetLeft;
+      var startTop  = wrap.offsetTop;
+      var startX    = e.clientX;
+      var startY    = e.clientY;
+      var pageW     = page.offsetWidth;
+      var pageH     = page.offsetHeight;
+      var wrapW     = wrap.offsetWidth;
+      var wrapH     = wrap.offsetHeight;
 
       pdDrag(e, handle, function(ev){
-        /* מיקום בפיקסלים בזמן הגרירה — צמידות מוחלטת לסמן.
-           המרה לאחוזים (לשמירה רספונסיבית) רק בשחרור. */
-        var pr = page.getBoundingClientRect();
-        var x = ev.clientX - pr.left - offX;
-        var y = ev.clientY - pr.top  - offY;
-        x = Math.max(0, Math.min(x, pr.width  - wr.width));
-        y = Math.max(0, Math.min(y, pr.height - wr.height));
-        lastX = x; lastY = y;
-        wrap.style.left = x + 'px';
+        var x = startLeft + (ev.clientX - startX);
+        var y = startTop  + (ev.clientY - startY);
+        x = Math.max(0, Math.min(x, pageW - wrapW));
+        y = Math.max(0, Math.min(y, pageH - wrapH));
+        wrap.style.left  = x + 'px';
         wrap.style.right = 'auto';
-        wrap.style.top = y + 'px';
+        wrap.style.top   = y + 'px';
       }, function(){
-        var pr = page.getBoundingClientRect();
-        b.x = (lastX / pr.width)  * 100;
-        b.y = (lastY / pr.height) * 100;
+        b.x = (wrap.offsetLeft  / page.offsetWidth)  * 100;
+        b.y = (wrap.offsetTop   / page.offsetHeight) * 100;
         wrap.style.left = b.x + '%';
         wrap.style.top  = b.y + '%';
         wrap.style.transition = '';
