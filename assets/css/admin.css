@@ -251,7 +251,8 @@ body.admin-on .custom-block.cb-editing::-webkit-resizer{background:var(--sea)}
   margin:0;
 }
 body.admin-on .custom-block.cb-free.cb-editing{outline-offset:4px}
-.custom-block.cb-dragging{opacity:.92;cursor:grabbing;box-shadow:0 22px 60px rgba(20,30,40,.4)}
+.custom-block.cb-dragging{opacity:.92;cursor:grabbing;box-shadow:0 22px 60px rgba(20,30,40,.4);transition:none !important}
+.custom-block.cb-free{transition:none !important}   /* בלוק צף — בלי אנימציית מיקום, צמוד לסמן */
 .cb-ctl.cb-drag{cursor:grab;background:var(--sea-deep)}
 .cb-ctl.cb-drag:hover{background:var(--sea)}
 .cb-ctl.cb-drag:active{cursor:grabbing}

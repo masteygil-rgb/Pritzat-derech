@@ -214,7 +214,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v56</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v57</b></div>' +
       '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
@@ -1804,12 +1804,16 @@
       }
 
       wrap.classList.add('cb-dragging');
-      var pr = page.getBoundingClientRect();
       var wr = wrap.getBoundingClientRect();
       var offX = e.clientX - wr.left;
       var offY = e.clientY - wr.top;
+      /* לכידת המצביע על הידית — כל אירועי התנועה מגיעים אליה גם בגרירה
+         מהירה, כך שהבוקסה צמודה לסמן 1:1 (אותו תיקון כמו באלמנטים קיימים) */
+      try { handle.setPointerCapture(e.pointerId); } catch(_){}
 
       function move(ev){
+        /* מלבן העמוד נמדד מחדש בכל תנועה — נשאר מדויק גם אם הדף גלל/השתנה */
+        var pr = page.getBoundingClientRect();
         var x = ev.clientX - pr.left - offX;
         var y = ev.clientY - pr.top  - offY;
         /* גבולות */
@@ -1822,13 +1826,16 @@
         wrap.style.top = b.y + '%';
       }
       function up(){
-        document.removeEventListener('pointermove', move);
-        document.removeEventListener('pointerup', up);
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', up);
+        handle.removeEventListener('pointercancel', up);
+        try { handle.releasePointerCapture(e.pointerId); } catch(_){}
         wrap.classList.remove('cb-dragging');
         saveBlocks();
       }
-      document.addEventListener('pointermove', move);
-      document.addEventListener('pointerup', up);
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', up);
+      handle.addEventListener('pointercancel', up);
     });
   }
 
