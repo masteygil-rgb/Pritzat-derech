@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>איפוס סיסמת ניהול · פריצת דרך</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{--ink:#16293a;--sea:#1f87b0;--sea-deep:#16689a;--line:#dfe3e8;--err:#b4452e;--ok:#2e7d4f}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Heebo',sans-serif;background:#f4f6f8;color:var(--ink);min-height:100vh;display:grid;place-items:center;padding:20px}
+  .card{background:#fff;border-radius:16px;box-shadow:0 14px 44px rgba(20,30,40,.12);padding:34px;width:100%;max-width:460px}
+  h1{font-size:1.3rem;margin-bottom:6px}
+  .sub{color:#5a6a78;font-size:.92rem;margin-bottom:22px;line-height:1.6}
+  .step{display:none}
+  .step.on{display:block}
+  .stepnum{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--sea);color:#fff;font-weight:800;font-size:.85rem;margin-inline-end:8px}
+  h2{font-size:1.02rem;margin-bottom:12px;display:flex;align-items:center}
+  input,textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:1rem;margin-bottom:10px;background:#fafbfc}
+  input:focus,textarea:focus{outline:none;border-color:var(--sea)}
+  textarea{min-height:90px;direction:ltr;text-align:left;font-size:.8rem;word-break:break-all}
+  button{width:100%;padding:13px;border:none;border-radius:10px;background:var(--sea);color:#fff;font-family:inherit;font-weight:700;font-size:1rem;cursor:pointer;transition:.15s}
+  button:hover{background:var(--sea-deep)}
+  button:disabled{opacity:.55;cursor:wait}
+  .msg{min-height:22px;font-size:.88rem;margin:10px 0;line-height:1.5}
+  .msg.err{color:var(--err)} .msg.ok{color:var(--ok);font-weight:700}
+  .hint{background:#f0f6fa;border-radius:10px;padding:12px 14px;font-size:.85rem;line-height:1.7;margin-bottom:14px;color:#3a4a58}
+  .done{display:none;text-align:center;padding:10px 0}
+  .done.on{display:block}
+  .done .big{font-size:2.4rem;margin-bottom:10px}
+  a.btnlink{display:inline-block;margin-top:14px;background:var(--sea);color:#fff;text-decoration:none;padding:12px 26px;border-radius:10px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>איפוס סיסמת ניהול</h1>
+  <p class="sub">הסיסמה לפרסום תוכן לאתר החי (אותו חשבון ניהול כמו marvah.co.il).</p>
+
+  <!-- שלב 1: שליחת אימייל איפוס -->
+  <div class="step on" id="s1">
+    <h2><span class="stepnum">1</span> שליחת קישור איפוס לאימייל</h2>
+    <input type="email" id="email" value="mastey.gil@gmail.com" placeholder="אימייל" />
+    <button id="sendBtn">שלחו לי קישור איפוס</button>
+    <div class="msg" id="m1"></div>
+  </div>
+
+  <!-- שלב 2: הדבקת הקישור -->
+  <div class="step" id="s2">
+    <h2><span class="stepnum">2</span> הדבקת הכתובת מהדפדפן</h2>
+    <div class="hint">
+      פתחו את האימייל שקיבלתם (גם בספאם) ולחצו על הקישור.<br/>
+      ייפתח דף כלשהו (לא משנה מה כתוב בו, גם אם שגיאה!) —<br/>
+      <b>העתיקו את הכתובת המלאה משורת הכתובת</b> של אותו דף והדביקו כאן:
+    </div>
+    <textarea id="pasted" placeholder="הדביקו כאן את הכתובת (מתחילה ב-http... ומכילה access_token)"></textarea>
+    <button id="parseBtn">המשך</button>
+    <div class="msg" id="m2"></div>
+  </div>
+
+  <!-- שלב 3: סיסמה חדשה -->
+  <div class="step" id="s3">
+    <h2><span class="stepnum">3</span> קביעת סיסמה חדשה</h2>
+    <input type="password" id="p1" placeholder="סיסמה חדשה (לפחות 6 תווים)" />
+    <input type="password" id="p2" placeholder="הסיסמה שוב, לאימות" />
+    <button id="setBtn">קבעו את הסיסמה</button>
+    <div class="msg" id="m3"></div>
+  </div>
+
+  <div class="done" id="done">
+    <div class="big">✅</div>
+    <b>הסיסמה נקבעה בהצלחה!</b>
+    <p class="sub" style="margin-top:8px">חזרו לאתר, היכנסו לעריכה, לחצו שמירה 💾 — ובחלון הפרסום הזינו את האימייל ואת הסיסמה החדשה. זה חד-פעמי: מכאן והלאה הדפדפן זוכר אתכם.</p>
+    <a class="btnlink" href="index.html">חזרה לאתר ←</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var URL_ = 'https://rtuobiaocojeefspkcez.supabase.co';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0dW9iaWFvY29qZWVmc3BrY2V6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMjIwMzQsImV4cCI6MjA5MzU5ODAzNH0.IbzqNQ2mTJ1ADTKMhCT7wuoScyrobsiGCIaYLFKVOTs';
+  var token = null;
+
+  function show(id){ document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('on'); }); var el=document.getElementById(id); if(el) el.classList.add('on'); }
+  function msg(id, t, cls){ var m=document.getElementById(id); m.textContent=t; m.className='msg '+(cls||''); }
+
+  /* אם הגענו לדף הזה ישירות מהקישור במייל — הטוקן כבר בכתובת */
+  (function fromHash(){
+    var h = location.hash;
+    if (h && h.indexOf('access_token=') > -1){
+      var p = new URLSearchParams(h.slice(1));
+      if (p.get('access_token')){ token = p.get('access_token'); show('s3'); }
+    }
+  })();
+
+  document.getElementById('sendBtn').addEventListener('click', function(){
+    var email = document.getElementById('email').value.trim();
+    if (!email){ msg('m1','נא להזין אימייל','err'); return; }
+    var btn = this; btn.disabled = true;
+    msg('m1','שולח…');
+    /* redirect_to: אם הכתובת מאושרת בפרויקט — הקישור במייל יחזיר ישירות לדף הזה
+       והטוקן ייקלט אוטומטית (דילוג על שלב 2). אחרת Supabase יפנה ל-Site URL הרגיל. */
+    var here = location.origin + location.pathname;
+    fetch(URL_ + '/auth/v1/recover?redirect_to=' + encodeURIComponent(here), {
+      method:'POST',
+      headers:{ 'apikey':ANON, 'Content-Type':'application/json' },
+      body: JSON.stringify({ email: email, gotrue_meta_security: {} })
+    }).then(function(r){
+      if (r.ok){ msg('m1','נשלח! בדקו את תיבת הדואר (גם ספאם) ועברו לשלב 2','ok'); show('s2'); }
+      else return r.json().then(function(j){ throw new Error(j.msg || j.error_description || ('שגיאה ' + r.status)); });
+    }).catch(function(e){ msg('m1', e.message === 'Failed to fetch' ? 'בעיית רשת — נסו שוב' : e.message, 'err'); })
+      .finally(function(){ btn.disabled = false; });
+  });
+
+  document.getElementById('parseBtn').addEventListener('click', function(){
+    var raw = document.getElementById('pasted').value.trim();
+    if (!raw){ msg('m2','נא להדביק את הכתובת','err'); return; }
+    if (raw.indexOf('access_token=') === -1){
+      if (raw.indexOf('/auth/v1/verify') > -1){
+        msg('m2','זה הקישור מתוך המייל — קודם פתחו אותו בדפדפן (לחיצה), ואז העתיקו את הכתובת של הדף שנפתח','err');
+      } else {
+        msg('m2','בכתובת שהודבקה אין access_token — ודאו שהעתקתם את הכתובת אחרי הלחיצה על הקישור במייל','err');
+      }
+      return;
+    }
+    var hashPart = raw.slice(raw.indexOf('access_token='));
+    var p = new URLSearchParams(hashPart);
+    token = p.get('access_token');
+    if (!token){ msg('m2','לא הצלחתי לחלץ את הקוד — נסו להעתיק שוב','err'); return; }
+    msg('m2','מצוין ✓','ok');
+    show('s3');
+  });
+
+  document.getElementById('setBtn').addEventListener('click', function(){
+    var p1 = document.getElementById('p1').value, p2 = document.getElementById('p2').value;
+    if (p1.length < 6){ msg('m3','הסיסמה צריכה להיות באורך 6 תווים לפחות','err'); return; }
+    if (p1 !== p2){ msg('m3','הסיסמאות אינן זהות','err'); return; }
+    if (!token){ msg('m3','חסר קוד אימות — חזרו לשלב 2','err'); show('s2'); return; }
+    var btn = this; btn.disabled = true;
+    msg('m3','קובע סיסמה…');
+    fetch(URL_ + '/auth/v1/user', {
+      method:'PUT',
+      headers:{ 'apikey':ANON, 'Authorization':'Bearer '+token, 'Content-Type':'application/json' },
+      body: JSON.stringify({ password: p1 })
+    }).then(function(r){ return r.json().then(function(j){ return { ok:r.ok, j:j }; }); })
+      .then(function(res){
+        if (!res.ok) throw new Error(res.j.msg || res.j.error_description || 'הקוד פג תוקף — שלחו קישור חדש בשלב 1');
+        document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('on'); });
+        document.getElementById('done').classList.add('on');
+      })
+      .catch(function(e){ msg('m3', e.message, 'err'); btn.disabled = false; });
+  });
+})();
+</script>
+</body>
+</html>
