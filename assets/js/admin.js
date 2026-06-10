@@ -214,7 +214,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v55</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v56</b></div>' +
       '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
@@ -230,7 +230,7 @@
     bar.addEventListener('click', function(e){
       var b = e.target.closest('[data-act]'); if (!b) return;
       var act = b.dataset.act;
-      if (act==='save'){ flush(); save(THEME_KEY, theme); save(BLOCKS_KEY, blocks); takeSnapshot(); setStatus('הכול נשמר ✓', true); }
+      if (act==='save'){ flush(); save(THEME_KEY, theme); save(BLOCKS_KEY, blocks); takeSnapshot(); setStatus('הכול נשמר ✓', true); publishToCloud(); }
       else if (act==='add') addBlockFlow();
       else if (act==='theme') toggleTheme();
       else if (act==='grid') toggleGrid(b);
@@ -485,6 +485,7 @@
         box.querySelector('#exSave').addEventListener('click', function(){
           hideModal(); finishExit();      /* השינויים כבר שמורים ב-localStorage */
           setStatus('השינויים נשמרו ✓', true);
+          publishToCloud();               /* פרסום לכל המבקרים */
         });
         box.querySelector('#exDiscard').addEventListener('click', function(){
           restoreSnapshot();               /* החזרה למצב לפני העריכה */
@@ -1933,18 +1934,68 @@
      העורך (localStorage) גוברות; מבקר רגיל מקבל את התוכן שפורסם.
      נכשל בשקט אם הקובץ לא קיים. */
   var bakedContent = null;
+  function applyBaked(d){
+    if (!d) return;
+    bakedContent = d;
+    var changed = false;
+    if (!load(STORE_KEY)  && d.overrides){ overrides = d.overrides; changed = true; }
+    if (!load(THEME_KEY)  && d.theme)    { theme     = d.theme;     changed = true; }
+    if (!load(BLOCKS_KEY) && d.blocks)   { blocks    = d.blocks;    changed = true; }
+    if (changed) applyOverrides();
+  }
   function loadBakedContent(){
-    fetch('assets/data/content.json?t=' + Date.now())
-      .then(function(r){ if (!r.ok) throw 0; return r.json(); })
-      .then(function(d){
-        bakedContent = d;
-        var changed = false;
-        if (!load(STORE_KEY)  && d.overrides){ overrides = d.overrides; changed = true; }
-        if (!load(THEME_KEY)  && d.theme)    { theme     = d.theme;     changed = true; }
-        if (!load(BLOCKS_KEY) && d.blocks)   { blocks    = d.blocks;    changed = true; }
-        if (changed) applyOverrides();
-      })
-      .catch(function(){});
+    /* קודם הענן (Supabase — תמיד הטרי ביותר), ואם אין — content.json מהמאגר */
+    var fromFile = function(){
+      fetch('assets/data/content.json?t=' + Date.now())
+        .then(function(r){ if (!r.ok) throw 0; return r.json(); })
+        .then(applyBaked)
+        .catch(function(){});
+    };
+    if (window.PDDB){
+      PDDB.load().then(function(d){ if (d) applyBaked(d); else fromFile(); })
+                 .catch(fromFile);
+    } else fromFile();
+  }
+
+  /* ---------- פרסום לענן — השינויים נראים לכל המבקרים מיד ---------- */
+  var publishRetry = null;
+  function publishToCloud(){
+    if (!window.PDDB) return;
+    var payload = { overrides: overrides, theme: theme, blocks: blocks, exportedAt: new Date().toISOString() };
+    if (!PDDB.isAuthed()){ askCloudLogin(payload); return; }
+    setStatus('מפרסם…');
+    PDDB.save(payload)
+      .then(function(){ bakedContent = payload; setStatus('פורסם לאתר ✓ — כל המבקרים רואים', true); })
+      .catch(function(err){
+        /* חיבור פג / נדחה — מבקשים התחברות מחדש */
+        if (/401|403|session|sign/i.test(String(err))) { PDDB.signOut(); askCloudLogin(payload); }
+        else setStatus('שגיאת פרסום: ' + err.message, false);
+      });
+  }
+  function askCloudLogin(payload){
+    showModal(
+      '<h3>פרסום לאתר החי</h3>' +
+      '<p>התחברות חד-פעמית בחשבון הניהול שלך (אותם פרטים כמו ב-marvah.co.il). החיבור נשמר בדפדפן.</p>' +
+      '<div class="am-err" id="clErr"></div>' +
+      '<input type="email" id="clEmail" placeholder="אימייל" autocomplete="username" />' +
+      '<input type="password" id="clPass" placeholder="סיסמה" autocomplete="current-password" style="margin-top:8px" />' +
+      '<div class="am-actions">' +
+        '<button class="admin-btn" data-close>לא עכשיו</button>' +
+        '<button class="admin-btn primary" id="clGo">התחבר ופרסם</button>' +
+      '</div>',
+      function(box){
+        var em = box.querySelector('#clEmail'), pw = box.querySelector('#clPass');
+        var go = function(){
+          box.querySelector('#clErr').textContent = '';
+          PDDB.signIn(em.value.trim(), pw.value)
+            .then(function(){ hideModal(); publishToCloud(); })
+            .catch(function(err){ box.querySelector('#clErr').textContent = err.message || 'התחברות נכשלה'; });
+        };
+        box.querySelector('#clGo').addEventListener('click', go);
+        pw.addEventListener('keydown', function(e){ if (e.key==='Enter') go(); });
+        em.focus();
+      }
+    );
   }
 
   function init(){
