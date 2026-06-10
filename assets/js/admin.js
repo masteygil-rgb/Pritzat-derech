@@ -214,7 +214,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v57</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v58</b></div>' +
       '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
@@ -621,7 +621,6 @@
         var r = el.getBoundingClientRect();
         var startW = r.width, startH = r.height;
         selOnly(el);
-        try { h.setPointerCapture(e.pointerId); } catch(_){}
         function mv(ev){
           var dx = ev.clientX - sx, dy = ev.clientY - sy;
           var nw = startW, nh = startH;
@@ -635,21 +634,14 @@
           el.style.height = nh + 'px';
           el._sz = { w:nw, h:nh };
         }
-        function up(){
-          h.removeEventListener('pointermove', mv);
-          h.removeEventListener('pointerup', up);
-          h.removeEventListener('pointercancel', up);
-          try { h.releasePointerCapture(e.pointerId); } catch(_){}
+        pdDrag(e, h, mv, function(){
           if (el._sz){
             var k = keyOf(el);
             overrides[k] = overrides[k] || {};
             overrides[k].size = el._sz;
             flush();
           }
-        }
-        h.addEventListener('pointermove', mv);
-        h.addEventListener('pointerup', up);
-        h.addEventListener('pointercancel', up);
+        });
       });
       el.appendChild(h);
     });
@@ -673,6 +665,38 @@
     setTimeout(function(){ btn.dataset.armed=''; btn.textContent='🗑'; btn.classList.remove('pd-del-arm'); }, 3000);
   }
 
+  /* ---------- עוזר גרירה אחיד וחסין ----------
+     • האזנה ב-document בשלב הלכידה (true) — שום stopPropagation או עזיבת
+       הידית לא מאבדים אירועים; הבוקסה צמודה לסמן תמיד.
+     • setPointerCapture כבונוס (אירועים גם מחוץ לחלון).
+     • requestAnimationFrame — עדכון אחד לכל פריים, חלק ובלי פיגור. */
+  var pdDragging = false;
+  function pdDrag(e, handle, onMove, onEnd){
+    pdDragging = true;
+    try { handle.setPointerCapture(e.pointerId); } catch(_){}
+    var raf = 0, last = null;
+    function mv(ev){
+      if (ev.pointerId !== e.pointerId) return;
+      last = ev;
+      if (!raf) raf = requestAnimationFrame(function(){ raf = 0; if (last && pdDragging) onMove(last); });
+    }
+    function up(ev){
+      if (ev.pointerId !== e.pointerId) return;
+      document.removeEventListener('pointermove', mv, true);
+      document.removeEventListener('pointerup', up, true);
+      document.removeEventListener('pointercancel', up, true);
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      if (last) onMove(last);           /* התנועה האחרונה — בלי לאבד פיקסל */
+      try { handle.releasePointerCapture(e.pointerId); } catch(_){}
+      pdDragging = false;
+      onEnd(ev);
+    }
+    document.addEventListener('pointermove', mv, true);
+    document.addEventListener('pointerup', up, true);
+    document.addEventListener('pointercancel', up, true);
+  }
+
   /* סימון אלמנט נבחר יחיד — רק עליו מוצגות הידיות */
   function selOnly(el){
     document.querySelectorAll('.pd-movable.pd-sel').forEach(function(n){
@@ -692,21 +716,16 @@
     var moved = false;
     selOnly(el);
     el.classList.add('pd-moving');
-    /* לכידת המצביע על הידית — כל ה-pointermove מגיע אליה, מסונכרן לחלוטין עם העכבר */
-    try { handle.setPointerCapture(e.pointerId); } catch(_){}
-    function move(ev){
+    el.style.transition = 'none';   /* מנצח כל transition של .reveal וכד' */
+    pdDrag(e, handle, function(ev){
       var dx = start.dx + (ev.clientX - sx);
       var dy = start.dy + (ev.clientY - sy);
       if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) > 3) moved = true;
       el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
       el._mv = { dx:dx, dy:dy };
-    }
-    function up(){
-      handle.removeEventListener('pointermove', move);
-      handle.removeEventListener('pointerup', up);
-      handle.removeEventListener('pointercancel', up);
-      try { handle.releasePointerCapture(e.pointerId); } catch(_){}
+    }, function(){
       el.classList.remove('pd-moving');
+      el.style.transition = '';
       if (moved && el._mv){
         var k = keyOf(el);
         overrides[k] = overrides[k] || {};
@@ -717,10 +736,7 @@
         setTimeout(function(){ handle._afterDrag = false; }, 400);
         flush();
       }
-    }
-    handle.addEventListener('pointermove', move);
-    handle.addEventListener('pointerup', up);
-    handle.addEventListener('pointercancel', up);
+    });
   }
   function resetMove(el){
     var k = keyOf(el);
@@ -1268,6 +1284,7 @@
 
   /* רינדור כל הבלוקים השמורים */
   function renderBlocks(){
+    if (pdDragging) return;   /* לא מחליפים את ה-DOM באמצע גרירה */
     ensureAddZones();
     /* הסרת בלוקים צפים קודמים */
     document.querySelectorAll('.custom-block.cb-free').forEach(function(n){ n.remove(); });
@@ -1771,13 +1788,7 @@
             }
           }
         }
-        function up(){
-          document.removeEventListener('pointermove', mv);
-          document.removeEventListener('pointerup', up);
-          saveBlocks();
-        }
-        document.addEventListener('pointermove', mv);
-        document.addEventListener('pointerup', up);
+        pdDrag(e, h, mv, function(){ saveBlocks(); });
       });
       wrap.appendChild(h);
     });
@@ -1804,38 +1815,34 @@
       }
 
       wrap.classList.add('cb-dragging');
+      wrap.style.transition = 'none';            /* שום אנימציה לא תרכך את התנועה */
       var wr = wrap.getBoundingClientRect();
       var offX = e.clientX - wr.left;
       var offY = e.clientY - wr.top;
-      /* לכידת המצביע על הידית — כל אירועי התנועה מגיעים אליה גם בגרירה
-         מהירה, כך שהבוקסה צמודה לסמן 1:1 (אותו תיקון כמו באלמנטים קיימים) */
-      try { handle.setPointerCapture(e.pointerId); } catch(_){}
+      var lastX = wrap.offsetLeft, lastY = wrap.offsetTop;
 
-      function move(ev){
-        /* מלבן העמוד נמדד מחדש בכל תנועה — נשאר מדויק גם אם הדף גלל/השתנה */
+      pdDrag(e, handle, function(ev){
+        /* מיקום בפיקסלים בזמן הגרירה — צמידות מוחלטת לסמן.
+           המרה לאחוזים (לשמירה רספונסיבית) רק בשחרור. */
         var pr = page.getBoundingClientRect();
         var x = ev.clientX - pr.left - offX;
         var y = ev.clientY - pr.top  - offY;
-        /* גבולות */
         x = Math.max(0, Math.min(x, pr.width  - wr.width));
         y = Math.max(0, Math.min(y, pr.height - wr.height));
-        b.x = (x / pr.width)  * 100;
-        b.y = (y / pr.height) * 100;
-        wrap.style.left = b.x + '%';
+        lastX = x; lastY = y;
+        wrap.style.left = x + 'px';
         wrap.style.right = 'auto';
-        wrap.style.top = b.y + '%';
-      }
-      function up(){
-        handle.removeEventListener('pointermove', move);
-        handle.removeEventListener('pointerup', up);
-        handle.removeEventListener('pointercancel', up);
-        try { handle.releasePointerCapture(e.pointerId); } catch(_){}
+        wrap.style.top = y + 'px';
+      }, function(){
+        var pr = page.getBoundingClientRect();
+        b.x = (lastX / pr.width)  * 100;
+        b.y = (lastY / pr.height) * 100;
+        wrap.style.left = b.x + '%';
+        wrap.style.top  = b.y + '%';
+        wrap.style.transition = '';
         wrap.classList.remove('cb-dragging');
         saveBlocks();
-      }
-      handle.addEventListener('pointermove', move);
-      handle.addEventListener('pointerup', up);
-      handle.addEventListener('pointercancel', up);
+      });
     });
   }
 
