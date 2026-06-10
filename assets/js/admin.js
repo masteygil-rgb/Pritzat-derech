@@ -214,7 +214,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v54</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v55</b></div>' +
       '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
@@ -455,6 +455,12 @@
 
   function enterAdmin(){
     adminOn = true;
+    /* אם אין עריכות מקומיות אך קיים תוכן שפורסם — מתחילים לערוך ממנו */
+    if (bakedContent && !load(STORE_KEY) && !load(BLOCKS_KEY)){
+      if (bakedContent.overrides){ overrides = bakedContent.overrides; save(STORE_KEY, overrides); }
+      if (bakedContent.theme)    { theme     = bakedContent.theme;     save(THEME_KEY, theme); }
+      if (bakedContent.blocks)   { blocks    = bakedContent.blocks;    save(BLOCKS_KEY, blocks); }
+    }
     takeSnapshot();          /* שומר את המצב המקורי לפני העריכה */
     document.body.classList.add('admin-on');
     document.body.classList.add('admin-mode');   /* מפעיל את סרגל הטקסט הצף (rich-text-toolbar) */
@@ -1922,8 +1928,28 @@
   }
 
   /* ---------- אתחול ---------- */
+  /* ---------- תוכן מפורסם (content.json) ----------
+     עריכות שפורסמו לכל המבקרים — נטען מהמאגר. עריכות מקומיות של
+     העורך (localStorage) גוברות; מבקר רגיל מקבל את התוכן שפורסם.
+     נכשל בשקט אם הקובץ לא קיים. */
+  var bakedContent = null;
+  function loadBakedContent(){
+    fetch('assets/data/content.json?t=' + Date.now())
+      .then(function(r){ if (!r.ok) throw 0; return r.json(); })
+      .then(function(d){
+        bakedContent = d;
+        var changed = false;
+        if (!load(STORE_KEY)  && d.overrides){ overrides = d.overrides; changed = true; }
+        if (!load(THEME_KEY)  && d.theme)    { theme     = d.theme;     changed = true; }
+        if (!load(BLOCKS_KEY) && d.blocks)   { blocks    = d.blocks;    changed = true; }
+        if (changed) applyOverrides();
+      })
+      .catch(function(){});
+  }
+
   function init(){
     applyOverrides();        /* תמיד — גם למבקר רגיל */
+    loadBakedContent();      /* תוכן שפורסם — מוצג לכל מבקר בלי עריכות מקומיות */
     buildUI();
     initImgInput();
 
