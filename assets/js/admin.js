@@ -111,6 +111,64 @@
   var adminOn   = false;
   var dirty     = false;
 
+  /* ---------- מחסנית ביטול (Undo) ---------- */
+  var UNDO_MAX    = 50;
+  var undoStack   = [];   /* [{ov, th, bl}] — מצב localStorage לפני כל פעולה */
+  var undoPaused  = false; /* אמת בזמן שחזור — מונע דחיפה כפולה */
+
+  function pushUndo(){
+    if (undoPaused || !adminOn) return;
+    undoStack.push({
+      ov: localStorage.getItem(STORE_KEY)  || '{}',
+      th: localStorage.getItem(THEME_KEY)  || '{}',
+      bl: localStorage.getItem(BLOCKS_KEY) || '{}'
+    });
+    if (undoStack.length > UNDO_MAX) undoStack.shift();
+    updateUndoBtn();
+  }
+
+  function doUndo(){
+    if (!undoStack.length) return;
+    undoPaused = true;
+    var state = undoStack.pop();
+    try { overrides = JSON.parse(state.ov) || {}; } catch(e){ overrides = {}; }
+    try { theme     = JSON.parse(state.th) || {}; } catch(e){ theme = {}; }
+    try { blocks    = JSON.parse(state.bl) || {}; } catch(e){ blocks = {}; }
+    save(STORE_KEY, overrides);
+    save(THEME_KEY, theme);
+    save(BLOCKS_KEY, blocks);
+    /* שחזור innerHTML לכל אלמנט טקסט */
+    eachText(function(el){
+      var k = keyOf(el);
+      var o = overrides[k];
+      if (o && o.html != null) el.innerHTML = o.html;
+      else if (el._pdOrigHTML != null) el.innerHTML = el._pdOrigHTML;
+    });
+    /* שחזור מיקומים ותנועות */
+    eachSel(MOVE_SELECTORS, function(el){
+      var o = overrides[keyOf(el)];
+      el.style.transform = (o && o.move) ? 'translate('+o.move.dx+'px,'+o.move.dy+'px)' : '';
+      el.classList.toggle('pd-moved', !!(o && o.move));
+      if (o && o.hidden) el.classList.add('pd-hidden');
+      else el.classList.remove('pd-hidden');
+    });
+    applyTheme();
+    renderBlocks();
+    injectInlineInserts(adminOn);
+    setStatus('בוטל ✓', true);
+    undoPaused = false;
+    updateUndoBtn();
+  }
+
+  function updateUndoBtn(){
+    var btn = document.querySelector('[data-act="undo"]');
+    if (!btn) return;
+    btn.disabled = undoStack.length === 0;
+    btn.title = undoStack.length
+      ? 'בטל פעולה (Ctrl+Z) — ' + undoStack.length + ' פעולות זמינות'
+      : 'אין פעולות לביטול';
+  }
+
   /* ---------- עזרי אחסון ---------- */
   function load(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } }
   function save(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
@@ -214,8 +272,9 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v59</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v60</b></div>' +
       '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
+      '<button class="admin-btn" data-act="undo" title="אין פעולות לביטול" disabled>↩ ביטול</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
       '<button class="admin-btn" data-act="theme">🎨 עיצוב כללי</button>' +
       '<button class="admin-btn" data-act="grid">▦ רשת עזר</button>' +
@@ -231,6 +290,7 @@
       var b = e.target.closest('[data-act]'); if (!b) return;
       var act = b.dataset.act;
       if (act==='save'){ flush(); save(THEME_KEY, theme); save(BLOCKS_KEY, blocks); takeSnapshot(); setStatus('הכול נשמר ✓', true); publishToCloud(); }
+      else if (act==='undo') doUndo();
       else if (act==='add') addBlockFlow();
       else if (act==='theme') toggleTheme();
       else if (act==='grid') toggleGrid(b);
@@ -392,6 +452,7 @@
     document.body.appendChild(tp);
     tp.addEventListener('input', function(e){
       var v = e.target.dataset.tvar; if (!v) return;
+      pushUndo();
       theme[v] = e.target.value;
       document.documentElement.style.setProperty(v, e.target.value);
       save(THEME_KEY, theme); setStatus('נשמר', true);
@@ -462,6 +523,9 @@
       if (bakedContent.blocks)   { blocks    = bakedContent.blocks;    save(BLOCKS_KEY, blocks); }
     }
     takeSnapshot();          /* שומר את המצב המקורי לפני העריכה */
+    /* מאפס מחסנית undo ושומר HTML מקורי של כל אלמנטי טקסט */
+    undoStack = []; updateUndoBtn();
+    eachText(function(el){ el._pdOrigHTML = el.innerHTML; });
     document.body.classList.add('admin-on');
     document.body.classList.add('admin-mode');   /* מפעיל את סרגל הטקסט הצף (rich-text-toolbar) */
     enableEditing(true);
@@ -1164,6 +1228,7 @@
     saveTimer = setTimeout(flush, 700);
   }
   function flush(){
+    pushUndo();
     var ok = save(STORE_KEY, overrides);
     dirty = false;
     setStatus(ok ? 'נשמר ✓' : 'שגיאת שמירה (אולי גדול מדי)', ok);
@@ -1266,7 +1331,7 @@
      בלוקים מותאמים אישית — הוספת שדות טקסט/תמונה חדשים
      =================================================================== */
   function uid(){ return 'b' + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36); }
-  function saveBlocks(){ var ok = save(BLOCKS_KEY, blocks); setStatus(ok?'נשמר ✓':'שגיאת שמירה', ok); }
+  function saveBlocks(){ pushUndo(); var ok = save(BLOCKS_KEY, blocks); setStatus(ok?'נשמר ✓':'שגיאת שמירה', ok); }
 
   /* יצירת אזור-תוספות בראש התוכן של כל פרק (פעם אחת) */
   function ensureAddZones(){
@@ -2021,10 +2086,15 @@
     buildUI();
     initImgInput();
 
-    /* קיצור מקלדת: Ctrl+Shift+E לפתיחת כניסה */
+    /* קיצורי מקלדת */
     document.addEventListener('keydown', function(e){
       if (e.ctrlKey && e.shiftKey && (e.key==='E'||e.key==='e')){ e.preventDefault(); adminOn?exitAdmin():requestLogin(); }
       if (e.key==='Escape'){ hideFmt(); }
+      /* Ctrl+Z — ביטול פעולה (רק כשלא כותבים בשדה contenteditable) */
+      if (adminOn && (e.ctrlKey||e.metaKey) && !e.shiftKey && (e.key==='z'||e.key==='Z')){
+        var ae = document.activeElement;
+        if (!ae || !ae.isContentEditable){ e.preventDefault(); doUndo(); }
+      }
     });
 
     /* כניסה אוטומטית אם ?admin=1 או אם כבר במהלך סשן */
