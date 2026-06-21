@@ -13,6 +13,20 @@
   <link rel="stylesheet" href="assets/css/rich-toolbar.css?v=3" />
   <link rel="stylesheet" href="assets/css/gate.css?v=1" />
   <link rel="icon" href="assets/img/logo.png" />
+  <!-- mobile overrides — inline so they apply even if external CSS is cached -->
+  <style>
+  @media(max-width:768px){
+    .hero{min-height:54vh!important;align-items:flex-end!important}
+    .eyebrow{display:none!important}
+    .hero-inner{padding:0 20px 28px!important}
+    .hero-title{font-size:1.75rem!important;letter-spacing:-.5px!important;margin-bottom:8px!important;line-height:1.1!important}
+    .hero-sub{font-size:.9rem!important;margin-bottom:16px!important}
+    .hero-actions{flex-direction:column!important;gap:8px!important}
+    .hero-actions .btn{width:100%!important;justify-content:center!important}
+    .hero-scroll{display:none!important}
+    .custom-block.cb-free{position:relative!important;left:auto!important;right:auto!important;top:auto!important;width:auto!important;max-width:100%!important;margin:20px 0!important;z-index:1!important}
+  }
+  </style>
 </head>
 <body>
 
@@ -616,5 +630,25 @@
   <script src="assets/js/pd-db.js?v=1"></script>
   <script src="assets/js/admin.js?v=61"></script>
   <script src="assets/js/rich-text-toolbar.js?v=5"></script>
+  <!-- מנקה inline positioning מבלוקים צפים במובייל — עובד גם עם JS/CSS ממוטמן -->
+  <script>
+  (function(){
+    if (window.innerWidth > 768) return;
+    function fix(){
+      if (document.body && document.body.classList.contains('admin-mode')) return;
+      document.querySelectorAll('.custom-block.cb-free').forEach(function(n){
+        n.style.removeProperty('position');
+        n.style.removeProperty('left');
+        n.style.removeProperty('right');
+        n.style.removeProperty('top');
+        n.style.removeProperty('width');
+        n.style.removeProperty('z-index');
+      });
+    }
+    var obs = new MutationObserver(fix);
+    function init(){ obs.observe(document.body,{childList:true,subtree:true}); fix(); }
+    document.readyState==='loading' ? document.addEventListener('DOMContentLoaded',init) : init();
+  })();
+  </script>
 </body>
 </html>
