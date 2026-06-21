@@ -272,7 +272,7 @@
     /* סרגל עליון */
     var bar = el('div', 'admin-bar');
     bar.innerHTML =
-      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v60</b></div>' +
+      '<div class="ab-logo"><i>פד</i> מצב עריכה <b style="background:#1f87b0;color:#fff;border-radius:5px;padding:1px 7px;font-size:.72rem;margin-inline-start:6px">v61</b></div>' +
       '<button class="admin-btn primary" data-act="save">💾 שמירה</button>' +
       '<button class="admin-btn" data-act="undo" title="אין פעולות לביטול" disabled>↩ ביטול</button>' +
       '<button class="admin-btn primary" data-act="add">➕ הוסף בלוק</button>' +
@@ -1490,8 +1490,10 @@
 
   function applyFreePos(node, b){
     node.classList.add('cb-free');
+    /* במובייל (ללא מצב עריכה) — זרימה רגילה, ללא מיקום מוחלט */
+    if (window.innerWidth <= 768 && !adminOn) return;
     node.style.position = 'absolute';
-    node.style.left = (b.x != null ? b.x : 50) + '%';   /* left רגיל — לא RTL-aware, כדי שלא יתהפך */
+    node.style.left = (b.x != null ? b.x : 50) + '%';
     node.style.right = 'auto';
     node.style.top = (b.y != null ? b.y : 18) + '%';
     node.style.width = (b.w ? b.w + 'px' : 'min(420px,80vw)');
